@@ -1,4 +1,4 @@
-import modelUserAdmin from "../models/usuario_admin_model.mjs";
+import modelUserAdmin from "../models/usuario_administrador_model.mjs";
 
 export const getAllUsersAdmins = async (req,res) => {
     try {

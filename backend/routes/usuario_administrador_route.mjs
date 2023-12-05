@@ -1,4 +1,4 @@
-import { createUserAdmins,deleteUserAdmins,getAllUsersAdmins,updateUserAdmins } from "../controllers/usuario_admin_controller.mjs";
+import { createUserAdmins,deleteUserAdmins,getAllUsersAdmins,updateUserAdmins } from "../controllers/usuario_administrador_controller.mjs";
 import express from 'express';
 
 const routerUserAdmin = express.Router();

@@ -1,3 +1,4 @@
+import 'package:app_final/components/cliente/promocion.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/components/cliente/productos.dart';
 
@@ -35,6 +36,29 @@ class _Bienvenido extends State<Bienvenido> {
   );
   }
 
+  void navigatePromos(){
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => Promocion(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutQuart;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 800),
+    ),
+  );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +74,7 @@ class _Bienvenido extends State<Bienvenido> {
                   children: [
                     Text("Bienvenido",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w200),),
                     SizedBox(height: 50,),
-                    Text("Promociones",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w200),),
+                    Text("< Promociones >",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w200),),
                    // SizedBox(height: 20,),
 
                     Container(
@@ -61,42 +85,49 @@ class _Bienvenido extends State<Bienvenido> {
                         color: Color.fromARGB(255, 237, 242, 181),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child:ListView(
-                        // This next line does the trick.
-                        scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          const SizedBox(width: 20,),
-                          Container(
-                            child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                            width: 300,
-                            color: Colors.red,
-                          ),
-                          const SizedBox(width: 20,),
-                          Container(
-                            child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                            width: 300,
-                            color: Colors.blue,
-                          ),
-                          const SizedBox(width: 20,),
+                      child:GestureDetector(
+                        onTap: (){
+                          navigatePromos();
+                          //Navigator.push(context,MaterialPageRoute(builder: (context)=>Promocion()));
+                        },
 
-                          Container(
-                            child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                            width: 300,
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 20,),
-                          Container(
-                            child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                            width: 300,
-                            color: Colors.yellow,
-                          ),
-                          const SizedBox(width: 20,),
-                          Container(
-                            child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                            width: 300,
-                            color: Colors.orange,
-                          ),
-                        ],
+                        child: ListView(
+                          // This next line does the trick.
+                          scrollDirection: Axis.horizontal,
+                          children:[
+                            const SizedBox(width: 20,),
+                            Container(
+                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
+                              width: 300,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(width: 20,),
+                            Container(
+                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
+                              width: 300,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 20,),
+                        
+                            Container(
+                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
+                              width: 300,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(width: 20,),
+                            Container(
+                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
+                              width: 300,
+                              color: Colors.yellow,
+                            ),
+                            const SizedBox(width: 20,),
+                            Container(
+                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
+                              width: 300,
+                              color: Colors.orange,
+                            ),
+                          ],
+                        ),
                       ),),
 
                      SizedBox(height: 30,),

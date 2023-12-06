@@ -1,0 +1,218 @@
+import 'dart:convert';
+
+import 'package:lottie/lottie.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/material.dart';
+import 'components/cliente/bienvenido.dart';
+
+class Login3 extends StatefulWidget{
+  const Login3({super.key});
+
+  @override
+  State<Login3> createState() => _Login3State();
+}
+
+class _Login3State extends State<Login3>{
+
+  //ATRIBUTOS
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  late String responseText='';
+  String apiUrl = 'http://10.0.2.2:8004/api/login';
+
+  // LLAMADA DE API
+  Future<dynamic> sendCredentials(user,pass) async {
+    if(user == null || pass == null){
+      return "Error: nulos";
+    }
+     print(" dentro de creden");
+  
+     
+     
+      var res = await http.post(Uri.parse(apiUrl),
+      headers: {"Content-Type":"application/json"},
+      body: jsonEncode({
+        "nickname":user,
+        "contrasena":pass
+      }));
+      
+
+      if (res.statusCode == 200) {
+        // La so  licitud fue exitosa, puedes manejar los datos aquí
+        return json.decode(res.body);
+      } 
+  }
+
+  void navigateToBienvenido(){
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => Bienvenido(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutQuart;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 800),
+    ),
+  );
+  }
+
+
+  @override
+  Widget build (BuildContext context){
+
+    // variables especiales
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+
+
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Lottie.asset('lib/imagenes/Animation - 1701782678197.json',
+            width: screenWidth,
+            height: screenHeight,
+            fit: BoxFit.fill),
+            SafeArea(
+              child:Padding(
+                padding:EdgeInsets.all(10),
+                child:Center(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 50),
+                      Image.asset('lib/imagenes/logo_sol_tiny.png',
+                      width: 100,
+                      height: 100,).animate().fade().then().shake(),
+                      const SizedBox(height: 200,),
+                      Container(
+                        width: 350,
+                        child: TextField(
+                            controller: _username,
+                            style:const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue
+                              ),
+                            decoration:const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelText: "User",
+                              labelStyle: TextStyle(
+                                color:Colors.blue,
+                                fontSize: 14
+                              ),
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent))
+                            ),
+                          ),
+                      ),
+                        const SizedBox(height: 20,),
+                      Container(
+                        width: 350,
+                        child: TextField(
+                            controller: _password,
+                            style:const TextStyle(
+                              
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue
+                              ),
+                            decoration:const InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelText: "Password",
+                              
+                              labelStyle: TextStyle(
+                                color:Colors.blue,
+                                fontSize: 14
+                              ),
+                              
+                              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent)),
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent))
+                            ),
+                            obscureText:true,
+                          ),
+                      ),
+                        const SizedBox(height: 20,),
+                      ElevatedButton(onPressed: () async {
+                          print("...Inicio...");
+                          String usuario = _username.text;
+                          String pass = _password.text;
+                          print("credenciales $usuario,$pass");
+
+                          FocusScope.of(context).unfocus();
+                          
+                          var resultado = await sendCredentials(_username.text,_password.text);
+                          if(resultado['rol_user']==1){
+                            //Navigator.pushNamed(context, '/bienvenido');
+                            navigateToBienvenido();
+                          }
+                          
+                          //print(data.rol_user);
+                          
+
+                        },
+                         style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.blue),
+                          fixedSize: MaterialStateProperty.all(Size(350,55)),
+                         ),
+                         child: Text("Iniciar Sesión",style: TextStyle(fontSize:15,color:Colors.white)),
+                        ),
+        
+        
+                        const SizedBox(height: 25,),
+                        Text("o continúa con"),
+        
+        
+                        const SizedBox(height: 25,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                print("ooog");
+                              },
+                              child:Image.asset('lib/imagenes/google.png',width: 50,height: 50,),
+                            ),
+        
+        
+                            const SizedBox(width: 50,),
+                           
+                            InkWell(
+                              onTap: (){
+                                print("face");
+                              },
+                              child:Image.asset('lib/imagenes/facebook.png',width: 50,height: 50,),
+                            ),
+        
+        
+        
+        
+                          ],
+                        ),
+        
+        
+        
+                    ],
+                  ),
+                )
+              ),
+            ),
+          ],
+        ),
+      )
+    );
+  }
+}
+ 

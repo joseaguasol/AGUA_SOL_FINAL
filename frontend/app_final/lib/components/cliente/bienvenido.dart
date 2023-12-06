@@ -38,7 +38,7 @@ class _Bienvenido extends State<Bienvenido> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.amber,
+      backgroundColor: const Color.fromARGB(255, 239, 205, 153),
       key: _scaffoldKey,
       body: SafeArea(
         child: Padding(

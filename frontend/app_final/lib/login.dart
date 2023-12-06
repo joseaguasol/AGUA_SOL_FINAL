@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'components/cliente/bienvenido.dart';
+import 'package:app_final/components/cliente/ubicacion.dart';
 
 class Login3 extends StatefulWidget{
   const Login3({super.key});
@@ -48,7 +49,7 @@ class _Login3State extends State<Login3>{
   Navigator.push(
     context,
     PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => Bienvenido(),
+      pageBuilder: (context, animation, secondaryAnimation) => Maps(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;

@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/empleado_ruta',
+      initialRoute: '/bienvenido',
       routes: {
         '/promociones':(context) => Promocion(),
         '/empleado_ruta':(context) => ArmadoRuta(),

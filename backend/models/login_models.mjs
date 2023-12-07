@@ -29,6 +29,7 @@ const modelLogin = {
             [credenciales.nickname,credenciales.contrasena]);
 
             if(administrador){
+                console.log("ad min--->:",administrador)
                 return {rol_user:administrador[0].rol_id}
             }
             else if(conductor){

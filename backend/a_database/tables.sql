@@ -127,7 +127,6 @@ create table ventas.pedido(
 --Table: ventas.producto
 create table ventas.producto(
 	id serial primary key,
-	pedido_id int not null,
 	nombre varchar(200) not null,
 	precio int not null,
 	descripcion varchar(200) not null,
@@ -190,9 +189,6 @@ ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_ruta FOREIGN KEY (ruta_id) RE
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_empleado FOREIGN KEY (empleado_id) REFERENCES personal.empleado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- PRODUCTO
-ALTER TABLE ventas.producto ADD CONSTRAINT fk_producto_pedido FOREIGN KEY (pedido_id) REFERENCES ventas.pedido (id);
 
 -- ZONA TRABAJO
 ALTER TABLE ventas.zona_trabajo ADD CONSTRAINT fk_zona_trabajo_superadmin FOREIGN KEY (superadmin_id) REFERENCES personal.superadmin (id);

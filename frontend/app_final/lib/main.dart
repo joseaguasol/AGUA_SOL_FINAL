@@ -1,4 +1,5 @@
 import 'package:app_final/components/cliente/promocion.dart';
+import 'package:app_final/components/empleado/home.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/login.dart';
 import 'package:app_final/components/cliente/productos.dart';
@@ -25,9 +26,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/bienvenido',
+      initialRoute: '/empleado_ruta',
       routes: {
         '/promociones':(context) => Promocion(),
+        '/empleado_ruta':(context) => ArmadoRuta(),
         '/loginsol':(context)=> const Login3(),
         '/bienvenido':(context)=> const Bienvenido(),
         '/productos':(context) => const Productos()

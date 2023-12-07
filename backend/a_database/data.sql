@@ -69,9 +69,6 @@ INSERT INTO ventas.pedido (conductor_id, ruta_id, empleado_id, cliente_id, monto
 INSERT INTO ventas.producto (pedido_id, nombre, precio, descripcion, stock) VALUES
   (1, 'Producto1', 50, 'Descripción producto 1', 100);
 
--- Insertar registros en la tabla compra
-INSERT INTO relaciones.compra (cliente_id, producto_id, fecha, cantidad, descripcion_general, descuento, precio_total) VALUES
-  (1, 1, '2023-01-15 09:30:00', 2, 'Descripción compra 1', 10, 90);
 
 
 
@@ -79,4 +76,6 @@ INSERT INTO relaciones.compra (cliente_id, producto_id, fecha, cantidad, descrip
 INSERT INTO ventas.vehiculo (conductor_id, placa, capacidad_carga_ton) VALUES
   (1, 'ABC123', 2);
   
-
+-- Insertar registros en la tabla compra
+INSERT INTO relaciones.detalle_pedido(pedido_id, producto_id, fecha, cantidad, descripcion_general, descuento, precio_total) VALUES
+  (1, 1, '2023-01-15 09:30:00', 2, 'Descripción compra 1', 10, 90);

@@ -163,9 +163,9 @@ create table ventas.zona_trabajo(
 ---------------------------------
 
 --Table: relaciones.compra
-create table relaciones.compra(
+create table relaciones.detalle_pedido(
 	id serial primary key,
-	cliente_id int not null,
+	pedido_id int not null,
 	producto_id int not null,
 	fecha timestamp not null,
 	cantidad int not null,
@@ -205,8 +205,8 @@ ALTER TABLE ventas.venta ADD CONSTRAINT fk_venta_admin FOREIGN KEY (administrado
 ALTER TABLE ventas.venta ADD CONSTRAINT fk_venta_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- COMPRA
-ALTER TABLE relaciones.compra ADD CONSTRAINT fk_compra_producto FOREIGN KEY (producto_id) REFERENCES ventas.producto (id);
-ALTER TABLE relaciones.compra ADD CONSTRAINT fk_compra_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id);
+ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_producto FOREIGN KEY (producto_id) REFERENCES ventas.producto (id);
+ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_pedido FOREIGN KEY (pedido_id) REFERENCES ventas.pedido (id);
 
 -- ROLES
 ALTER TABLE personal.usuario ADD CONSTRAINT fk_usuario_rol FOREIGN KEY (rol_id) REFERENCES relaciones.roles(id);

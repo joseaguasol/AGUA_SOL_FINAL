@@ -1,6 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import morgan from "morgan";
+import routerVentasPedido from "./routes/ventas_pedido_route.mjs";
 import routerUserConductor from "./routes/usuario_conductor_route.mjs";
 import routerUserEmpleado from "./routes/usuario_empleado_route.mjs";
 import routerUserCliente from "./routes/usuario_cliente_route.mjs";
@@ -23,6 +24,7 @@ app_sol.use('/api',routerUserEmpleado);
 app_sol.use('/api',routerUserConductor);
 app_sol.use('/api',routerVentasProduct);
 app_sol.use('/api',routerLogin);
+app_sol.use('/api',routerVentasPedido);
 
 
 app_sol.listen(port, ()=>{

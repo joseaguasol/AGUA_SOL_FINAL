@@ -5,12 +5,20 @@ import 'package:app_final/login.dart';
 import 'package:app_final/components/cliente/productos.dart';
 import 'package:app_final/components/cliente/bienvenido.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:app_final/provider/usuario_provider.dart';
+import 'package:provider/provider.dart';
 
 
 void main() {
   //WidgetsFlutterBinding.ensureInitialized();
   //await Geolocator.requestPermission();
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UsuarioProvider(),
+      child: const MyApp(),
+    )
+    
+    );
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +34,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/bienvenido',
+      initialRoute: '/loginsol',
       routes: {
         '/promociones':(context) => Promocion(),
         '/empleado_ruta':(context) => ArmadoRuta(),

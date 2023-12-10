@@ -1,18 +1,27 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class ProductCustom extends StatelessWidget {
-
-  final String image;
-  final String descripcion;
+  //final int id;
+  final String image; // temporal por ahora
+  final String nombre;
+  final int precio;
+  //final String descripcion;
+  //final int stock; // temporal por ahora
   final int contador;
   final VoidCallback? onPressedplus;
   final VoidCallback? onPressedminus;
 
   const ProductCustom({
     super.key,
+    //required this.id,
+    required this.nombre,
+    required this.precio,
+    //required this.stock,
     required this.image,
     required this.contador,
-    required this.descripcion,
+    //required this.descripcion,
     this.onPressedplus,
     this.onPressedminus,
     
@@ -40,7 +49,14 @@ class ProductCustom extends StatelessWidget {
             alignment:Alignment.center,
               
               child:
-            Text(descripcion,style:TextStyle(color:Colors.grey,fontSize:14,fontWeight: FontWeight.w300),),
+            Row(
+              children: [
+                Text(nombre,style:TextStyle(color:Colors.grey,fontSize:14,fontWeight: FontWeight.w300),),
+                SizedBox(width: 30,),
+                Text("S/.${precio}",style:TextStyle(color:Colors.grey,fontSize:14,fontWeight: FontWeight.w300),),
+              ],
+            ),
+            
           ),
         ),
         Container(

@@ -1,5 +1,7 @@
 import 'dart:convert';
-
+import 'package:provider/provider.dart';
+import 'package:app_final/provider/usuario_provider.dart';
+import 'package:app_final/provider/usuarios_model.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_animate/flutter_animate.dart';
@@ -49,7 +51,7 @@ class _Login3State extends State<Login3>{
   Navigator.push(
     context,
     PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => Maps(),
+      pageBuilder: (context, animation, secondaryAnimation) => Bienvenido(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
@@ -75,7 +77,7 @@ class _Login3State extends State<Login3>{
     // variables especiales
     final double screenHeight = MediaQuery.of(context).size.height;
     final double screenWidth = MediaQuery.of(context).size.width;
-
+    final usuarioProvider = Provider.of<UsuarioProvider>(context, listen: false);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -155,8 +157,46 @@ class _Login3State extends State<Login3>{
                           FocusScope.of(context).unfocus();
                           
                           var resultado = await sendCredentials(_username.text,_password.text);
-                          if(resultado['rol_user']==1){
+                          if(resultado['rol_id']==4){
                             //Navigator.pushNamed(context, '/bienvenido');
+                           usuarioProvider.actualizarUsuario(
+                              Cliente(id:resultado['id'],
+                              nick:resultado['nickname'],
+                              rolid: resultado['rol_id'],
+                              pass: resultado['contrasena'],
+                              email: resultado['email'],
+                              usuarioid: resultado['usuario_id'],
+                              nombre: resultado['nombre'],
+                              apellidos: resultado['apellidos'],
+                              fechanacimiento: resultado['fecha_nacimiento'],
+                              sexo: resultado['sexo'],
+                              direccionempresa: resultado['direccion'],
+                              zonatrabajoid: resultado['zona_trabajo_id'],
+                              ruc: resultado['ruc'],
+                              saldobeneficios: resultado['saldo_beneficios'],
+                              ubicacion: resultado['ubicacion'],
+                              suscripcion: resultado['suscripcion'],
+                              dni: resultado['dni'],
+                              codigo: resultado['codigo'],
+                              nombreempresa: resultado['direccion_empresa']
+                            ));
+                            navigateToBienvenido();
+                          }
+                          else if(resultado['rol_id']==2){
+                            usuarioProvider.actualizarUsuario(
+                            Empleado(
+                              id: resultado['id'],
+                              rolid: resultado['rol_id'],
+                              nick: resultado['nickname'],
+                              pass: resultado['contrasena'],
+                              email: resultado['email'],
+                              usuarioid: resultado['usuario_id'],
+                              nombre: resultado['nombres'],
+                              apellidos: resultado['apellidos'],
+                              fechanacimiento: resultado['fecha_nacimiento'],
+                              codigoempleado: resultado['codigo_empleado'],
+                              dni: resultado['dni']
+                            ));
                             navigateToBienvenido();
                           }
                           

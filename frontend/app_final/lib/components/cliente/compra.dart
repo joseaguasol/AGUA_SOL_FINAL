@@ -3,12 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:app_final/components/cliente/gracias.dart';
 import 'package:app_final/components/cliente/productos.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-//import 'package:app_final/components/cliente/row_product.dart';
+import 'package:app_final/provider/usuarios_model.dart';
+import 'package:app_final/provider/usuario_provider.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'package:intl/intl.dart';
+
+import 'package:http/http.dart' as http;
 
 class Compra extends StatefulWidget {
   //final List<Producto> productos;
   final List<Producto> productos;
-  const Compra({required this.productos});
+  final int montoTotal;
+
+  const Compra({required this.productos,required this.montoTotal});
 
   @override
   State<Compra> createState() => _Compra();
@@ -19,9 +27,25 @@ class _Compra extends State<Compra>{
     bool normal = false;
     bool express = false;
     int cantidad = 0;
+     String apiPedido = 'http://10.0.2.2:8004/api/pedido';
+
+    Future <void>setCliente (clienteId,monto,fecha,direccion)async{
+    await http.post(Uri.parse(apiPedido),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+        	"cliente_id": clienteId,
+          "monto_total":monto,
+          "fecha":fecha,
+          "direccion":direccion
+      }));
+  }
 
    
-    void navigateGracias(){
+    void navigateGracias(id,monto,fecha,direccion)async{
+
+        setCliente(id, monto, fecha, direccion);
+
+
         Navigator.push(
           context,
           PageRouteBuilder(
@@ -50,6 +74,9 @@ class _Compra extends State<Compra>{
 
     @override
     Widget build (BuildContext context){
+    UsuarioProvider usuarioProvider = Provider.of<UsuarioProvider>(context);
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
       return Scaffold(
        // backgroundColor: const Color.fromARGB(255, 240, 211, 122),
         appBar: AppBar(
@@ -97,13 +124,14 @@ class _Compra extends State<Compra>{
                                  children: [
                                    Icon(Icons.check_circle_outlined),
                                    const SizedBox(width: 10,),
+                                   Text("ID DE PRODUCTO ${widget.productos[index].id}"),
                                    Text("Cantidad de Productos:${widget.productos[index].cantidad}",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20)),
                                  ],
                                );
                             
                               }),
                           ),
-                          Text("Subtotal:   S/.105.00",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20))
+                          Text("Subtotal:   S/.${widget.montoTotal}",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20))
                           
                         ]),           
                       ),
@@ -126,7 +154,10 @@ class _Compra extends State<Compra>{
                                 Text("Usuario",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 40)),
                               ],
                             ),
-                            Text(" - Nombres: Pedro P. Perez Perez",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20)),
+                           // print("id,${usuarioProvider.getusuarioActual.id}");
+                          Text(" -ID de Cliente: ${usuarioProvider.getusuarioActual.getid()}", style: TextStyle(fontWeight: FontWeight.w200, fontSize: 20)),
+
+                            Text(" - Nombres: ${usuarioProvider.getusuarioActual.getNombre()}",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20)),
                             Text(" - Direccion: Av. Brasil 204",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20))
                     
                     
@@ -223,10 +254,10 @@ class _Compra extends State<Compra>{
                            const SizedBox(width:10,),
                            Icon(Icons.payments_outlined,size: 50,color: Colors.white,),
                            const SizedBox(width:20,),
-                           Text("S/.200.00",style:TextStyle(fontSize:30,color:Colors.white),),
+                           Text("S/.${widget.montoTotal}.00",style:TextStyle(fontSize:30,color:Colors.white),),
                            const SizedBox(width:30,),
                            ElevatedButton(onPressed:(){
-                              navigateGracias();
+                              navigateGracias(usuarioProvider.getusuarioActual.id,widget.montoTotal,formattedDate,"sachaquita");
                            },
                            style:ButtonStyle(
                             fixedSize: MaterialStateProperty.all(Size(150,80))

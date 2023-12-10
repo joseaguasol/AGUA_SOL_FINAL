@@ -2,7 +2,7 @@ import pgPromise from 'pg-promise';
 
 const pgp = pgPromise();
 
-const connectionStr = "postgres://postgres:1234@localhost:5432/new_sol2";
+const connectionStr = "postgres://postgres:1234@localhost:5432/new_sol3";
 export const db_pool =  pgp(connectionStr);
 
 try{

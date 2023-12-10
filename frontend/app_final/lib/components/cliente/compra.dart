@@ -28,9 +28,11 @@ class _Compra extends State<Compra>{
     bool express = false;
     int cantidad = 0;
      String apiPedido = 'http://10.0.2.2:8004/api/pedido';
+     String apiDetalle = 'http://10.0.2.2:8004/api/detallepedido';
+     String apiLastPedido = 'http://10.0.2.2:8004/api/pedido_last';
 
     Future <void>setCliente (clienteId,monto,fecha,direccion)async{
-    await http.post(Uri.parse(apiPedido),
+   await http.post(Uri.parse(apiPedido),
     headers: {"Content-Type": "application/json"},
     body: jsonEncode({
         	"cliente_id": clienteId,
@@ -38,16 +40,61 @@ class _Compra extends State<Compra>{
           "fecha":fecha,
           "direccion":direccion
       }));
+     
+  }
+  
+  Future<void>setDetallePedido(Clienteid,producto_id,fecha,cantidadProducto,descripcion,descuento,precioProducto) async{
+    await http.post(Uri.parse(apiDetalle),
+     headers: {"Content-Type": "application/json"},
+   body: jsonEncode({
+        	"clienteid":Clienteid,
+          "producto_id":producto_id,
+          "fecha":fecha,
+          "cantidad":cantidadProducto,
+          "descripcion_general":descripcion,
+          "descuento":descuento,
+          "precio_total":precioProducto
+
+      }));
+
+  }
+  
+  Future<int>getLastPedido() async {
+    var lastPedido = await http.get(Uri.parse(apiLastPedido),
+    headers: {"Content-Type":"application/json"});
+    if (lastPedido.statusCode == 200){
+      Map<String,dynamic> data = jsonDecode(lastPedido.body);
+      
+      return int.parse(data['id'].toString());
+    }
+    else{
+      return 0;
+    }
+    
+
+    
   }
 
    
     void navigateGracias(id,monto,fecha,direccion)async{
 
+        BuildContext currentContext = context;
+
         setCliente(id, monto, fecha, direccion);
+        DateTime now = DateTime.now();
+        String fechaHoy = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+        //var lastPedido = await getLastPedido();
+        //print("last--> ${lastPedido}");
+        for (var i=0;i<widget.productos.length;i++){
+          await setDetallePedido(id,widget.productos[i].id,fechaHoy,widget.productos[i].cantidad,"productos",10,widget.productos[i].precio);
+
+        }
+
+        
 
 
         Navigator.push(
-          context,
+          currentContext,
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => Gracias(),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -258,6 +305,7 @@ class _Compra extends State<Compra>{
                            const SizedBox(width:30,),
                            ElevatedButton(onPressed:(){
                               navigateGracias(usuarioProvider.getusuarioActual.id,widget.montoTotal,formattedDate,"sachaquita");
+                           
                            },
                            style:ButtonStyle(
                             fixedSize: MaterialStateProperty.all(Size(150,80))

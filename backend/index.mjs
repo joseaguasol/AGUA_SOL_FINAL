@@ -8,6 +8,7 @@ import routerUserCliente from "./routes/usuario_cliente_route.mjs";
 import routerUserAdmin from "./routes/usuario_administrador_route.mjs";
 import routerLogin from "./routes/login_route.mjs";
 import routerVentasProduct from "./routes/ventas_producto_route.mjs";
+import routerDetallePedido from "./routes/relaciones_detallepedido_route.mjs";
 
 /** INICIA LA APP Y EL PUERTO */
 const app_sol = express();
@@ -25,7 +26,7 @@ app_sol.use('/api',routerUserConductor);
 app_sol.use('/api',routerVentasProduct);
 app_sol.use('/api',routerLogin);
 app_sol.use('/api',routerVentasPedido);
-
+app_sol.use('/api',routerDetallePedido);
 
 app_sol.listen(port, ()=>{
     console.log(`Servidor en: http://127.0.0.1:${port}`);

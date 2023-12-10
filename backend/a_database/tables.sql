@@ -164,7 +164,7 @@ create table ventas.zona_trabajo(
 --Table: relaciones.compra
 create table relaciones.detalle_pedido(
 	id serial primary key,
-	pedido_id int not null,
+	pedido_id int,
 	producto_id int not null,
 	fecha timestamp not null,
 	cantidad int not null,

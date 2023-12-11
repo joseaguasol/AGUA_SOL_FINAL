@@ -37,7 +37,7 @@ class Productos extends StatefulWidget {
 }
 
 class _Productos extends State<Productos> {
- // List<Map<String,dynamic>>datosProductos = [];
+  bool almenosUno = false;
   List <Producto> newproduct = [];
   int enviados = 0;
   String ima = 'lib/imagenes/RECARGA.png';
@@ -84,6 +84,7 @@ class _Productos extends State<Productos> {
   
   void incrementar(int index) {
   setState(() {
+    almenosUno = true;
     newproduct[index].cantidad++;
   });
 }
@@ -93,7 +94,10 @@ void disminuir(int index) {
     if(newproduct[index].cantidad>0){
        newproduct[index].cantidad--;
     }
-
+    // Verificar si hay al menos un producto seleccionado después de la disminución
+    List<Producto> productosContabilizados = newproduct.where((producto) => producto.cantidad > 0).toList();
+   print("${productosContabilizados.isEmpty} <--isEmpty?");
+    almenosUno = productosContabilizados.isNotEmpty;
    
   });
 }
@@ -102,9 +106,9 @@ void navigateCompras(){
   
   List<Producto> productosContabilizados = newproduct.where((producto) => producto.cantidad > 0).toList();
   print("DENTRO .......NAVIGATE OMPRAS");
-  print("${newproduct.length}");
+  print("productos seleccionados : ${newproduct.length}");
   //print("${newproduct.ca}");
-
+  
   Navigator.push(
     context,
     PageRouteBuilder(
@@ -153,7 +157,7 @@ void navigateCompras(){
              // backgroundColor:Colors.blue,
 
         appBar: AppBar(
-          title: Text("Productos",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w200),),centerTitle: true,
+          title: Text("Productos",style: TextStyle(color:Color.fromARGB(255, 32, 143, 233),fontFamily: 'Pacifico',fontSize: 50,fontWeight: FontWeight.w100),),centerTitle: true,
           //automaticallyImplyLeading: false,
         ),
         body: SafeArea(
@@ -184,18 +188,18 @@ void navigateCompras(){
                   ), SizedBox(height: 20,),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 164, 109, 174),
+                      color: const Color.fromARGB(255, 32, 143, 233),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     height: 150,
                     child: Row(
                       children: [
                        const SizedBox(width:10,),
-                       Icon(Icons.shopping_cart_outlined,size: 100,color: Colors.white,),
-                       const SizedBox(width:20,),
-                       Text("${total}",style:TextStyle(fontSize:30,color:Colors.white),),
+                       Icon(Icons.shopping_cart_outlined,size: 60,color: Colors.white,),
+                       const SizedBox(width:10,),
+                       Text("Subtotal: S/.${total}.00",style:TextStyle(fontFamily: 'Pacifico',fontSize:20,color:Colors.white),),
                        const SizedBox(width:30,),
-                       ElevatedButton(onPressed:(){
+                       ElevatedButton(onPressed:almenosUno ?(){
                           //getProducts();
                           print("dentro de producc");
                           print("usaurio nick,${usuarioProvider.getusuarioActual.nick}");
@@ -208,11 +212,11 @@ void navigateCompras(){
                           
 
                           navigateCompras();
-                       },
+                       }:null,
                        style:ButtonStyle(
                         fixedSize: MaterialStateProperty.all(Size(150,80))
                        ), 
-                       child:Text("Confirmar",style: TextStyle(fontSize:20),))
+                       child:Text("Confirmar",style: TextStyle(fontFamily: 'Pacifico',fontSize:20),))
                        
                       ],
                     ),

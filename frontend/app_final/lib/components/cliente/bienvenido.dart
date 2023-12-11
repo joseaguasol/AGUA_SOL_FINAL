@@ -61,10 +61,13 @@ class _Bienvenido extends State<Bienvenido> {
 
   @override
   Widget build(BuildContext context) {
+    //Color miColor = Color(0xFFD6F635);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 239, 205, 153),
+     // backgroundColor: Color.fromARGB(255, 222, 242, 161),
+     
       key: _scaffoldKey,
       body: SafeArea(
+        
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Stack(
@@ -72,17 +75,22 @@ class _Bienvenido extends State<Bienvenido> {
               Center(
                 child: Column(
                   children: [
-                    Text("Bienvenido",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w200),),
-                    SizedBox(height: 50,),
-                    Text("< Promociones >",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w200),),
+                    Text("Agua Sol",style: TextStyle(color:const Color.fromARGB(255, 32, 143, 233),fontSize:45,fontFamily:'Pacifico',fontWeight: FontWeight.w100),),
+                    SizedBox(height: 8,),
+                    Text("Llevando vida a tu hogar",style: TextStyle(fontFamily: 'Pacifico',color:Color.fromARGB(255, 6, 34, 24),fontSize:15,fontWeight: FontWeight.w400),textAlign:TextAlign.right,),
+                    SizedBox(height: 8,),
+                    
+                    Text("Promociones",style: TextStyle(fontFamily: 'Pacifico',color:const Color.fromARGB(255, 32, 143, 233),fontSize:25,fontWeight: FontWeight.w400),textAlign:TextAlign.right,),
+
                    // SizedBox(height: 20,),
 
                     Container(
                       
-                      width: 340,height:200,
-                      padding: EdgeInsets.all(10),
+                      //width: 340,
+                      height:350,
+                      padding: EdgeInsets.all(1),
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 237, 242, 181),
+                        //color: Color.fromARGB(255, 202, 222, 89),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child:GestureDetector(
@@ -97,80 +105,114 @@ class _Bienvenido extends State<Bienvenido> {
                           children:[
                             const SizedBox(width: 20,),
                             Container(
-                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                              width: 300,
-                              color: Colors.red,
+                              child: Image.asset('lib/imagenes/bodegon.png',height: 380,),
+                              width: 450,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:Colors.white
+                              ),
+                              //color: Colors.red,
                             ),
                             const SizedBox(width: 20,),
                             Container(
-                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                              width: 300,
-                              color: Colors.blue,
+                              child: Image.asset('lib/imagenes/bodegon.png',height: 380,),
+                              width: 450,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:Colors.white
+                              ),
                             ),
                             const SizedBox(width: 20,),
                         
                             Container(
-                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                              width: 300,
-                              color: Colors.green,
+                              child: Image.asset('lib/imagenes/bodegon.png',height: 380,),
+                              width: 450,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:Colors.white
+                              ),
                             ),
                             const SizedBox(width: 20,),
                             Container(
-                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                              width: 300,
-                              color: Colors.yellow,
+                              child: Image.asset('lib/imagenes/bodegon.png',height: 300,),
+                              width: 450,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:Colors.white
+                              ),
                             ),
                             const SizedBox(width: 20,),
                             Container(
-                              child: Image.asset('lib/imagenes/promocion.jpg',height: 300,),
-                              width: 300,
-                              color: Colors.orange,
+                              child: Image.asset('lib/imagenes/bodegon.png',height: 300,),
+                              width: 450,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:Colors.white
+                              ),
                             ),
                           ],
                         ),
                       ),),
 
-                     SizedBox(height: 30,),
-                    Text("Productos",style: TextStyle(fontSize: 20,fontWeight: FontWeight.w200),),
+                     SizedBox(height: 20,),
+                    Text("Productos",style: TextStyle(fontFamily: 'Pacifico',color: const Color.fromARGB(255, 32, 143, 233),fontSize:20,fontWeight: FontWeight.w400),),
                     //SizedBox(height: 20,),
 
-
+                    // PRODUCTOS
                     InkWell(
-                              onTap: (){
-                                navigateToProductos();
-                              },
-                            
+                      onTap: (){
+                        navigateToProductos();
+                      },
+                      child: Container(
+                        height: 150,
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 93, 243, 33),
+                          borderRadius: BorderRadius.circular(15),
+                          image: DecorationImage(
+                            image: AssetImage('lib/imagenes/tranquilidad.png'),  // Reemplaza con la ruta de tu imagen
+                            fit: BoxFit.cover,
+                          )
+                        ),
+                        child: Row(
+                          children: [
+                           Image.asset('lib/imagenes/BIDON20.png',width:130,),
+                           Image.asset('lib/imagenes/BIDON7.png',width:100,),
+                           Image.asset('lib/imagenes/BIDON03.png',width:100,),
+                           Image.asset('lib/imagenes/BIDON0.png',width:100,),
 
-                    child:Container(
-                      width: 340,
-                      height:250,
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 40, 182, 168) ,
-                        borderRadius: BorderRadius.circular(15)
+
+                           //Image.asset('lib/imagenes/bodegoncito.jpg',width:300,),
+                          ],
+                        ),
                       ),
-                      
-                      child: Image.asset('lib/imagenes/bodegon.png',height:200,),)),
-
-                     SizedBox(height: 40,),
-                    Text("Monedero",style: TextStyle(fontSize:20,fontWeight: FontWeight.w200),),
+                    ),
+                   
+                     SizedBox(height: 30,),
+                    Text("Saldo Beneficiario",style: TextStyle(fontFamily: 'Pacifico',color: const Color.fromARGB(255, 32, 143, 233),fontSize:20,fontWeight: FontWeight.w400),),
                     //SizedBox(height: 20,),
 
-                    Container(width: 340,height:90,
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
+
+                    /// MONEDERO
+                    Container(
+                      //width: 340,
+                      height:150,
+                      decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 32, 143, 233),
                       borderRadius: BorderRadius.circular(25)
                     ),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
                       children: [
-                      const  SizedBox(width: 20,),
-                      Text("Saldo \nS/. 100.00",style: TextStyle(color:Colors.yellow,fontSize: 15,fontWeight: FontWeight.bold),),
-                      Icon(Icons.currency_exchange,size: 25,color: Colors.yellow,),
-                      Icon(Icons.savings_outlined,size: 68,color: Colors.yellow,),
-                     const SizedBox(width: 20,)
-                    ],),)
+                      const  SizedBox(width:10,),
+                      Text("Acumulaste: S/. 100.00",style: TextStyle(fontFamily: 'Pacifico',color:Colors.white,fontSize:25,fontWeight: FontWeight.w400),),
+                      const  SizedBox(width:50,),
+                      Icon(Icons.savings_outlined,size: 68,color: Colors.white,),
+                    const SizedBox(width: 20,)
+                    ],),),
+                    SizedBox(height: 20,),
+                   
 
                   ],
                 ),
@@ -193,7 +235,7 @@ class _Bienvenido extends State<Bienvenido> {
                     ),
                     child: Icon(
                       color: Colors.white,
-                      Icons.account_circle_outlined,
+                      Icons.menu,
                       size: 45,
                     ),
                   ),

@@ -32,6 +32,7 @@ class ProductCustom extends StatelessWidget {
 
     
     return Row(
+      
       children: [
         Container(
           height: 100,
@@ -51,9 +52,9 @@ class ProductCustom extends StatelessWidget {
               child:
             Row(
               children: [
-                Text(nombre,style:TextStyle(color:Colors.grey,fontSize:14,fontWeight: FontWeight.w300),),
+                Text(nombre,style:TextStyle(fontFamily: 'Pacifico',color:Colors.black,fontSize:25,fontWeight: FontWeight.w300),),
                 SizedBox(width: 30,),
-                Text("S/.${precio}",style:TextStyle(color:Colors.grey,fontSize:14,fontWeight: FontWeight.w300),),
+                Text("S/.${precio}",style:TextStyle(fontFamily: 'Pacifico',color:Colors.black,fontSize:25,fontWeight: FontWeight.w300),),
               ],
             ),
             
@@ -64,7 +65,7 @@ class ProductCustom extends StatelessWidget {
           width: 150,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(22),
-           // color: Colors.blue,
+           //color: Colors.blue,
           ),
           //color:Colors.blue,
           child: Row(
@@ -81,7 +82,7 @@ class ProductCustom extends StatelessWidget {
                 //color: Colors.blue,
                 child:Center(
                   child:FittedBox(
-                    child:Text("$contador",style: TextStyle(color:Colors.blue,fontSize:30,fontWeight: FontWeight.w300),
+                    child:Text("$contador",style: TextStyle(fontFamily: 'Pacifico',color:Color.fromARGB(255, 32, 143, 233),fontSize:30,fontWeight: FontWeight.w300),
                     )))
                  
                ),
@@ -93,7 +94,9 @@ class ProductCustom extends StatelessWidget {
                 )
             ],
           ),
+          
         ),
+      SizedBox(height: 120,),
       ],
     );
   }

@@ -24,7 +24,7 @@ class _PromocionState extends State<Promocion> {
               Row(
                 children: [
                   Container(
-                    color:Colors.amber,
+                    color:Colors.blue,
                     padding: EdgeInsets.all(8),
                     width: 150,
                     height: 100,
@@ -33,7 +33,7 @@ class _PromocionState extends State<Promocion> {
                   SizedBox(width: 10,),
                   Expanded(
                     child: Container(
-                      color:Colors.amber,
+                      color:Colors.blue,
                       padding: EdgeInsets.all(8),
                       //width: 150,
                       height: 100,
@@ -47,7 +47,7 @@ class _PromocionState extends State<Promocion> {
               Row(
                 children: [
                   Container(
-                    color:Colors.amber,
+                    color:Colors.blue,
                     padding: EdgeInsets.all(8),
                     width: 150,
                     height: 100,
@@ -56,7 +56,7 @@ class _PromocionState extends State<Promocion> {
                   SizedBox(width: 10,),
                   Expanded(
                     child: Container(
-                      color:Colors.amber,
+                      color:Colors.blue,
                       padding: EdgeInsets.all(8),
                       //width: 150,
                       height: 100,
@@ -70,7 +70,7 @@ class _PromocionState extends State<Promocion> {
               Row(
                 children: [
                   Container(
-                    color:Colors.amber,
+                    color:Colors.blue,
                     padding: EdgeInsets.all(8),
                     width: 150,
                     height: 100,
@@ -79,7 +79,7 @@ class _PromocionState extends State<Promocion> {
                   SizedBox(width: 10,),
                   Expanded(
                     child: Container(
-                      color:Colors.amber,
+                      color:Colors.blue,
                       padding: EdgeInsets.all(8),
                       //width: 150,
                       height: 100,
@@ -93,7 +93,7 @@ class _PromocionState extends State<Promocion> {
               Row(
                 children: [
                   Container(
-                    color:Colors.amber,
+                    color:Colors.blue,
                     padding: EdgeInsets.all(8),
                     width: 150,
                     height: 100,
@@ -102,7 +102,7 @@ class _PromocionState extends State<Promocion> {
                   SizedBox(width: 10,),
                   Expanded(
                     child: Container(
-                      color:Colors.amber,
+                      color:Colors.blue,
                       padding: EdgeInsets.all(8),
                       //width: 150,
                       height: 100,

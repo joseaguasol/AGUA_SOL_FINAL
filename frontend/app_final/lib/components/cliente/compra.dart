@@ -23,7 +23,7 @@ class Compra extends StatefulWidget {
 }
 
 class _Compra extends State<Compra>{
-
+    
     bool normal = false;
     bool express = false;
     int cantidad = 0;
@@ -127,7 +127,7 @@ class _Compra extends State<Compra>{
       return Scaffold(
        // backgroundColor: const Color.fromARGB(255, 240, 211, 122),
         appBar: AppBar(
-          title: Text("Detalle de Compra",style: TextStyle(fontSize: 30,fontWeight: FontWeight.w200),),centerTitle: true,
+          title: Text("Detalle de Compra",style: TextStyle(color:Colors.blue,fontFamily: 'Pacifico',fontSize: 35,fontWeight: FontWeight.w200),),centerTitle: true,
           //automaticallyImplyLeading: false,
         ),
         body: SafeArea(
@@ -154,9 +154,9 @@ class _Compra extends State<Compra>{
                   
                           Row(
                             children: [
-                              Icon(Icons.checklist_rounded,size: 40,),
+                              Icon(Icons.checklist_rounded,size: 40,color: Colors.white,),
                               const SizedBox(width:15,),
-                              Text("Compra",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 40)),
+                              Text("Compra",style:TextStyle(color:Colors.white,fontFamily: 'Pacifico',fontWeight: FontWeight.w200,fontSize: 40)),
                             ],
                           ),
                           Expanded(
@@ -172,13 +172,13 @@ class _Compra extends State<Compra>{
                                    Icon(Icons.check_circle_outlined),
                                    const SizedBox(width: 10,),
                                    Text("ID DE PRODUCTO ${widget.productos[index].id}"),
-                                   Text("Cantidad de Productos:${widget.productos[index].cantidad}",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20)),
+                                   Text("Cantidad de Productos:${widget.productos[index].cantidad}",style:TextStyle(fontFamily:'Pacifico',fontWeight: FontWeight.w200,fontSize: 20)),
                                  ],
                                );
                             
                               }),
                           ),
-                          Text("Subtotal:   S/.${widget.montoTotal}",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20))
+                          Text("Subtotal:   S/.${widget.montoTotal}",style:TextStyle(color:Colors.blue,fontFamily: 'Pacifico',fontWeight: FontWeight.w200,fontSize: 30))
                           
                         ]),           
                       ),
@@ -196,16 +196,16 @@ class _Compra extends State<Compra>{
                             children: [
                             Row(
                               children: [
-                                Icon(Icons.person_pin_outlined,size: 40,),
+                                Icon(Icons.person_pin_outlined,size: 40,color:Colors.white),
                                 SizedBox(width: 15,),
-                                Text("Usuario",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 40)),
+                                Text("Cliente",style:TextStyle(color:Colors.blue,fontFamily:'Pacifico',fontWeight: FontWeight.w200,fontSize: 40)),
                               ],
                             ),
                            // print("id,${usuarioProvider.getusuarioActual.id}");
-                          Text(" -ID de Cliente: ${usuarioProvider.getusuarioActual.getid()}", style: TextStyle(fontWeight: FontWeight.w200, fontSize: 20)),
+                          Text(" -ID de Cliente: ${usuarioProvider.getusuarioActual.getid()}", style: TextStyle(fontFamily:'Pacifico',fontWeight: FontWeight.w200, fontSize: 20)),
 
-                            Text(" - Nombres: ${usuarioProvider.getusuarioActual.getNombre()}",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20)),
-                            Text(" - Direccion: Av. Brasil 204",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 20))
+                            Text(" - Nombres: ${usuarioProvider.getusuarioActual.getNombre()}",style:TextStyle(fontFamily:'Pacifico',fontWeight: FontWeight.w200,fontSize: 20)),
+                            Text(" - Direccion: Av. Brasil 204",style:TextStyle(fontFamily:'Pacifico',fontWeight: FontWeight.w200,fontSize: 20))
                     
                     
                           ]),           
@@ -224,7 +224,7 @@ class _Compra extends State<Compra>{
                         child:Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          Text("Tipo de Envío:",style:TextStyle(fontWeight: FontWeight.w200,fontSize: 30)),
+                          Text("Tipo de Envío:",style:TextStyle(fontFamily:'Pacifico',fontWeight: FontWeight.w200,fontSize: 30)),
                           Row(children: [
                             Container(
                               height: 50,
@@ -235,7 +235,7 @@ class _Compra extends State<Compra>{
                               child: Container(
                                 alignment: Alignment.center,
                                 height: 50,
-                                child: Text("Normal (Se agenda para mañana)"),
+                                child: Text("ESTANDAR ( Se agenda para mañana )",style: TextStyle(fontSize:15,fontFamily:'Pacifico',),),
                               ),
                             ),
                             Container(
@@ -262,7 +262,7 @@ class _Compra extends State<Compra>{
                               child: Container(
                                 alignment: Alignment.center,
                                 height: 50,
-                                child: Text("Express (Se entrega HOY + S/.10.00)"),
+                                child: Text("EXPRESS ( Entrega  HOY + S/.10.00 )",style:TextStyle(fontSize:15,fontFamily:'Pacifico',),),
                               ),
                             ),
                             Container(
@@ -301,7 +301,7 @@ class _Compra extends State<Compra>{
                            const SizedBox(width:10,),
                            Icon(Icons.payments_outlined,size: 50,color: Colors.white,),
                            const SizedBox(width:20,),
-                           Text("S/.${widget.montoTotal}.00",style:TextStyle(fontSize:30,color:Colors.white),),
+                           Text("S/.${widget.montoTotal}.00",style:TextStyle(fontFamily:'Pacifico',fontSize:30,color:Colors.white),),
                            const SizedBox(width:30,),
                            ElevatedButton(onPressed:(){
                               navigateGracias(usuarioProvider.getusuarioActual.id,widget.montoTotal,formattedDate,"sachaquita");
@@ -310,7 +310,7 @@ class _Compra extends State<Compra>{
                            style:ButtonStyle(
                             fixedSize: MaterialStateProperty.all(Size(150,80))
                            ), 
-                           child:Text("Confirmar",style: TextStyle(fontSize:20),))
+                           child:Text("Confirmar",style: TextStyle(fontFamily:'Pacifico',fontSize:20),))
                            
                           ],
                         ),           

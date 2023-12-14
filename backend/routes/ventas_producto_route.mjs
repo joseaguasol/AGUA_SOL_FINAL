@@ -8,4 +8,5 @@ routerVentasProduct.get('/products',getAllProduct)
 
 
 
+
 export default routerVentasProduct;

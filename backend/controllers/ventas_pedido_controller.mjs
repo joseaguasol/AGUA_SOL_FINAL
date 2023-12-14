@@ -21,3 +21,12 @@ export const getLastPedidos = async (req,res) => {
         res.status(500).json({error:e.message})
     }
 }
+
+export const getPedidos =  async (req,res) => {
+    try {
+        const getPedidos = await modelPedido.getPedido();
+        res.json(getPedidos)
+    } catch (error) {
+        res.status(500).json({erro:error.message})
+    }
+}

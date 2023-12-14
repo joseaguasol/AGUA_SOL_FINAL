@@ -6,4 +6,5 @@ const routerDetallePedido = express.Router();
 
 routerDetallePedido.post('/detallepedido',createDetalle)
 
+
 export default routerDetallePedido

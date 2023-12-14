@@ -20,6 +20,15 @@ const modelPedido = {
         } catch (e) {
             throw new Error(`Error getting last pedido: ${e}`);
         }
+    },
+    getPedido: async ()=> {
+        try {
+            const pedidos = await db_pool.any('SELECT * FROM ventas.pedido');
+            return pedidos
+
+        } catch (error) {
+            throw new Error(`Error getting pedido: ${error}`)
+        }
     }
 }
 

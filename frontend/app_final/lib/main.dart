@@ -1,5 +1,6 @@
 import 'package:app_final/components/cliente/promocion.dart';
-import 'package:app_final/components/empleado/home.dart';
+//import 'package:app_final/components/empleado/home.dart';
+import 'package:app_final/components/empleado/armadoruta.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/login.dart';
 import 'package:app_final/components/cliente/productos.dart';
@@ -7,6 +8,8 @@ import 'package:app_final/components/cliente/bienvenido.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:app_final/provider/usuario_provider.dart';
 import 'package:provider/provider.dart';
+//import 'package:app_final/components/empleado/pedidos.dart';
+import 'package:app_final/components/empleado/programacion.dart';
 
 
 void main() {
@@ -34,10 +37,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/loginsol',
+      initialRoute: '/programacion',
       routes: {
+        '/programacion':(context) => Programacion(),
         '/promociones':(context) => Promocion(),
-        '/empleado_ruta':(context) => ArmadoRuta(),
+        '/armadoruta':(context) => ArmadoRuta(),
+        //'/empleado_ruta':(context) => Programacion(),
         '/loginsol':(context)=> const Login3(),
         '/bienvenido':(context)=> const Bienvenido(),
         '/productos':(context) => const Productos()

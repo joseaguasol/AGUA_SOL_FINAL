@@ -142,7 +142,7 @@ class _Login3State extends State<Login3>{
                               ),
                               
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent))
+                              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(30)),borderSide: BorderSide(color: Colors.blueAccent)),
                             ),
                             obscureText:true,
                           ),
@@ -204,7 +204,7 @@ class _Login3State extends State<Login3>{
                           
 
                         },
-                         style: ButtonStyle(
+                         style:ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(Colors.blue),
                           fixedSize: MaterialStateProperty.all(Size(350,55)),
                          ),

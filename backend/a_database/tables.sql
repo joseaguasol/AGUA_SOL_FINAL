@@ -99,6 +99,15 @@ create table ventas.cliente(
 	zona_trabajo_id int not null
 );
 
+create table ventas.cliente_noregistrado(
+	id serial primary key,
+	nombre varchar(200),
+	apellidos varchar(300),
+	direccion varchar(200),
+	telefono varchar(50),
+	ubicacion varchar(300)
+);
+
 -- Table: ventas.ruta
 create table ventas.ruta(
 	id serial primary key,
@@ -209,6 +218,7 @@ ALTER TABLE personal.usuario ADD CONSTRAINT fk_usuario_rol FOREIGN KEY (rol_id) 
 
 -- CLIENTE
 ALTER TABLE ventas.cliente ADD CONSTRAINT fk_cliente_zona FOREIGN KEY (zona_trabajo_id) REFERENCES ventas.zona_trabajo (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
 
 -- USUARIOS
 ALTER TABLE ventas.cliente ADD CONSTRAINT fk_cliente_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;

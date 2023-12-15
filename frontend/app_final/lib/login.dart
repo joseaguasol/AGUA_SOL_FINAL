@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'components/cliente/bienvenido.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:app_final/components/cliente/ubicacion.dart';
 import 'package:app_final/components/empleado/programacion.dart';
 
@@ -23,7 +25,7 @@ class _Login3State extends State<Login3>{
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   late String responseText='';
-  String apiUrl = 'https://aguasol.onrender.com/api/login';
+  String apiUrl = 'http://10.0.2.2:8004/api/login';
 
   // LLAMADA DE API
   Future<dynamic> sendCredentials(user,pass) async {
@@ -181,7 +183,8 @@ class _Login3State extends State<Login3>{
                           FocusScope.of(context).unfocus();
                           
                           var resultado = await sendCredentials(_username.text,_password.text);
-                          if(resultado['rol_id']==4){
+                          if (resultado!=null){
+                            if(resultado['rol_id']==4){
                             //Navigator.pushNamed(context, '/bienvenido');
                            usuarioProvider.actualizarUsuario(
                               Cliente(id:resultado['id'],
@@ -223,6 +226,30 @@ class _Login3State extends State<Login3>{
                             ));
                             navigateToProgramacion();
                           }
+                          }
+                          else if (resultado == null){
+  print(" Dentro del null");
+  print("${resultado}");
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Verificación"),
+        content: Text("No existe el usuario"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'OK'),
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+                          
+                          
+                          
                           
                           //print(data.rol_user);
                           

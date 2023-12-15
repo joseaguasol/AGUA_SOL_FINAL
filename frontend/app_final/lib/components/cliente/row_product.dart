@@ -1,4 +1,4 @@
-import 'dart:ffi';
+
 
 import 'package:flutter/material.dart';
 
@@ -52,7 +52,7 @@ class ProductCustom extends StatelessWidget {
               child:
             Row(
               children: [
-                Text(nombre,style:TextStyle(fontFamily: 'Pacifico',color:Colors.black,fontSize:25,fontWeight: FontWeight.w300),),
+                Text(nombre,style:TextStyle(fontFamily: 'Pacifico',color:Colors.black,fontSize:15,fontWeight: FontWeight.w300),),
                 SizedBox(width: 30,),
                 Text("S/.${precio}",style:TextStyle(fontFamily: 'Pacifico',color:Colors.black,fontSize:25,fontWeight: FontWeight.w300),),
               ],

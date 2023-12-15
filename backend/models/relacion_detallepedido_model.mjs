@@ -15,6 +15,14 @@ const modelDetallePedido = {
         } catch (error) {
             throw new Error(`Error query create: ${error}`);
         }
-}
+    },
+    getDetallePedido: async () => {
+        try {
+            const pedidos = await db_pool.any('SELECT * FROM relaciones.detalle_pedido')
+            return pedidos
+        } catch (error) {
+            throw new Error(`Error query get: ${error}`);
+        }
+    }
 }
 export default modelDetallePedido;

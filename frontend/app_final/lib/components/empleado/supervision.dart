@@ -86,6 +86,7 @@ class _SupervisionState extends State<Supervision> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.cyan,
       appBar: AppBar(
         title: Align(
           alignment: Alignment.center,
@@ -96,7 +97,12 @@ class _SupervisionState extends State<Supervision> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            children: [],
+            children: [
+              Text("AQUI DEBE IR UN MAPA --- Y PUEDE SER QUE ESTE \n RASTREE EN TIEMPO REAL LOS AUTOS"),
+           
+          Text("Luego mostrar en una lista ya la lista de rutas  ya asignadas- ADEMÁS mostrar FLAGS\n de cada CONDUCTOR para saber si ya completo sus pedidos")
+
+            ],
         ),
        )
       ),

@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/programacion',
+      initialRoute: '/loginsol',
       routes: {
         '/programacion':(context) => Programacion(),
         '/promociones':(context) => Promocion(),

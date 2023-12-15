@@ -260,6 +260,7 @@ class _Bienvenido extends State<Bienvenido> {
                 ),
               ),
             ),
+            
             ListTile(
               title: Text('Opción 1'),
               onTap: () {
@@ -272,6 +273,10 @@ class _Bienvenido extends State<Bienvenido> {
                 Navigator.pop(context);
               },
             ),
+            const SizedBox(height: 200,),
+            ElevatedButton(onPressed: (){
+               Navigator.pushReplacementNamed(context, '/loginsol');
+            }, child:Text("Salir")),
           ],
         ),
       ),

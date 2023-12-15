@@ -100,12 +100,21 @@ class _Programacion extends State<Programacion>{
   
  @override
  Widget build (BuildContext context){
+  
+
+
+
+
+
   return Scaffold(
+    key: _scaffoldKey,
     appBar: AppBar(title: Align(
                       alignment:Alignment.center,
                       child:Text("Bienvenido - Colaborador",style:TextStyle(fontSize:20,fontFamily: 'Pacifico'),)
                      ),
-                     leading:IconButton(icon:Icon(Icons.menu),onPressed:(){}),
+                     leading:IconButton(icon:Icon(Icons.menu),onPressed:(){
+                        _scaffoldKey.currentState?.openDrawer();
+                     }),
                      ),
     body: SafeArea(
         child:Padding(
@@ -242,7 +251,38 @@ class _Programacion extends State<Programacion>{
 
         ),
       ),
-  );
+    drawer: Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text('Menú'),
+          ),
+          ListTile(
+            title: Text('Opción 1'),
+            onTap: () {
+              // Lógica cuando se selecciona la opción 1
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: Text('Opción 2'),
+            onTap: () {
+              // Lógica cuando se selecciona la opción 2
+              Navigator.pop(context);
+            },
+          ),
+          ElevatedButton(onPressed: (){
+            Navigator.pushReplacementNamed(context, '/loginsol');
+          }, child:Text("Salir"))
+          // Agregar más elementos según sea necesario
+        ],
+      ),
+    ),
+    );
  }
 
 }

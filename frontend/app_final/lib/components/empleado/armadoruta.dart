@@ -145,11 +145,11 @@ void crearWidget() {
               child: Text('Mapa de Pedidos',style: TextStyle(fontFamily:'Pacifico',fontSize: 20),)),
               //SizedBox(height: 16), // Espacio entre el final de la lista y el mapa
               Container(
-                padding: EdgeInsets.all(15), // Espacio horizontal entre el mapa y los bordes
+                padding: EdgeInsets.all(10), // Espacio horizontal entre el mapa y los bordes
                 width: double.infinity,
                 height: 400,
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Colors.cyan,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: FlutterMap(
@@ -179,27 +179,35 @@ void crearWidget() {
                 children: [
                   Column(
                     children: [
-                      Text("Rutas"),
+                      Text("Rutas",style:TextStyle(fontFamily: 'Pacifico'),),
                       Row(
                         children:
                         [
                         ElevatedButton(onPressed:(){setState(() {
                           crearWidget();
-                        });}, child: Text("Crear")),
-
+                        });}, child: Text("Crear",style: TextStyle(color:Colors.white),),
+                          style:ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.purpleAccent),
+                          
+                        ),),
+                        const SizedBox(width: 20,),
                         ElevatedButton(onPressed:(){setState(() {
                           if(widgetList.isNotEmpty){widgetList.removeLast();}
-                        });}, child: Text("Destruir"))
+                        });}, child: Text("Destruir"),
+                          style:ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.amberAccent),
+                          
+                        ),)
                        ],
                       ),                      
                     ]
                   ),
 
-                  Expanded(child: SizedBox(width: 10),),
+                  const SizedBox(width: 120,),
                   Column(
                     children: [
-                      Text("Pedidos"),
-                      SizedBox(width: 99,),
+                      Text("Pedidos",style:TextStyle(fontFamily: 'Pacifico'),),
+                      
                       ],
                   ),
                 ],
@@ -291,16 +299,17 @@ void crearWidget() {
                   ),
                 ),
               ),
-              
+              SizedBox(height: 60,),
               ElevatedButton(onPressed:(){
                 navigateToSupervision();
               }, 
               child: Text("Confirmar",style: TextStyle(fontSize:19,color:Colors.white),),
               style:ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 33, 243, 135)),
+                backgroundColor: MaterialStateProperty.all(Colors.blue),
                 fixedSize: MaterialStateProperty.all(Size(350,55)),
                ),
               ),
+              SizedBox(height: 60,),
             ],
           ),
         ),

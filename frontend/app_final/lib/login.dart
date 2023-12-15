@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'components/cliente/bienvenido.dart';
 import 'package:app_final/components/cliente/ubicacion.dart';
+import 'package:app_final/components/empleado/programacion.dart';
 
 class Login3 extends StatefulWidget{
   const Login3({super.key});
@@ -22,7 +23,7 @@ class _Login3State extends State<Login3>{
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
   late String responseText='';
-  String apiUrl = 'http://10.0.2.2:8004/api/login';
+  String apiUrl = 'https://aguasol.onrender.com/api/login';
 
   // LLAMADA DE API
   Future<dynamic> sendCredentials(user,pass) async {
@@ -52,6 +53,29 @@ class _Login3State extends State<Login3>{
     context,
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => Bienvenido(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutQuart;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 800),
+    ),
+  );
+  }
+
+  void navigateToProgramacion(){
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => Programacion(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
@@ -197,7 +221,7 @@ class _Login3State extends State<Login3>{
                               codigoempleado: resultado['codigo_empleado'],
                               dni: resultado['dni']
                             ));
-                            navigateToBienvenido();
+                            navigateToProgramacion();
                           }
                           
                           //print(data.rol_user);

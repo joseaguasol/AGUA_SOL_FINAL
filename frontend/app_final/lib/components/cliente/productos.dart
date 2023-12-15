@@ -44,7 +44,7 @@ class _Productos extends State<Productos> {
   String desc = "botella";
   int conta = 0;
   int total = 0;
-  String apiProduct = 'http://10.0.2.2:8004/api/products';
+  String apiProduct = 'https://aguasol.onrender.com/api/products';
  
 
  // AQUI RECIBIMOS LOS PRODUCTOS DE LA API Y LUEGO añadimos a la clase producto

@@ -11,4 +11,12 @@ export const createDetalle = async (req,res) => {
 
     }
 }
+export const getDetalles =  async (req,res) => {
+    try {
+        const allDetalles = await modelDetallePedido.getDetallePedido();
+        res.json(allDetalles)
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
+}
 

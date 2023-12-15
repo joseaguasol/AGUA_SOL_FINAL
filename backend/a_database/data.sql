@@ -67,7 +67,9 @@ INSERT INTO ventas.pedido (conductor_id, ruta_id, empleado_id, cliente_id, monto
   
   -- Insertar registros en la tabla producto
 INSERT INTO ventas.producto (nombre, precio, descripcion, stock) VALUES
-  ('Producto1', 50, 'Descripción producto 1', 100),('botellita',50,'descrip',200);
+  ('botella 700ml',2, 'botella de 700ml', 100),
+  ('botella 3l',5,'botella de 3l',200),
+  ('bidon 20l',20,'bidon de 20l',200);
 
 
 

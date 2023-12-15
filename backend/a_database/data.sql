@@ -79,13 +79,3 @@ INSERT INTO ventas.vehiculo (conductor_id, placa, capacidad_carga_ton) VALUES
 -- Insertar registros en la tabla compra
 INSERT INTO relaciones.detalle_pedido(pedido_id, producto_id, fecha, cantidad, descripcion_general, descuento, precio_total) VALUES
   (1, 1, '2023-01-15 09:30:00', 2, 'Descripción compra 1', 10, 90);
-
-
-select * from relaciones.detalle_pedido;
-select * from personal.usuario inner join personal.administrador
-on personal.usuario.id=personal.administrador.usuario_id;
-
-
-select * from personal.usuario;
-
-select * from ventas.producto;

@@ -1,186 +1,331 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'dart:math';
-
-class Supervision extends StatefulWidget {
-  const Supervision({Key? key}) : super(key: key);
-
+class Supervision extends StatefulWidget{
+  const Supervision({super .key});
   @override
-  State<Supervision> createState() => _SupervisionState();
+  State<Supervision> createState()=>_Supervision();
 }
 
-class _SupervisionState extends State<Supervision> {
-  final List<LatLng> routeCoordinates = [
-    LatLng(-16.40521646629229, -71.57102099896395), // Puente Fatima
-    LatLng(-16.409123, -71.537864), // Punto A
-    LatLng(-16.408621, -71.538210), // Punto B
-    LatLng(-16.387654, -71.542098), // Punto J
-    LatLng(-16.400123, -71.540256), // Punto A
-    LatLng(-16.394276, -71.551809), // Punto B
-    LatLng(-16.408932, -71.523482), // Punto C
-    LatLng(-16.420765, -71.515688), // Punto D
-    LatLng(-16.389632, -71.525739), // Punto E
-    LatLng(-16.404123, -71.558394), // Punto F
-    LatLng(-16.397475, -71.512548), // Punto G
-    LatLng(-16.416789, -71.530956), // Punto H
-    LatLng(-16.411234, -71.555720), // Punto I
-    LatLng(-16.387654, -71.542098), // Punto J
-    LatLng(-16.415245, -71.534607), // Punto A
-    LatLng(-16.404910, -71.547812), // Punto B
-    LatLng(-16.400892, -71.525317), // Punto C
-    LatLng(-16.408546, -71.517649), // Punto D
-    LatLng(-16.420590, -71.527074), // Punto E
-    LatLng(-16.399976, -71.540883), // Punto F
-    LatLng(-16.413621, -71.554457), // Punto G
-    LatLng(-16.394760, -71.530665), // Punto H
-    LatLng(-16.409975, -71.549272), // Punto I
-    LatLng(-16.389543, -71.517308), // Punto J
-  ];
-
-  double calculateTotalDistance(List<LatLng> coordinates) {
-    double totalDistance = 0;
-
-    for (int i = 0; i < coordinates.length - 1; i++) {
-      totalDistance += distanceBetweenCoordinates(
-        coordinates[i].latitude,
-        coordinates[i].longitude,
-        coordinates[i + 1].latitude,
-        coordinates[i + 1].longitude,
-      );
-    }
-
-    return totalDistance;
-  }
-
-  double distanceBetweenCoordinates(
-      double lat1, double lon1, double lat2, double lon2) {
-    const double earthRadius = 6371; // Radio de la Tierra en kilómetros
-
-    double dLat = _degreesToRadians(lat2 - lat1);
-    double dLon = _degreesToRadians(lon2 - lon1);
-
-    double a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(_degreesToRadians(lat1)) *
-            cos(_degreesToRadians(lat2)) *
-            sin(dLon / 2) *
-            sin(dLon / 2);
-
-    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    double distance = earthRadius * c; // Distancia en kilómetros
-
-    return distance;
-  }
-
-  double _degreesToRadians(double degrees) {
-    return degrees * (pi / 180);
-  }
-
-  void sortCoordinates(List<LatLng> coordinates) {
-    for (int i = 0; i < coordinates.length - 1; i++) {
-      int minIndex = i;
-      double minDistance = double.infinity;
-      // Buscar la coordenada más cercana excluyendo las ya ordenadas
-      for (int j = i + 1; j < coordinates.length; j++) {
-        double distance = distanceBetweenCoordinates(
-          coordinates[i].latitude,
-          coordinates[i].longitude,
-          coordinates[j].latitude,
-          coordinates[j].longitude,
-        );
-
-        if (distance < minDistance) {
-          minDistance = distance;
-          minIndex = j;
-        }
-      }
-      LatLng temp = coordinates[minIndex];
-      coordinates[minIndex] = coordinates[i + 1];
-      coordinates[i + 1] = temp;
-    }
-  }
-
+class _Supervision extends State<Supervision>{
   @override
-  Widget build(BuildContext context) {
-    sortCoordinates(routeCoordinates);
-
-    // Añadir una nueva coordenada a la lista después de ordenarla
-    routeCoordinates.add(routeCoordinates.first);
-
-    double totalDistance = calculateTotalDistance(routeCoordinates);
-
-    List<Marker> markers = [];
-    for (LatLng coordinate in routeCoordinates) {
-      markers.add(
-        Marker(
-          width: 40.0,
-          height: 40.0,
-          point: coordinate,
-          child: Container(
-            child: Icon(
-              Icons.location_pin,
-              color: Colors.red,
-              size: 40.0,
-            ),
-          ),
-        ),
-      );
-    }
-
+  Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ruta'),
+        title: const Text("Supervisión de Rutas", style: TextStyle(fontFamily: 'Pacifico',fontSize:22,fontWeight:FontWeight.w300,)),
+        backgroundColor: const Color.fromARGB(255, 175, 231, 255),
       ),
-      body: Stack(
-        children: [
-          Container(
-            height: 400,
-            width: double.infinity,
-            child: FlutterMap(
-              options: MapOptions(
-                initialCenter: LatLng(-16.40521646629229,
-                    -71.57102099896395), // Centro del mapa (California)
-                initialZoom: 12.0, // Nivel de zoom
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ListView(
+            children: [
+        
+        
+        
+        
+              Row(
+                children:  [
+                  SizedBox(
+                    width: 30,
+                    child: Icon(Icons.local_shipping, color: Color.fromARGB(255, 65, 65, 65),size: 27,),
+                  ),
+                  Column(
+                    children:  [
+                      SizedBox(
+                        width: 220,
+                        child: Text('  RUTA 1 (31)',
+                              style: TextStyle(
+                              fontSize:15,
+                              fontWeight:FontWeight.w700, 
+                              color: Color.fromARGB(255, 65, 65, 65)
+                              ),
+                            ),
+                      ),
+                      SizedBox(
+                        width: 220,
+                        child: Text('   Chofer: Mario Juano Perez',
+                          style: TextStyle(
+                            fontSize:10,
+                            fontWeight:FontWeight.w400, 
+                            color: Color.fromARGB(255, 65, 65, 65)
+                          ),
+                        )
+                      )
+                    ], //hijos de la columna
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        child: Icon(Icons.hourglass_top, color: Color.fromARGB(255, 240, 228, 0),size: 23,),
+                      ),
+                      SizedBox(
+                        width: 70,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text('EN PROGRESO',
+                            style: TextStyle(
+                              fontSize:9,
+                              fontWeight:FontWeight.w600, 
+                              color: Color.fromARGB(255, 240, 228, 0)
+                            ),
+                          )
+                        )
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
-                ),
-                PolylineLayer(
-                  polylines: [
-                    Polyline(
-                      points: routeCoordinates,
-                      color: Colors.lightBlueAccent, // Color de la línea
-                      strokeWidth: 3.0, // Ancho de la línea
+        
+              SizedBox(height: 5),
+        
+              SizedBox(
+                height: 200,
+                width: 200,
+                child: ListView(
+                  children: [
+                    ListTile(
+                      isThreeLine: true,
+                      leading: Icon(Icons.double_arrow, size: 20,),
+                      title: Text('Pedido 1: Maria Perez', style: TextStyle(fontSize:12,fontWeight:FontWeight.w600, color: Color.fromARGB(255, 65, 65, 65)),),
+                      subtitle: Align(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Text('Dirección: Sachaca - Calle Polonia 345', style: TextStyle(fontSize:9,fontWeight:FontWeight.w500, color: Color.fromARGB(255, 65, 65, 65)),),
+                            Text('Productos: 7OO mL(x2), 20L RECARGA (x1)',style: TextStyle(fontSize:9,fontWeight:FontWeight.w500, color: Color.fromARGB(255, 65, 65, 65)),),
+                          ],
+                        ),
+                      ), 
+                    ),
+                    ListTile(
+                      isThreeLine: true,
+                      leading: Icon(Icons.double_arrow, size: 20,),
+                      title: Text('Pedido 2: Maria Perez', style: TextStyle(fontSize:12,fontWeight:FontWeight.w600, color: Color.fromARGB(255, 65, 65, 65)),),
+                      subtitle: Align(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Text('Dirección: Sachaca - Calle Polonia 345', style: TextStyle(fontSize:9,fontWeight:FontWeight.w500, color: Color.fromARGB(255, 65, 65, 65)),),
+                            Text('Productos: 7OO mL(x2), 20L RECARGA (x1)',style: TextStyle(fontSize:9,fontWeight:FontWeight.w500, color: Color.fromARGB(255, 65, 65, 65)),),
+                          ],
+                        ),
+                      ), 
+                    ),
+                    ListTile(
+                      isThreeLine: true,
+                      leading: Icon(Icons.double_arrow, size: 20,),
+                      title: Text('Pedido 3: Maria Perez', style: TextStyle(fontSize:12,fontWeight:FontWeight.w600, color: Color.fromARGB(255, 65, 65, 65)),),
+                      subtitle: Align(
+                        alignment: Alignment.topLeft,
+                        child: Column(
+                          children: [
+                            Text('Dirección: Sachaca - Calle Polonia 345', style: TextStyle(fontSize:9,fontWeight:FontWeight.w500, color: Color.fromARGB(255, 65, 65, 65)),),
+                            Text('Productos: 7OO mL(x2), 20L RECARGA (x1)',style: TextStyle(fontSize:9,fontWeight:FontWeight.w500, color: Color.fromARGB(255, 65, 65, 65)),),
+                          ],
+                        ),
+                      ), 
                     ),
                   ],
-                ),
-                MarkerLayer(markers: markers),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 20,
-            left: 20,
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black54,
-                borderRadius: BorderRadius.circular(8),
+                )
               ),
-              child: Text(
-                'Distancia Total: ${totalDistance.toStringAsFixed(2)} km',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                ),
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+              Row(
+                children: [
+                  SizedBox(
+                    width: 30,
+                    child: Icon(Icons.local_shipping, color: Color.fromARGB(255, 65, 65, 65),size: 27,),
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 220,
+                        child: Text('  RUTA 2 (30)',
+                              style: TextStyle(
+                              fontSize:15,
+                              fontWeight:FontWeight.w700, 
+                              color: Color.fromARGB(255, 65, 65, 65)
+                              ),
+                            ),
+                      ),
+                      SizedBox(
+                        width: 220,
+                        child: Text('   Chofer: Pedro Jose Pendeivis',
+                          style: TextStyle(
+                            fontSize:10,
+                            fontWeight:FontWeight.w400, 
+                            color: Color.fromARGB(255, 65, 65, 65)
+                          ),
+                        )
+                      )
+                    ], //hijos de la columna
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        child: Icon(Icons.insert_emoticon, color: Color.fromARGB(255, 68, 226, 0),size: 23,),
+                      ),
+                      SizedBox(
+                        width: 70,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text('COMPLETADO',
+                            style: TextStyle(
+                              fontSize:9,
+                              fontWeight:FontWeight.w600, 
+                              color: Color.fromARGB(255, 68, 226, 0)
+                            ),
+                          )
+                        )
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
+              SizedBox(height: 5),
+        
+        
+              SizedBox(
+                height: 200,
+                width: 260,
+              ),
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+              Row(
+                children: [
+                  SizedBox(
+                    width: 30,
+                    child: Icon(Icons.local_shipping, color: Color.fromARGB(255, 65, 65, 65),size: 27,),
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 220,
+                        child: Text('  RUTA 3 (31)',
+                              style: TextStyle(
+                              fontSize:15,
+                              fontWeight:FontWeight.w700, 
+                              color: Color.fromARGB(255, 65, 65, 65)
+                              ),
+                            ),
+                      ),
+                      SizedBox(
+                        width: 220,
+                        child: Text('   Chofer: Maria Choque',
+                          style: TextStyle(
+                            fontSize:10,
+                            fontWeight:FontWeight.w400, 
+                            color: Color.fromARGB(255, 65, 65, 65)
+                          ),
+                        )
+                      )
+                    ], //hijos de la columna
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 70,
+                        child: Icon(Icons.hourglass_top, color: Color.fromARGB(255, 240, 228, 0),size: 23,),
+                      ),
+                      SizedBox(
+                        width: 70,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text('EN PROGRESO',
+                            style: TextStyle(
+                              fontSize:9,
+                              fontWeight:FontWeight.w600, 
+                              color: Color.fromARGB(255, 240, 228, 0),
+                            ),
+                          )
+                        )
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+        
+              SizedBox(
+                height: 200,
+                child: ListTile(),
+              ),
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+              
+            ], // fin de los hijos de list view
           ),
-        ],
+        ),
       ),
+
+
+
+
+     /* 
+          FloatingActionButton(
+            onPressed: null,
+            backgroundColor: Color.fromARGB(255, 58, 196, 255),
+            child: Icon(Icons.add_ic_call_outlined, color:  Color.fromARGB(255, 65, 65, 65),),
+            shape: CircleBorder(),
+          ),
+          SizedBox(height: 10,),
+          FloatingActionButton(
+            onPressed: null,
+            backgroundColor: Color.fromARGB(255, 58, 196, 255),
+            child: Icon(Icons.directions_bike, color:  Color.fromARGB(255, 65, 65, 65),),
+            shape: CircleBorder(),
+          ),*/
+       
     );
   }
 }

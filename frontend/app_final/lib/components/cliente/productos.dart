@@ -153,6 +153,8 @@ void navigateCompras(){
     final usuarioProvider = Provider.of<UsuarioProvider>(context);
     total =obtenerTotal();
 
+    
+
     return Scaffold(
              // backgroundColor:Colors.blue,
 

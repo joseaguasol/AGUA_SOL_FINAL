@@ -101,10 +101,9 @@ class _Programacion extends State<Programacion>{
  @override
  Widget build (BuildContext context){
   
-
-
-
-
+  //DIMENSIONES
+  final mediaQuery = MediaQuery.of(context);
+  final screenWidth = mediaQuery.size.width;
 
   return Scaffold(
     key: _scaffoldKey,

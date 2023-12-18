@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
+import 'package:app_sol_new/components/conductor_felicitaciones.dart';
 
 class BienvenidaConductor extends StatefulWidget{
 
@@ -13,37 +14,28 @@ class BienvenidaConductor extends StatefulWidget{
   State<BienvenidaConductor> createState()=>_BienvenidaConductor();
 }
 
-
 String url = 'https://aguasol.onrender.com/api/user_conductor';
 
+    List<dynamic> datosConductor=[];
+    String nombreConductor='Pedrito';
+
+    Future<dynamic>getPedidos() async{
+      var res = await http.get(Uri.parse(url),
+      headers:{"Content-Type":"application/json"});
+      datosConductor = json.decode(res.body);
+      nombreConductor=datosConductor[0]['nombres'];
+      print(nombreConductor);
+      return nombreConductor;
+    }
 
 class _BienvenidaConductor extends State<BienvenidaConductor>{
 
-List<dynamic> datosConductor=[];
-var nombreConductor='';
-
-Future<dynamic>getPedidos() async{
-    var res = await http.get(Uri.parse(url),
-    headers:{"Content-Type":"application/json"});
-    datosConductor = json.decode(res.body);
-    nombreConductor=datosConductor[0]['nombres'];
-    print(nombreConductor);
-    return nombreConductor;
-}
-
-
-  @override
-  void initState() {
-  super.initState();
-  getPedidos();
-  }
-  
-
- 
   var ruta=2;
 
   @override
   Widget build(BuildContext context){
+
+    getPedidos();
 
     return Container(
 
@@ -54,7 +46,6 @@ Future<dynamic>getPedidos() async{
           colors: [Color.fromARGB(255, 255, 255, 255),Color.fromARGB(255, 28, 187, 255)],
         )
       ),
-
 
 
       child: Scaffold(
@@ -79,19 +70,36 @@ Future<dynamic>getPedidos() async{
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
-                child: Text('¡Buenos días, ${nombreConductor}!',style: const TextStyle(fontSize:19,fontWeight:FontWeight.w500,color: Color.fromARGB(255, 92, 92, 92))) ,
+                child: Text('¡Buenos días, $nombreConductor!',style: const TextStyle(fontSize:19,fontWeight:FontWeight.w500,color: Color.fromARGB(255, 92, 92, 92))) ,
               ),
               const Text('Tu ruta asignada es la',style: TextStyle(fontSize:17,fontWeight:FontWeight.w500,color:  Color.fromARGB(255, 92, 92, 92),fontStyle: FontStyle.italic)),
               Text('RUTA $ruta',style: const TextStyle(fontSize:17,fontWeight:FontWeight.w500,color:  Color.fromARGB(255, 92, 92, 92),fontStyle: FontStyle.italic)),
               SizedBox(
                 height: 160,
-                child: Lottie.asset('lib/animations/anim_4.json',height: 700),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Lottie.asset('lib/animations/anim_23.json',height: 700)
+                      ),
+                    Center(
+                      child: Lottie.asset('lib/animations/anim_23.json',height: 700)
+                      ),
+                    Center(
+                      child: Lottie.asset('lib/animations/anim_13.json',height: 480),
+                    )
+                    
+                  ],
+                )
+                //opciones posibles:14,13,12,9,5
               ),
               ElevatedButton(
                 onPressed: (){
+                  Navigator.push(context, 
+                    MaterialPageRoute(builder: (context)=>const FelicitacionesConductor()),
+                  );
                 }, 
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(255, 240, 240, 240),
+                  backgroundColor: const Color.fromARGB(255, 240, 240, 240),
                 ),
                 child: const Text('¡COMENZAR!', style: TextStyle(color: Colors.black),),
               ),

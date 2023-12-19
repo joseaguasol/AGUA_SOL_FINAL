@@ -89,3 +89,28 @@ class Empleado extends Usuario {
     
   }) : super(id: id, rolid: rolid, nick:nick,pass:pass, email: email);
 }
+
+class Conductor extends Usuario {
+  // Propiedades específicas del Conductor
+  int usuarioid = 0;
+  String nombre;
+  String apellidos;
+  String dni;
+  String fechanacimiento;
+  String licencia;
+
+  Conductor({
+   required int id,
+    required int rolid,
+    required String nick,
+    required String pass,
+    required String email,
+    required this.usuarioid,
+    required this.nombre,
+    required this.apellidos,
+    required this.fechanacimiento,
+    required this.licencia,
+    required this.dni,
+    
+  }) : super(id: id, rolid: rolid, nick:nick,pass:pass, email: email);
+}

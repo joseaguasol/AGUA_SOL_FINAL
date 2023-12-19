@@ -7,10 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/material.dart';
 import 'components/cliente/bienvenido.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:app_final/components/cliente/ubicacion.dart';
 import 'package:app_final/components/empleado/programacion.dart';
+import 'package:app_final/components/conductor/bienvenida.dart';
 
 class Login3 extends StatefulWidget{
   const Login3({super.key});
@@ -78,6 +76,29 @@ class _Login3State extends State<Login3>{
     context,
     PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => Programacion(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOutQuart;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var offsetAnimation = animation.drive(tween);
+
+        return SlideTransition(
+          position: offsetAnimation,
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 800),
+    ),
+  );
+  }
+
+    void navigateToBienvenidaConductor(){
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => BienvenidaConductor(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;
@@ -226,26 +247,43 @@ class _Login3State extends State<Login3>{
                             ));
                             navigateToProgramacion();
                           }
+                          else if(resultado['rol_id']==5){
+                            usuarioProvider.actualizarUsuario(
+                            Conductor(
+                              id: resultado['id'],
+                              rolid: resultado['rol_id'],
+                              nick: resultado['nickname'],
+                              pass: resultado['contrasena'],
+                              email: resultado['email'],
+                              usuarioid: resultado['usuario_id'],
+                              nombre: resultado['nombres'],
+                              apellidos: resultado['apellidos'],
+                              fechanacimiento: resultado['fecha_nacimiento'],
+                              licencia: resultado['licencia'],
+                              dni: resultado['dni']
+                            ));
+                            navigateToBienvenidaConductor();
+                          }
                           }
                           else if (resultado == null){
-  print(" Dentro del null");
-  print("${resultado}");
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Verificación"),
-        content: Text("No existe el usuario"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'OK'),
-            child: const Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}
+                            print(" Dentro del null");
+                            print("${resultado}");
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Verificación"),
+                                  content: Text("No existe el usuario"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
 
                           
                           

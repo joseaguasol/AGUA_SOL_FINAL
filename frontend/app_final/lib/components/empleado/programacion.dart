@@ -104,6 +104,9 @@ class _Programacion extends State<Programacion>{
   //DIMENSIONES
   final mediaQuery = MediaQuery.of(context);
   final screenWidth = mediaQuery.size.width;
+   //DIMENSIONES
+    final anchoActual = MediaQuery.of(context).size.width;
+    final largoActual = MediaQuery.of(context).size.height;
 
   return Scaffold(
     key: _scaffoldKey,
@@ -240,7 +243,11 @@ class _Programacion extends State<Programacion>{
                       onPressed:(){
                         navigateToPedidos();
                       },
-                      child: Text("Programar Pedido"),
+                      child: Text("Programar Pedido",style:TextStyle(color: Colors.white,fontSize:22),),
+                      style:ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.blue),
+                    fixedSize: MaterialStateProperty.all(Size(anchoActual <= 393.8 ? 180 : 250,largoActual <= 865.6 ? 20 : 50)),
+                   ),
                     ),
 
               

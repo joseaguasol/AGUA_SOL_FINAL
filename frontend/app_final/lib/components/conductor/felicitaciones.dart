@@ -1,4 +1,4 @@
-import 'package:app_sol_new/components/conductor_bienvenido.dart';
+import 'package:app_final/components/conductor/bienvenida.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
@@ -66,13 +66,13 @@ class _FelicitacionesConductor extends State<FelicitacionesConductor>{
                 child: Stack(
                   children: [
                     Center(
-                      child: Lottie.asset('lib/animations/anim_1.json',height: 700),
+                      child: Lottie.asset('lib/animatios/anim_1.json',height: 700),
                     ),
                     Center(
-                      child: Lottie.asset('lib/animations/anim_1.json',height: 200)
+                      child: Lottie.asset('lib/animatios/anim_1.json',height: 200)
                       ),
                     Center(
-                      child: Lottie.asset('lib/animations/anim_16.json',height: 180),
+                      child: Lottie.asset('lib/animatios/anim_16.json',height: 180),
                     )
                     
                   ],

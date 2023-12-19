@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
-import 'package:app_sol_new/components/conductor_felicitaciones.dart';
+import 'package:app_final/components/conductor/felicitaciones.dart';
 
 class BienvenidaConductor extends StatefulWidget{
 
@@ -79,13 +79,13 @@ class _BienvenidaConductor extends State<BienvenidaConductor>{
                 child: Stack(
                   children: [
                     Center(
-                      child: Lottie.asset('lib/animations/anim_23.json',height: 700)
+                      child: Lottie.asset('lib/animatios/anim_23.json',height: 700)
                       ),
                     Center(
-                      child: Lottie.asset('lib/animations/anim_23.json',height: 700)
+                      child: Lottie.asset('lib/animatios/anim_23.json',height: 700)
                       ),
                     Center(
-                      child: Lottie.asset('lib/animations/anim_13.json',height: 480),
+                      child: Lottie.asset('lib/animatios/anim_13.json',height: 480),
                     )
                     
                   ],

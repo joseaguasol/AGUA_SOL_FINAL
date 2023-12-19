@@ -1,10 +1,14 @@
+import 'package:app_final/components/cliente/historial.dart';
 import 'package:app_final/components/cliente/promocion.dart';
+import 'package:app_final/components/conductor/bienvenida.dart';
+import 'package:app_final/components/conductor/felicitaciones.dart';
 //import 'package:app_final/components/empleado/home.dart';
 import 'package:app_final/components/empleado/armadoruta.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/login.dart';
 import 'package:app_final/components/cliente/productos.dart';
 import 'package:app_final/components/cliente/bienvenido.dart';
+import 'package:app_final/presentacion.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:app_final/provider/usuario_provider.dart';
 import 'package:provider/provider.dart';
@@ -37,8 +41,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/loginsol',
+      initialRoute: '/historial',
       routes: {
+        '/historial':(context) => Historial(),
+        '/c_felicitaciones':(context) => FelicitacionesConductor(),
+        '/c_bienvenido':(context) => BienvenidaConductor(),
+        '/presentacion':(context) => Presentacion(),
         '/programacion':(context) => Programacion(),
         '/promociones':(context) => Promocion(),
         '/armadoruta':(context) => ArmadoRuta(),

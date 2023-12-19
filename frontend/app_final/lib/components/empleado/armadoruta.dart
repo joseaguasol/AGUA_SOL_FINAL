@@ -269,10 +269,10 @@ void crearWidget(double ancho, double largo) {
               Container(
                 height: largoActual  <= 865.6 ? 200 : 300,//400,
                 width: anchoActual <=393.8 ? 300 :400,//double.infinity,
-                padding: EdgeInsets.all(10),
+                //padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color:Colors.cyan
+                  borderRadius: BorderRadius.circular(20),
+                //  color:const Color.fromARGB(255, 184, 212, 0)
                 ),
                 child: FlutterMap(
                   options: MapOptions(
@@ -300,7 +300,7 @@ void crearWidget(double ancho, double largo) {
                 ),
               ),
 
-              Container(
+              /*Container(
                 margin: EdgeInsets.only(top:20,left: 20),
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -314,7 +314,7 @@ void crearWidget(double ancho, double largo) {
                       color: Colors.white,
                     ),
                   ),
-                ),
+                ),*/
               
           
           
@@ -332,29 +332,38 @@ void crearWidget(double ancho, double largo) {
                               crearWidget(anchoActual,largoActual);
                             });}, child: Text("Crear",style: TextStyle(color:Colors.white),),
                               style:ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.purpleAccent),
+                              backgroundColor: MaterialStateProperty.all(Colors.blueAccent
+                              ),
                               
                             ),),
-                            const SizedBox(width: 10,),
+                           // const SizedBox(width: 10,),
                             ElevatedButton(onPressed:(){setState(() {
                               if(widgetList.isNotEmpty){widgetList.removeLast();}
                             });}, child: Text("Destruir"),
                               style:ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(Colors.amberAccent),
                               
-                            ),)
+                            ),),
+                            
                            ],
                           ),                      
                         ]
                       ),
           
-                      const SizedBox(width:10,),
-                      Column(
-                        children: [
-                          Text("Pedidos",style:TextStyle(fontFamily: 'Pacifico'),),
+                      //const SizedBox(width:10,),
+                     Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                           children: [
+                             Text("Pedidos",style:TextStyle(fontFamily: 'Pacifico'),),
+                            
+                             
+                           ],
+                         ),
+                         
                           
-                          ],
-                      ),
+                        
+                      
                     ],
 
                   ),
@@ -364,6 +373,7 @@ void crearWidget(double ancho, double largo) {
           
                   // CONTENIDO
                   Expanded(
+                    
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -379,7 +389,7 @@ void crearWidget(double ancho, double largo) {
                                 Container(
                                   height: largoActual  <= 865.6 ? 5 : 10,
                                   width:anchoActual <= 393.8 ? 150 : 180,// 200,
-                                  color: Colors.pink,
+                                 // color: Colors.pink,
                                 ),
                                 ...widgetList,
           

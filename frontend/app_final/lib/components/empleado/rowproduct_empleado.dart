@@ -33,7 +33,7 @@ class ProductCustomEmpleado extends StatelessWidget {
                   Text(
                     nombre,
                     style: TextStyle(
-                      fontFamily: 'Pacifico',
+                     // fontFamily: 'Pacifico',
                       color: Colors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w300,
@@ -42,7 +42,7 @@ class ProductCustomEmpleado extends StatelessWidget {
                   Text(
                     "S/.${precio}",
                     style: TextStyle(
-                      fontFamily: 'Pacifico',
+                     // fontFamily: 'Pacifico',
                       color: Colors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w300,

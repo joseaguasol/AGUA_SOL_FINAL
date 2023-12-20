@@ -4,20 +4,21 @@ import 'package:app_final/components/conductor/bienvenida.dart';
 import 'package:app_final/components/conductor/felicitaciones.dart';
 //import 'package:app_final/components/empleado/home.dart';
 import 'package:app_final/components/empleado/armadoruta.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/login.dart';
 import 'package:app_final/components/cliente/productos.dart';
 import 'package:app_final/components/cliente/bienvenido.dart';
 import 'package:app_final/presentacion.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:app_final/provider/usuario_provider.dart';
 import 'package:provider/provider.dart';
 //import 'package:app_final/components/empleado/pedidos.dart';
 import 'package:app_final/components/empleado/programacion.dart';
 
 
-void main() {
-  //WidgetsFlutterBinding.ensureInitialized();
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   //await Geolocator.requestPermission();
   runApp(
     ChangeNotifierProvider(
@@ -41,8 +42,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/historial',
+      initialRoute: '/loginsol',
       routes: {
+      
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
         '/c_bienvenido':(context) => BienvenidaConductor(),

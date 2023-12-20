@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'components/cliente/bienvenido.dart';
 import 'package:app_final/components/empleado/programacion.dart';
 import 'package:app_final/components/conductor/bienvenida.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Login3 extends StatefulWidget{
   const Login3({super.key});
@@ -24,6 +26,9 @@ class _Login3State extends State<Login3>{
   final TextEditingController _password = TextEditingController();
   late String responseText='';
   String apiUrl = 'https://aguasol.onrender.com/api/login';
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // LLAMADA DE API
   Future<dynamic> sendCredentials(user,pass) async {
@@ -46,6 +51,28 @@ class _Login3State extends State<Login3>{
         // La so  licitud fue exitosa, puedes manejar los datos aquí
         return json.decode(res.body);
       } 
+  }
+
+  // google
+
+  Future<dynamic> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+      return user;
+    } catch (e) {
+      print('Error during Google sign-in: $e');
+      return null;
+    }
   }
 
   void navigateToBienvenido(){
@@ -310,7 +337,18 @@ class _Login3State extends State<Login3>{
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             InkWell(
-                              onTap: (){
+                              onTap: ()async{
+                                User? user = await signInWithGoogle();
+                                if (user != null) {
+                                  print('Usuario autenticado con Google:');
+                                  print('UID: ${user.uid}');
+                                  print('Nombre: ${user.displayName}');
+                                  print('Correo Electrónico: ${user.email}');
+                                  // Resto de tu código...
+                                  navigateToBienvenido();
+                                } else {
+                                  print('Inicio de sesión con Google cancelado o error');
+                                }
                                 print("ooog");
                               },
                               child:Image.asset('lib/imagenes/google.png',width: 50,height: 50,),

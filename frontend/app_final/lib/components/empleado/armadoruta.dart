@@ -1,5 +1,5 @@
 
-import 'package:app_final/components/empleado/rowicon_empleado.dart';
+//import 'package:app_final/components/empleado/rowicon_empleado.dart';
 import 'package:app_final/components/empleado/supervision.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -235,7 +235,7 @@ void crearWidget(double ancho, double largo) {
     // Añadir una nueva coordenada a la lista después de ordenarla
     routeCoordinates.add(routeCoordinates.first);
 
-    double totalDistance = calculateTotalDistance(routeCoordinates);
+    
 
     List<Marker> markers = [];
     for (LatLng coordinate in routeCoordinates) {

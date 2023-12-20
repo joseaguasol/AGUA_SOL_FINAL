@@ -1,7 +1,6 @@
 import 'package:app_final/components/empleado/armadoruta.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/components/empleado/rowproduct_empleado.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -40,7 +39,7 @@ class _Programacion extends State<Programacion>{
   final TextEditingController _apellidos = TextEditingController();
   final TextEditingController _telefono = TextEditingController();
   final TextEditingController _direccion = TextEditingController();
-  final TextEditingController _ubicacion = TextEditingController();
+  //final TextEditingController _ubicacion = TextEditingController();
   int contador = 0;
 
   String dropdownValue = list.first;

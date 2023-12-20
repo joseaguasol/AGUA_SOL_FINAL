@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:http/retry.dart';
+
 
 class Promocion extends StatefulWidget{
   const Promocion({super.key});

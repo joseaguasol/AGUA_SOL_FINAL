@@ -1,9 +1,9 @@
-import 'package:app_final/components/cliente/bienvenido.dart';
+
 import 'package:flutter/material.dart';
 import 'package:app_final/components/cliente/gracias.dart';
 import 'package:app_final/components/cliente/productos.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:app_final/provider/usuarios_model.dart';
+
 import 'package:app_final/provider/usuario_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';

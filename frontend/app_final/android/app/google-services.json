@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "958996581318",
+    "project_id": "aguasolapp",
+    "storage_bucket": "aguasolapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:958996581318:android:d0441dff2f6a23ce0a40c7",
+        "android_client_info": {
+          "package_name": "com.example.app_final"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqs5iTRUISoC-30htZzB-WMUeyfLtGSQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

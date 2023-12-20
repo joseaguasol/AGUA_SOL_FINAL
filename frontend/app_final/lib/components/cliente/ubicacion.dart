@@ -70,7 +70,7 @@ class _MapsState extends State<Maps>{
   @override
   Widget build (BuildContext context){
 
-    final double screenHeight =MediaQuery.of(context).size.height;
+   // final double screenHeight =MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: SafeArea(

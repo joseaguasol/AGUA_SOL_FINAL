@@ -1,13 +1,23 @@
 import 'package:app_final/components/cliente/historial.dart';
 import 'package:app_final/components/cliente/promocion.dart';
+import 'package:app_final/components/cliente/ubicacion.dart';
 import 'package:app_final/components/conductor/bienvenida.dart';
 import 'package:app_final/components/conductor/felicitaciones.dart';
 //import 'package:app_final/components/empleado/home.dart';
 import 'package:app_final/components/empleado/armadoruta.dart';
+import 'package:app_final/components/test/dise%C3%B1o.dart';
+import 'package:app_final/components/test/fin.dart';
+import 'package:app_final/components/test/formulario.dart';
+import 'package:app_final/components/test/hola.dart';
+import 'package:app_final/components/test/holaconductor.dart';
+import 'package:app_final/components/test/pedido.dart';
+import 'package:app_final/components/test/promos.dart';
+import 'package:app_final/components/test/ubicacion.dart';
+import 'package:app_final/components/test/productos.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:app_final/login.dart';
-import 'package:app_final/components/cliente/productos.dart';
+//import 'package:app_final/components/cliente/productos.dart';
 import 'package:app_final/components/cliente/bienvenido.dart';
 import 'package:app_final/presentacion.dart';
 import 'package:app_final/provider/usuario_provider.dart';
@@ -42,9 +52,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/loginsol',
+      initialRoute: '/diseño',
       routes: {
-      
+        '/diseño':(context) =>HolaConductor(),
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
         '/c_bienvenido':(context) => BienvenidaConductor(),
@@ -55,7 +65,9 @@ class MyApp extends StatelessWidget {
         //'/empleado_ruta':(context) => Programacion(),
         '/loginsol':(context)=> const Login3(),
         '/bienvenido':(context)=> const Bienvenido(),
-        '/productos':(context) => const Productos()
+        //'/productos':(context) => const Productos(),
+        '/maps':(context) => const Maps(),
+
       },
       //home: const Login3(),
     );

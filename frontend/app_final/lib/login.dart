@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:app_final/components/cliente/ubicacion.dart';
 import 'package:provider/provider.dart';
 import 'package:app_final/provider/usuario_provider.dart';
 import 'package:app_final/provider/usuarios_model.dart';
@@ -79,7 +80,7 @@ class _Login3State extends State<Login3>{
   Navigator.push(
     context,
     PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => Bienvenido(),
+      pageBuilder: (context, animation, secondaryAnimation) => Maps(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0);
         const end = Offset.zero;

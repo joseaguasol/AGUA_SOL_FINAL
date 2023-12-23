@@ -1,3 +1,4 @@
+import 'package:app_final/login.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -25,6 +26,7 @@ class _PresentacionState extends State<Presentacion> with TickerProviderStateMix
       if (status == AnimationStatus.completed) {
         setState(() {
           _showLogo = true;
+          _navigateToLogin();
         });
       }
     });
@@ -37,6 +39,15 @@ class _PresentacionState extends State<Presentacion> with TickerProviderStateMix
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _navigateToLogin(){
+    Future.delayed(Duration(seconds: 2),(){
+       Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Login3()), // Reemplaza "OtraVista" con el nombre de tu nueva vista
+      );
+    });
   }
 
   @override

@@ -103,7 +103,7 @@ void disminuir(int index) {
 }
 
 void navigateCompras(){
-  
+  if(mounted){
   List<Producto> productosContabilizados = newproduct.where((producto) => producto.cantidad > 0).toList();
   print("DENTRO .......NAVIGATE OMPRAS");
   print("productos seleccionados : ${newproduct.length}");
@@ -129,7 +129,7 @@ void navigateCompras(){
       transitionDuration: const Duration(milliseconds: 800),
     ),
   );
-  
+  }
   }
 
   int obtenerTotal (){

@@ -89,10 +89,6 @@ class _Compra extends State<Compra>{
           await setDetallePedido(id,widget.productos[i].id,fechaHoy,widget.productos[i].cantidad,"productos",10,widget.productos[i].precio);
 
         }
-
-        
-
-
         Navigator.push(
           currentContext,
           PageRouteBuilder(

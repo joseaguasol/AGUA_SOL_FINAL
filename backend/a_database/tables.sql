@@ -144,7 +144,8 @@ create table ventas.producto(
 	nombre varchar(200) not null,
 	precio float not null,
 	descripcion varchar(200) not null,
-	stock int not null
+	stock int not null,
+	foto varchar(200)
 );
 
 -- Table: ventas.vehiculo
@@ -233,3 +234,50 @@ ALTER TABLE personal.superadmin ADD CONSTRAINT fk_superadmin_usuario FOREIGN KEY
 ALTER TABLE personal.administrador ADD CONSTRAINT fk_administrador_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE personal.conductor ADD CONSTRAINT fk_conductor_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE personal.empleado ADD CONSTRAINT fk_empleado_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+-- reseteo secuencias
+-- Roles
+SELECT setval('relaciones.roles_id_seq', 1, false);
+
+-- Usuario
+SELECT setval('personal.usuario_id_seq', 1, false);
+
+-- Superadmin
+SELECT setval('personal.superadmin_id_seq', 1, false);
+
+-- Administrador
+SELECT setval('personal.administrador_id_seq', 1, false);
+
+-- Conductor
+SELECT setval('personal.conductor_id_seq', 1, false);
+
+-- Empleado
+SELECT setval('personal.empleado_id_seq', 1, false);
+
+-- Cliente
+SELECT setval('ventas.cliente_id_seq', 1, false);
+
+-- Cliente No Registrado
+SELECT setval('ventas.cliente_noregistrado_id_seq', 1, false);
+
+-- Ruta
+SELECT setval('ventas.ruta_id_seq', 1, false);
+
+-- Pedido
+SELECT setval('ventas.pedido_id_seq', 1, false);
+
+-- Producto
+SELECT setval('ventas.producto_id_seq', 1, false);
+
+-- Vehiculo
+SELECT setval('ventas.vehiculo_id_seq', 1, false);
+
+-- Venta
+SELECT setval('ventas.venta_id_seq', 1, false);
+
+-- Zona Trabajo
+SELECT setval('ventas.zona_trabajo_id_seq', 1, false);
+
+-- Detalle Pedido
+SELECT setval('relaciones.detalle_pedido_id_seq', 1, false);

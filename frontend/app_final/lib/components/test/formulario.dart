@@ -31,15 +31,12 @@ class _FormuState extends State<Formu> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(child: Text("Me encantaría",
+                              Container(child: const Text("Me encantaría",
                               style: TextStyle(color:const Color.fromARGB(255, 0, 57, 103),
                               fontSize: 35,fontWeight: FontWeight.w300),)),
-                              Container(child: Text("saber de ti",
+                              Container(child: const Text("saber de ti",
                               style: TextStyle(fontSize: 35,color:Color.fromARGB(255, 0, 41, 72)),)),
-                              Container(child: Text("para ayudarte mejor",
-                              style: TextStyle(fontSize: 30,
-                              fontWeight: FontWeight.w300,
-                              color:Color.fromARGB(255, 0, 41, 72)),)),
+                              
                             ],
                           ),
                           
@@ -58,7 +55,15 @@ class _FormuState extends State<Formu> {
                       margin: const EdgeInsets.only(left: 20),
                       height: 500,
                       width: 300,
-                     // color:Colors.cyan,
+                      decoration: BoxDecoration(
+                        borderRadius:BorderRadius.circular(20),
+                        border: Border.all(
+                          width: 2,
+                          color: const Color.fromARGB(255, 2, 72, 129),
+                          
+                        )
+                      ),
+                    //color:Colors.cyan,
                       child: ListView(
                         
                         children: [

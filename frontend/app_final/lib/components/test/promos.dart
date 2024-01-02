@@ -23,7 +23,7 @@ class _PromosState extends State<Promos> {
                     children: [
                       Container(
                         //height: 0,
-                        //color: Colors.grey,
+                       // color: Colors.grey,
                         margin: const EdgeInsets.only(top:20,left: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,7 +37,8 @@ class _PromosState extends State<Promos> {
                                 //height: 100,
                                 child: Text(
                                   "Llévate !",
-                                  style: TextStyle(color:Color.fromARGB(255, 7, 55, 95),fontSize: 35),
+                                  style: TextStyle(color:Color.fromARGB(255, 7, 55, 95),
+                                  fontSize: 35,fontWeight: FontWeight.w300),
                                 ),
                               ),
                               Container(
@@ -60,9 +61,17 @@ class _PromosState extends State<Promos> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(right: 20),
-                            height: 200,
-                            width: 180,
-                            child: Image.asset('lib/imagenes/gotitapastel.jpg'),
+                            height: 100,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.blue,
+                              image: DecorationImage(
+                                image: AssetImage('lib/imagenes/gotitapastel.jpg'),
+                                fit: BoxFit.fill,
+                              )
+                            ),
+                           
                           )
                         ]),
                       ),
@@ -70,27 +79,35 @@ class _PromosState extends State<Promos> {
                       Container(
                         margin: const EdgeInsets.only(left: 20),
                         decoration: BoxDecoration(
-                          color:const Color.fromARGB(255, 0, 91, 165),
+                          color:Color.fromARGB(255, 255, 255, 255),
                           borderRadius: BorderRadius.circular(20)
                         ),
                         padding: const EdgeInsets.all(8),
-                        height: 380,
+                        height: 400,
                         child: ListView.builder(
-                          scrollDirection: Axis.vertical,
+                          scrollDirection: Axis.horizontal,
                           itemCount: 5,
                           itemBuilder: (context, index){
                             return Container(
-                              margin: const EdgeInsets.only(top:10),
-                              height: 150,
-                              //color: Colors.green,
-                              child: Row(
+                              margin: const EdgeInsets.only(left:10),
+                              padding: const EdgeInsets.all(10),
+                              
+                             // height: 150,
+                             decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                             // color: Colors.green,
+                             ),
+                             width: 400,
+                              
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Container(
                                     
-                                    width: 150,
-                                    height: 150,
-                                    decoration:const BoxDecoration(
-                                      
+                                    width: 390,
+                                    height: 220,
+                                    decoration: BoxDecoration(
+                                      //color:Colors.orange,
                                       image: DecorationImage(
                                          image: AssetImage('lib/imagenes/bodegoncito.jpg'),
                                          fit:BoxFit.cover,
@@ -98,31 +115,37 @@ class _PromosState extends State<Promos> {
                                     ),
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.only(left: 10),
-                                    //color:Colors.blue,
+                                    height: 120,
+                                    margin: const EdgeInsets.only(left: 0),
+                                   // color:Colors.blue,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,                                      children: [
+                                      //crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      
+                                      children: [
+
                                         Text("Llévate la promo 3 x S/.20",
                                         style: TextStyle(fontSize:20,
-                                        color:Colors.white)),
+                                        color:const Color.fromARGB(255, 2, 79, 141))),
                                         Text("Válido por 1 mes",
-                                        style: TextStyle(fontSize:15,
-                                        color:Colors.white)),
+                                        style: TextStyle(fontSize:20,
+                                        color:const Color.fromARGB(255, 0, 89, 161))),
                                         const SizedBox(height: 5,),
                                         Container(
-                                          height: 80,
+                                          height: 50,
                                           width: 160,
                                           //color:Colors.pink,
                                           child: Row(
                                             children: [
                                               IconButton(onPressed: (){},
-                                              iconSize: 45,
-                                              color:Color.fromARGB(255, 224, 234, 228),
+                                              iconSize: 40,
+                                              color:Colors.amber,
                                               icon: Icon(Icons.remove_circle_outline)),
                                               Text(" 1 ",
-                                              style: TextStyle(color:Colors.white,fontSize: 35),),
+                                              style: TextStyle(color:const Color.fromARGB(255, 0, 82, 149),
+                                              fontSize: 30),),
                                               IconButton(onPressed: (){},
-                                                iconSize: 45,
+                                                iconSize: 40,
                                                 color: Color.fromARGB(255, 224, 41, 206),
                                                icon: Icon(Icons.add_circle_outline))
                                             ],
@@ -166,7 +189,7 @@ class _PromosState extends State<Promos> {
                            child: Text("Si !",style: TextStyle(
                             fontSize:20,color:Colors.white),),
                            style:ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 2, 50, 89))
+                            backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 2, 91, 164))
                            )),
                         ),
                          const SizedBox(width: 20,),

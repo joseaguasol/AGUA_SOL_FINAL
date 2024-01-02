@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:lottie/lottie.dart';
 class Hola extends StatefulWidget {
   const Hola({super.key});
 
@@ -11,8 +11,47 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final TabController _tabController = TabController(length: 2, vsync: this);
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
+      key: _scaffoldKey,
+        drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 2, 68, 122),
+              ),
+              child: const Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Opción 1'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Opción 2'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(
+              height: 200,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  //Navigator.pushReplacementNamed(context, '/loginsol');
+                },
+                child: Text("Salir")),
+          ],
+        ),
+      ),
         body: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -26,11 +65,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(
-                              Icons.menu,
-                              color: Colors.black,
-                              size: 30,
-                            ),
+                            IconButton(onPressed: (){
+                              _scaffoldKey.currentState?.openDrawer();
+                            }, icon: Icon(Icons.menu)),
                             Container(
                               child: ClipRRect(
                                 child: Image.asset('lib/imagenes/chica.jpg'),
@@ -79,13 +116,24 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         ),
                       ),
                       Container(
+                        height: 70,
                         margin: const EdgeInsets.only(left: 20),
-                        child: Text(
-                          "Disfruta!",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 30,
-                              color: Color.fromARGB(255, 3, 34, 60)),
+                       // color: Colors.grey,
+                        child: Row(
+                         // mainAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Disfruta!",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 30,
+                                  color: Color.fromARGB(255, 3, 34, 60)),
+                            ),
+                            Container(
+                              //height: 80,
+                             // width: 80,
+                              child: Lottie.asset('lib/imagenes/vasito.json'))
+                          ],
                         ),
                       ),
                       const SizedBox(
@@ -278,5 +326,6 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         ]),
                       ),
                     ]))));
+        
   }
 }

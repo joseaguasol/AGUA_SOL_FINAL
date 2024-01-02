@@ -83,20 +83,21 @@ create table personal.empleado(
 create table ventas.cliente(
 	id serial primary key,
 	usuario_id int unique,
+	frecuencia int,
 	nombre varchar(100) not null,
 	apellidos varchar(100) not null,
-	fecha_nacimiento date not null,
-	sexo varchar(100) not null,
-	direccion varchar(150) not null,
+	fecha_nacimiento date,
+	sexo varchar(100),
+	direccion varchar(150),
 	dni varchar(100) not null,
-	codigo varchar(200) not null,
-	saldo_beneficios int not null,
+	codigo varchar(200),
+	saldo_beneficios int,
 	direccion_empresa varchar(200),
-	suscripcion varchar(200) not null,
-	ubicacion varchar(200) not null,
+	suscripcion varchar(200),
+	ubicacion varchar(200), --GEOMETRY
 	RUC varchar(200),
 	nombre_empresa varchar(200),
-	zona_trabajo_id int not null
+	zona_trabajo_id int
 );
 
 create table ventas.cliente_noregistrado(
@@ -105,7 +106,10 @@ create table ventas.cliente_noregistrado(
 	apellidos varchar(300),
 	direccion varchar(200),
 	telefono varchar(50),
-	ubicacion varchar(300)
+	email varchar(50),
+	distrito varchar(50),
+	ubicacion varchar(300), --geometry
+	RUC varchar(20)
 );
 
 -- Table: ventas.ruta
@@ -114,8 +118,7 @@ create table ventas.ruta(
 	conductor_id int not null,
 	administrador_id int not null,
 	empleado_id int not null,
-	origen varchar(100) not null,
-	destino varchar(100) not null,
+	multipuntos varchar(1000), --GEOMETRY(MULTIPOINT,4326),
 	distancia_km int not null,
 	tiempo_ruta int not null,
 	zona_trabajo_id int not null
@@ -124,20 +127,22 @@ create table ventas.ruta(
 -- Table: ventas.pedido
 create table ventas.pedido(
 	id serial primary key,
+	empleado_id int,
 	conductor_id int,
 	ruta_id int,
-	empleado_id int,
-	cliente_id int not null,
+	cliente_id int,
+	cliente_nr_id int,
 	monto_total int not null,
 	fecha timestamp not null,
-	direccion varchar(300) not null
+	tipo varchar(20),
+	estado boolean
 );
 
 --Table: ventas.producto
 create table ventas.producto(
 	id serial primary key,
 	nombre varchar(200) not null,
-	precio int not null,
+	precio float not null,
 	descripcion varchar(200) not null,
 	stock int not null
 );
@@ -162,7 +167,11 @@ create table ventas.venta(
 --Table: ventas.zona_trabajo
 create table ventas.zona_trabajo(
 	id serial primary key,
-	nombre varchar(50) not null,
+	ubicacion varchar(100), --GEOMETRY(POINT,4326), --municipalidad
+	poligono varchar(1000),--GEOMETRY(POLYGON,4326),
+	departamento varchar(50),
+	provincia varchar(50),
+	distrito varchar(50),
 	superadmin_id int not null
 );
 
@@ -175,11 +184,7 @@ create table relaciones.detalle_pedido(
 	id serial primary key,
 	pedido_id int,
 	producto_id int not null,
-	fecha timestamp not null,
-	cantidad int not null,
-	descripcion_general varchar(200) not null,
-	descuento int not null,
-	precio_total int not null
+	cantidad int not null
 );
 
 ---------------------------------
@@ -198,6 +203,8 @@ ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_ruta FOREIGN KEY (ruta_id) RE
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_empleado FOREIGN KEY (empleado_id) REFERENCES personal.empleado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id) ON DELETE CASCADE ON UPDATE CASCADE;
+-- pedido-cliente nr
+ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_clientenr FOREIGN KEY (cliente_nr_id) REFERENCES ventas.cliente_noregistrado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ZONA TRABAJO
 ALTER TABLE ventas.zona_trabajo ADD CONSTRAINT fk_zona_trabajo_superadmin FOREIGN KEY (superadmin_id) REFERENCES personal.superadmin (id);

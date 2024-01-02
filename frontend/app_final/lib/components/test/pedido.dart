@@ -22,23 +22,25 @@ class _PedidoState extends State<Pedido> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 200,
+                      height: 160,
                       margin: const EdgeInsets.only(top: 30,left: 20),
-                      //color:Colors.grey,
+                     // color:Colors.grey,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(left: 0),
-                            height:200 ,
-                            width: 180,
+                            margin: const EdgeInsets.only(left: 20),
+                            padding: const EdgeInsets.all(10),
+                            height:100 ,
+                            width: 130,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
+                              borderRadius: BorderRadius.circular(10),
                               image: DecorationImage(
                                 fit: BoxFit.cover,
                                 image: AssetImage('lib/imagenes/mañana.png')
                               ),
-                              //color:const Color.fromARGB(255, 186, 164, 164)
+                              color:Color.fromARGB(255, 24, 157, 104)
                             ),
                           ),
                           //Expanded(child: Container()),
@@ -53,21 +55,21 @@ class _PedidoState extends State<Pedido> {
                                 child: Text("Tu pedido",
                                 style: 
                                 TextStyle(color:const Color.fromARGB(255, 17, 62, 98),
-                                fontSize: 39,fontWeight:FontWeight.w300),)),
+                                fontSize: 30,fontWeight:FontWeight.w300),)),
                               Container(
                                 margin: const EdgeInsets.only(right: 20),
                             child: Text("se agendó",
-                            style: TextStyle(fontSize: 35,color: const Color.fromARGB(255, 3, 39, 68)),),
+                            style: TextStyle(fontSize: 28,color: const Color.fromARGB(255, 3, 39, 68)),),
                           ),
                           Container(
                             margin: const EdgeInsets.only(right:20),
                             child:Text("para mañana",
-                            style: TextStyle(fontSize: 30,fontWeight: FontWeight.w200),),
+                            style: TextStyle(fontSize: 25,fontWeight: FontWeight.w200),),
                           ),
                           Container(
                             margin: const EdgeInsets.only(right:20),
                             child:Text("aquí esta el detalle",
-                            style: TextStyle(fontSize: 25,
+                            style: TextStyle(fontSize: 20,
                             fontWeight: FontWeight.w400),),
                           ),
                             ],
@@ -80,36 +82,41 @@ class _PedidoState extends State<Pedido> {
                     const SizedBox(height: 20,),
                     Container(
                       margin: const EdgeInsets.only(left: 20,right: 20),
-                      //color:Colors.grey,
+                    //  color:Colors.grey,
 
                       height: 200,
                       decoration: BoxDecoration(
+                        //color:Color.fromARGB(255, 83, 231, 147),
+                        
                         borderRadius: BorderRadius.circular(20),
-                            border: Border.all(width: 2)
+                            border: Border.all(width: 4,color: Color.fromARGB(255, 218, 222, 3))
+                            
                           ),
                       child: ListView.builder(
                         itemCount: 8,
                         itemBuilder:(context,index){
                         return Container(
                           margin: const EdgeInsets.only(left: 20),
-                          child: Row(
+                          child:const Row(
                             children: [
-                              Icon(Icons.water_drop_outlined,size: 40,),
+                              Icon(Icons.water_drop_outlined,
+                              color:Color.fromARGB(255, 2, 77, 138),size: 40,),
                               const SizedBox(width: 50,),
                               Text("Bidón 20L cantidad: 3",
-                              style: TextStyle(fontSize: 20),),
+                              style: TextStyle(fontSize: 20,color:const Color.fromARGB(255, 1, 75, 135)),),
                             ],
                           ),
                         );
                       }),
                     ),
+
                     const SizedBox(height: 20,),
                     Container(
                       margin: const EdgeInsets.only(left: 20),
                       //color:Colors.grey,
                       height: 50,
                       child: Text("El total es de: S/.200.00",
-                      style:TextStyle(color: const Color.fromARGB(255, 1, 34, 60),fontSize: 28,fontWeight: FontWeight.w500),),
+                      style:TextStyle(color: Color.fromARGB(255, 0, 70, 123),fontSize: 28,fontWeight: FontWeight.w500),),
 
                     ),
                     Container(
@@ -121,7 +128,7 @@ class _PedidoState extends State<Pedido> {
                        child: Text("Listo !",
                        style: TextStyle(fontSize: 25,color:Colors.white),),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 1, 34, 60))
+                        backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 0, 68, 120))
                       ),
                        ),
 
@@ -143,8 +150,13 @@ class _PedidoState extends State<Pedido> {
                           Container(
                             height: 60,
                             width: 60,
-                            color:Colors.amber,
-                            child:Lottie.asset('lib/imagenes/anim_13.json'),),
+                            decoration: BoxDecoration(
+                               color:Colors.amber,
+                               borderRadius: BorderRadius.circular(15)
+                            ),
+                            child:Lottie.asset('lib/imagenes/anim_13.json'),
+
+                            ),
                           Text(" + S/.10 conviértelo en Pedido express",
                           style: TextStyle(fontSize: 20),),
                         ],
@@ -158,13 +170,14 @@ class _PedidoState extends State<Pedido> {
                       width: 180,
                       child: ElevatedButton(onPressed: (){},
                        child: Text("Express >>",
-                       style: TextStyle(fontSize: 25,color:const Color.fromARGB(255, 1, 31, 56)),),
+                       style: TextStyle(fontSize: 25,color:Color.fromARGB(255, 2, 78, 140)),),
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 219, 214, 214))
                       ),
                        ),
 
                     ),
+                    
                   
                   ],
                 ))));

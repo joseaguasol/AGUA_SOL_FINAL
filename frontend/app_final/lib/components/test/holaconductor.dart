@@ -66,9 +66,20 @@ class _HolaConductorState extends State<HolaConductor> {
                     ),
                     Container(
                       margin: const EdgeInsets.only(left: 20),
-                      child: const Text(
-                        "Bienvenid@",
-                        style: TextStyle(fontSize: 25),
+                      child: const Row(
+                        children: [
+                          Text(
+                            "Bienvenid@ a",
+                            style: TextStyle(fontSize: 25),
+                          ),
+                          Text(
+                              "Agua Sol",
+                              style: TextStyle(
+                                  color: const Color.fromARGB(255, 3, 42, 74),
+                                  fontFamily: 'Pacifico',
+                                  fontSize: 30),
+                            )
+                        ],
                       ),
                     ),
                     Container(
@@ -76,8 +87,11 @@ class _HolaConductorState extends State<HolaConductor> {
                       child: Row(
                         children: [
                           Text(
-                            "agradezco tu esfuerzo",
-                            style: TextStyle(fontSize: 18),
+                            "Valoro tu esfuerzo!",
+                            
+                            style: TextStyle(fontSize: 23,
+                            color: Color.fromARGB(255, 1, 54, 98),
+                            fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(
                             width: 20,
@@ -168,13 +182,11 @@ class _HolaConductorState extends State<HolaConductor> {
                           //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                                child: Text("Registra tu pedido con una foto!",style:TextStyle(fontSize: 20),)),
+                                child: Text("Aquí está tus pedidos!",style:TextStyle(fontSize: 20),)),
                             const SizedBox(
                               width: 20,
                             ),
-                            Container(
-                              child: Icon(Icons.photo_camera,color: const Color.fromARGB(255, 1, 58, 3),),
-                            ),
+                            
                             
                           ]),
                     ),
@@ -206,8 +218,7 @@ class _HolaConductorState extends State<HolaConductor> {
                                         style: ButtonStyle(
                                           backgroundColor:
                                               MaterialStateProperty.all(
-                                                  const Color.fromARGB(
-                                                      255, 0, 47, 86)),
+                                                  Color.fromARGB(255, 3, 74, 132)),
                                         ),
                                         child: Row(
                                           children: [
@@ -276,7 +287,7 @@ class _HolaConductorState extends State<HolaConductor> {
                             height: 60,
                             child: ElevatedButton(onPressed: (){},
                              style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 1, 53, 95))
+                              backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 2, 86, 155))
                              ),
                              child: Text("Si !",style:TextStyle(fontSize:20,color:Colors.white),)),
                           )

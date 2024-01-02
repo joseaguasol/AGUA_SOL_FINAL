@@ -1,11 +1,21 @@
 import { db_pool } from "../config.mjs";
+import { io } from '../index.mjs';
+import {Server} from "socket.io";
+
 
 const modelPedido = {
     createPedido:async (pedido) => {
         try{
-            const pedidos = await db_pool.one('INSERT INTO ventas.pedido (cliente_id,monto_total,fecha,direccion) VALUES ($1,$2,$3,$4) RETURNING *',
-            [pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.direccion]);
+
+           // const io = await app_sol.get('io');
+
+            const pedidos = await db_pool.one('INSERT INTO ventas.pedido (cliente_id,monto_total,fecha,tipo,estado) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+            [pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.tipo,pedido.estado]);
             
+           // const io = app_sol.get(io);
+            //EMITIR UN EVENTO
+            io.emit('nuevoPedido',pedidos)
+
             return pedidos
 
         }

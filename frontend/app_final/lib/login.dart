@@ -345,6 +345,7 @@ class _Login3State extends State<Login3>{
                                   print('UID: ${user.uid}');
                                   print('Nombre: ${user.displayName}');
                                   print('Correo Electrónico: ${user.email}');
+                                  print('${user.uid}');
                                   // Resto de tu código...
                                   navigateToBienvenido();
                                 } else {

@@ -1,6 +1,6 @@
 import { db_pool } from "../config.mjs";
 import { io } from '../index.mjs';
-import {Server} from "socket.io";
+
 
 
 const modelPedido = {

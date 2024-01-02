@@ -6,8 +6,8 @@ const modelUserCliente = {
             const usuario = await db_pool.one('INSERT INTO personal.usuario (rol_id,nickname, contrasena, email) VALUES ($1,$2,$3,$4) RETURNING *',
             [cliente.rol_id,cliente.nickname,cliente.contrasena,cliente.email]);
             
-            const clientes = await db_pool.one('INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sexo, direccion, dni, codigo, saldo_beneficios, direccion_empresa, suscripcion, ubicacion, RUC, nombre_empresa, zona_trabajo_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *',
-            [usuario.id, cliente.nombre, cliente.apellidos, cliente.fecha_nacimiento, cliente.sexo, cliente.direccion, cliente.dni, cliente.codigo, cliente.saldo_beneficios, cliente.direccion_empresa, cliente.suscripcion, cliente.ubicacion, cliente.RUC, cliente.nombre_empresa, cliente.zona_trabajo_id]);
+            const clientes = await db_pool.one('INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sexo, direccion, dni, codigo, saldo_beneficios, direccion_empresa, suscripcion, ubicacion, RUC, nombre_empresa,frecuencia, zona_trabajo_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *',
+            [usuario.id, cliente.nombre, cliente.apellidos, cliente.fecha_nacimiento, cliente.sexo, cliente.direccion, cliente.dni, cliente.codigo, cliente.saldo_beneficios, cliente.direccion_empresa, cliente.suscripcion, cliente.ubicacion, cliente.RUC, cliente.nombre_empresa,cliente.frecuencia, cliente.zona_trabajo_id]);
 
             return clientes
 

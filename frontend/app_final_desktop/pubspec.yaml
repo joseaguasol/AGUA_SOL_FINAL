@@ -44,6 +44,7 @@ dependencies:
   geocoding: ^2.1.1
   open_street_map_search_and_pick: ^0.1.1
   bitsdojo_window: ^0.1.6
+  socket_io_client: ^2.0.3+1
  
 
 dev_dependencies:

@@ -77,7 +77,7 @@ INSERT INTO ventas.ruta (conductor_id, administrador_id, empleado_id, multipunto
   
 -- Insertar registros en la tabla pedido
 INSERT INTO ventas.pedido (conductor_id, ruta_id, empleado_id, cliente_id, monto_total, fecha, tipo, estado) VALUES
-  (1, 1, 1, 1, 200, '2023-01-15 09:00:00','express','1');
+  (1, 1, 1, 1, 200, current_timestamp,'express','pendiente');
   
 
   

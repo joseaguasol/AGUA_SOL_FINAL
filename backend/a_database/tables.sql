@@ -135,7 +135,7 @@ create table ventas.pedido(
 	monto_total int not null,
 	fecha timestamp not null,
 	tipo varchar(20),
-	estado boolean
+	estado varchar(50) -- pendiente, en proceso, entregado
 );
 
 --Table: ventas.producto

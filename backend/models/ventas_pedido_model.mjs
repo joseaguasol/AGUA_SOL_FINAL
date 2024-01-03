@@ -33,7 +33,7 @@ const modelPedido = {
     },
     getPedido: async ()=> {
         try {
-            const pedidos = await db_pool.any('SELECT * FROM ventas.pedido');
+            const pedidos = await db_pool.any('SELECT id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido');
             return pedidos
 
         } catch (error) {

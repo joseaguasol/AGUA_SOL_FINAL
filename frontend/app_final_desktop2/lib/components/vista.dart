@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:app_final_desktop2/move/controls.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 // ... rest of the MyApp widget ...
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -75,7 +75,7 @@ class _ArmadoState extends State<Armado> {
     socket.disconnect();
     super.dispose();
   }
-
+/*
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,9 +94,9 @@ class _ArmadoState extends State<Armado> {
       ),
     );
   }
-}
+}*/
 
- /* @override
+  @override
   Widget build(BuildContext context) {
     final ancho = MediaQuery.of(context).size.width;
     final alto = MediaQuery.of(context).size.height;
@@ -104,21 +104,7 @@ class _ArmadoState extends State<Armado> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          WindowBorder(
-            color: Colors.white,
-            width: 1,
-            child: WindowTitleBarBox(
-              child: MoveWindow(
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // Barra de controles en la parte superior derecha
-                    WindowButtons(),
-                  ],
-                ),
-              ),
-            ),
-          ),
+         
           // AQUI EL CODIGO PRINCIPAL
           SafeArea(
             child: Padding(
@@ -348,5 +334,5 @@ class _ArmadoState extends State<Armado> {
         ],
       ),
     );
-  }*/
-
+  }
+}

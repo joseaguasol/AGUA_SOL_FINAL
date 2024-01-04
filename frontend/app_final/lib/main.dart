@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/diseño',
       routes: {
-        '/diseño':(context) =>Camara(),
+        '/diseño':(context) =>Maps(),
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
         '/c_bienvenido':(context) => BienvenidaConductor(),

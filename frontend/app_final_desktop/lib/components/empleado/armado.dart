@@ -1,13 +1,11 @@
-//import 'package:slidable_button/slidable_button.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
-import 'package:latlong2/latlong.dart';
-//import 'package:flutter/services.dart';
-//import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter_map/flutter_map.dart' as map;
 
 class Pedido {
   final int id;
@@ -31,20 +29,15 @@ class Pedido {
       this.seleccionado = false});
 }
 
-
-
-
-
 // PREGUNTAR SI DEBO MODIFICAR EL MODEL CONDUCTOR AÑADIENDO UN ATRIBUTO
-// ESTADO  O EN EL LOGIN PARA VER SI SE CONECTO EN TIEMPO REAL 
-class Conductor{
+// ESTADO  O EN EL LOGIN PARA VER SI SE CONECTO EN TIEMPO REAL
+class Conductor {
   final int id;
   final String nombres;
   final String apellidos;
   final String licencia;
   final String dni;
-  final String fecha;
-  
+  final String fecha_nacimiento;
 
   bool seleccionado; // Nuevo campo para rastrear la selección
 
@@ -54,7 +47,7 @@ class Conductor{
       required this.apellidos,
       required this.licencia,
       required this.dni,
-      required this.fecha,
+      required this.fecha_nacimiento,
       this.seleccionado = false});
 }
 
@@ -66,40 +59,80 @@ class Armado extends StatefulWidget {
 }
 
 class _ArmadoState extends State<Armado> {
-  late ScrollController _scrollController;
-  late ScrollController _scrollControllerAgendados;
-  late ScrollController _scrollControllerExpress;
+  LatLng currentLcocation = LatLng(0, 0);
+  late ScrollController _scrollController; // = ScrollController();
+  ScrollController _scrollControllerAgendados = ScrollController();
+  ScrollController _scrollControllerExpress = ScrollController();
+  ScrollController _scrollControllerSelection = ScrollController();
   late io.Socket socket;
   List<Pedido> hoypedidos = [];
   List<Pedido> hoyexpress = [];
   List<Pedido> agendados = [];
   List<Pedido> obtenerPedidoSeleccionado = [];
 
+  List<Conductor> obtenerConductor = [];
+  List<Conductor> conductores = [];
+
   DateTime now = DateTime.now();
 
-  // formattedDate = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
+  final List<LatLng> routePoints = [
+    LatLng(-16.4055657, -71.5719081),
+    LatLng(-16.4050152, -71.5705073),
+    LatLng(-16.4022842, -71.5651442),
+    LatLng(-16.4086712, -71.5579809),
+  ];
 
   var direccion = '';
   String apiPedidos = 'http://127.0.0.1:8004/api/pedido';
+  String apiConductores = 'http://127.0.0.1:8004/api/user_conductor';
   final TextEditingController _searchController = TextEditingController();
   //final TextEditingController _distrito = TextEditingController();
   //final TextEditingController _ubicacion = TextEditingController();
-  
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+
     connectToServer();
-    getPedidos();
+    //getPedidos();
+    //getConductores();
   }
 
-  void actualizarObtenidos(){
+  void actualizarObtenidos() {
     setState(() {
-      obtenerPedidoSeleccionado = [...hoypedidos,...hoyexpress,...agendados]
-      .where((element) => element.seleccionado).toList();
-
+      obtenerPedidoSeleccionado = [...hoypedidos, ...hoyexpress, ...agendados]
+          .where((element) => element.seleccionado)
+          .toList();
     });
+  }
+
+  // GET CONDUCTORES
+  Future<dynamic> getConductores() async {
+    print(">>>>> CONDUCTORES");
+    var res = await http.get(Uri.parse(apiConductores),
+        headers: {"Content-type": "application/json"});
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Conductor> tempConductor = data.map<Conductor>((mapa) {
+          return Conductor(
+              id: mapa['id'],
+              nombres: mapa['nombres'],
+              apellidos: mapa['apellidos'],
+              licencia: mapa['licencia'],
+              dni: mapa['dni'],
+              fecha_nacimiento: mapa['fecha_nacimiento']);
+        }).toList();
+
+        setState(() {
+          conductores = tempConductor;
+        });
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
   }
 
   // GET PEDIDOS
@@ -138,31 +171,40 @@ class _ArmadoState extends State<Armado> {
       throw Exception('Error en la solicitud: $e');
     }
   }
-
-
+  /**/
 
   void connectToServer() {
-    print("dentro de connecttoServer");
+    print("-----CONEXIÓN------");
     // Reemplaza la URL con la URL de tu servidor Socket.io
-    socket = io.io('http://127.0.0.1:8004', <String, dynamic>{
+
+    /*  socket = io.io('http://127.0.0.1:8004', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
+      'reconnect': true,
+      'reconnectionAttempts': 5,
+      'reconnectionDelay': 1000,
+    
+    });*/
+    socket = io.io('http://127.0.0.1:8004', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
       'reconnect': true,
       'reconnectionAttempts': 5,
       'reconnectionDelay': 1000,
     });
 
     socket.connect();
+
     socket.onConnect((_) {
-      print('Conexión establecida');
+      print('Conexión establecida: EMPLEADO');
     });
 
     socket.onDisconnect((_) {
-      print('Conexión desconectada');
+      print('Conexión desconectada: EMPLEADO');
     });
 
     // CREATE PEDIDO
-    socket.on('nuevoPedido', (data) {
+    /*  socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
       setState(() {
         DateTime fechaparseada = DateTime.parse(data['fecha'].toString());
@@ -171,34 +213,32 @@ class _ArmadoState extends State<Armado> {
         if (data['tipo'].toString() == 'normal' &&
             fechaparseada.year == now.year &&
             fechaparseada.month == now.month &&
-            fechaparseada.day == now.day)
-        {
+            fechaparseada.day == now.day) {
           Pedido nuevoHoy = Pedido(
-            id: data['id'],
-            cliente_id: data['cliente_id'],
-            cliente_nr_id:data['cliente_nr_id'],
-            monto_total: data['monto_total'],
-            fecha: data['fecha'],
-            tipo: data['tipo'],
-            estado: data['estado']);
-            // añadimos el objeto
-            hoypedidos.add(nuevoHoy);
+              id: data['id'],
+              cliente_id: data['cliente_id'],
+              cliente_nr_id: data['cliente_nr_id'],
+              monto_total: data['monto_total'],
+              fecha: data['fecha'],
+              tipo: data['tipo'],
+              estado: data['estado']);
+          // añadimos el objeto
+          hoypedidos.add(nuevoHoy);
         }
         // SI EL PEDIDO TIENE FECHA DE HOY Y ES EXPRESS
         if (data['tipo'].toString() == 'express' &&
             fechaparseada.year == now.year &&
             fechaparseada.month == now.month &&
-            fechaparseada.day == now.day)
-        {
+            fechaparseada.day == now.day) {
           Pedido nuevoExpress = Pedido(
-            id: data['id'],
-            cliente_id: data['cliente_id'],
-            cliente_nr_id:data['cliente_nr_id'],
-            monto_total: data['monto_total'],
-            fecha: data['fecha'],
-            tipo: data['tipo'],
-            estado: data['estado']);
-            //añadimos el objeto
+              id: data['id'],
+              cliente_id: data['cliente_id'],
+              cliente_nr_id: data['cliente_nr_id'],
+              monto_total: data['monto_total'],
+              fecha: data['fecha'],
+              tipo: data['tipo'],
+              estado: data['estado']);
+          //añadimos el objeto
           hoyexpress.add(nuevoExpress);
         }
       });
@@ -206,10 +246,18 @@ class _ArmadoState extends State<Armado> {
       // Desplaza automáticamente hacia el último elemento
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+        duration: Duration(milliseconds: 800),
+        curve: Curves.easeInOutQuart,
+      );
+
+      _scrollControllerExpress.animateTo(
+        _scrollControllerExpress.position.maxScrollExtent,
+        duration: Duration(milliseconds: 800),
+        curve: Curves.easeInOutQuart,
       );
     });
+
+    */
 
     socket.onConnectError((error) {
       print("error de conexion $error");
@@ -218,18 +266,42 @@ class _ArmadoState extends State<Armado> {
     socket.onError((error) {
       print("error de socket, $error");
     });
+
+    socket.on('testy', (data) {
+      print("CARRRR");
+    });
+
+    socket.on('enviandoCoordenadas', (data) {
+      print("Conductor transmite:");
+      print(data);
+      setState(() {
+        currentLcocation = LatLng(data['x'], data['y']);
+      });
+    });
   }
+
+  /* void dihola(){
+    print("hoaaaa");
+    print("s");
+    socket.on('car', (data) {
+      print("--------CARRITO ------");
+      setState(() {
+        
+        //LatLng
+        currentLcocation = LatLng(data['x'], data['y']);
+      });
+    });
+  }*/
 
   @override
   void dispose() {
     socket.disconnect();
+    socket.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
         // drawer: Drawer(),
         body: SafeArea(
@@ -280,7 +352,7 @@ class _ArmadoState extends State<Armado> {
                       print('selected: $value');
                     },
                   ),
-                  
+
                   // CONTENIDO
                   Expanded(
                     child: SingleChildScrollView(
@@ -340,8 +412,12 @@ class _ArmadoState extends State<Armado> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   //crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text("Agendados",style: TextStyle(fontSize: 20),),
-                                    TextField(controller: _searchController,
+                                    const Text(
+                                      "Agendados",
+                                      style: TextStyle(fontSize: 20),
+                                    ),
+                                    TextField(
+                                      controller: _searchController,
                                       onChanged: (value) {
                                         setState(
                                             () {}); // Actualiza el estado al cambiar el texto
@@ -360,7 +436,7 @@ class _ArmadoState extends State<Armado> {
                                       child: ListView.builder(
                                         reverse: true,
                                         scrollDirection: Axis.vertical,
-                                        // controller: _scrollControllerAgendados,
+                                        //controller: _scrollControllerAgendados,
                                         itemCount: agendados.length,
                                         itemBuilder: (context, index) {
                                           return Container(
@@ -372,19 +448,28 @@ class _ArmadoState extends State<Armado> {
                                                 color: Colors.white),
                                             child: ListTile(
                                               trailing: Checkbox(
-                                                value: agendados[index].seleccionado,
+                                                value: agendados[index]
+                                                    .seleccionado,
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    agendados[index].seleccionado = value ?? false;
-                                                    obtenerPedidoSeleccionado =agendados.where((element) => element.seleccionado).toList();
-                                                    if(value == true){
-                                                      agendados[index].estado = "en proceso";
+                                                    agendados[index]
+                                                            .seleccionado =
+                                                        value ?? false;
+                                                    obtenerPedidoSeleccionado =
+                                                        agendados
+                                                            .where((element) =>
+                                                                element
+                                                                    .seleccionado)
+                                                            .toList();
+                                                    if (value == true) {
+                                                      agendados[index].estado =
+                                                          "en proceso";
                                                       // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
                                                       // esto con la finalidad de que se maneje el estado en la database
                                                       actualizarObtenidos();
-                                                    }
-                                                    else{
-                                                      agendados[index].estado = 'pendiente';
+                                                    } else {
+                                                      agendados[index].estado =
+                                                          'pendiente';
                                                       // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
                                                       // esto con la finalidad de que se maneje el estado en la database
                                                       actualizarObtenidos();
@@ -402,12 +487,25 @@ class _ArmadoState extends State<Armado> {
                                                       'Cliente ID: ${agendados[index].cliente_id}'),
                                                   Text(
                                                       'Monto Total: ${agendados[index].monto_total}'),
-                                                  Text('Estado: ${agendados[index].estado}',
-                                                  style: TextStyle(color: agendados[index].estado == 'pendiente' ? Colors.red
-                                                    : agendados[index].estado == 'en proceso' ? Colors.blue
-                                                    : agendados[index].estado == 'entregado' ? Colors.green
-                                                    : Colors.black),),
-                                                  
+                                                  Text(
+                                                    'Estado: ${agendados[index].estado}',
+                                                    style: TextStyle(
+                                                        color: agendados[index]
+                                                                    .estado ==
+                                                                'pendiente'
+                                                            ? Colors.red
+                                                            : agendados[index]
+                                                                        .estado ==
+                                                                    'en proceso'
+                                                                ? Colors.blue
+                                                                : agendados[index]
+                                                                            .estado ==
+                                                                        'entregado'
+                                                                    ? Colors
+                                                                        .green
+                                                                    : Colors
+                                                                        .black),
+                                                  ),
                                                   Text(
                                                       'Fecha: ${agendados[index].fecha}'),
                                                 ],
@@ -481,19 +579,28 @@ class _ArmadoState extends State<Armado> {
                                                     BorderRadius.circular(20)),
                                             child: ListTile(
                                               trailing: Checkbox(
-                                                value: hoypedidos[index].seleccionado,
+                                                value: hoypedidos[index]
+                                                    .seleccionado,
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    hoypedidos[index].seleccionado = value ?? false;
-                                                    obtenerPedidoSeleccionado =hoypedidos.where((element) => element.seleccionado).toList();
-                                                    if(value == true){
-                                                      hoypedidos[index].estado = "en proceso";
+                                                    hoypedidos[index]
+                                                            .seleccionado =
+                                                        value ?? false;
+                                                    obtenerPedidoSeleccionado =
+                                                        hoypedidos
+                                                            .where((element) =>
+                                                                element
+                                                                    .seleccionado)
+                                                            .toList();
+                                                    if (value == true) {
+                                                      hoypedidos[index].estado =
+                                                          "en proceso";
                                                       // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
                                                       // esto con la finalidad de que se maneje el estado en la database
                                                       actualizarObtenidos();
-                                                    }
-                                                    else{
-                                                      hoypedidos[index].estado = 'pendiente';
+                                                    } else {
+                                                      hoypedidos[index].estado =
+                                                          'pendiente';
                                                       // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
                                                       // esto con la finalidad de que se maneje el estado en la database
                                                       actualizarObtenidos();
@@ -502,18 +609,38 @@ class _ArmadoState extends State<Armado> {
                                                 },
                                               ),
                                               title: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text('Pedido ID: ${hoypedidos[index].id}'),
-                                                  Text('Cliente ID: ${hoypedidos[index].cliente_id}'),
-                                                  Text('Monto Total: ${hoypedidos[index].monto_total}'),
-                                                  Text('Estado: ${hoypedidos[index].estado}',
-                                                  style: TextStyle(color:hoypedidos[index].estado== 'pendiente' ? Colors.red
-                                                  :hoypedidos[index].estado == 'en proceso' ? Colors.blue
-                                                  :hoypedidos[index].estado == 'entregado' ? Colors.green
-                                                  : Colors.black),),
-                                                  Text('Fecha: ${hoypedidos[index].fecha}'),
-                                                  Text('Tipo: ${hoypedidos[index].tipo}'),
+                                                  Text(
+                                                      'Pedido ID: ${hoypedidos[index].id}'),
+                                                  Text(
+                                                      'Cliente ID: ${hoypedidos[index].cliente_id}'),
+                                                  Text(
+                                                      'Monto Total: ${hoypedidos[index].monto_total}'),
+                                                  Text(
+                                                    'Estado: ${hoypedidos[index].estado}',
+                                                    style: TextStyle(
+                                                        color: hoypedidos[index]
+                                                                    .estado ==
+                                                                'pendiente'
+                                                            ? Colors.red
+                                                            : hoypedidos[index]
+                                                                        .estado ==
+                                                                    'en proceso'
+                                                                ? Colors.blue
+                                                                : hoypedidos[index]
+                                                                            .estado ==
+                                                                        'entregado'
+                                                                    ? Colors
+                                                                        .green
+                                                                    : Colors
+                                                                        .black),
+                                                  ),
+                                                  Text(
+                                                      'Fecha: ${hoypedidos[index].fecha}'),
+                                                  Text(
+                                                      'Tipo: ${hoypedidos[index].tipo}'),
                                                 ],
                                               ),
                                               /*trailing: Row(*/
@@ -573,6 +700,7 @@ class _ArmadoState extends State<Armado> {
                                     ),
                                     Expanded(
                                       child: ListView.builder(
+                                        controller: _scrollControllerExpress,
                                         reverse: true,
                                         itemCount: hoyexpress.length,
                                         itemBuilder: (context, index) {
@@ -585,19 +713,28 @@ class _ArmadoState extends State<Armado> {
                                                     BorderRadius.circular(20)),
                                             child: ListTile(
                                               trailing: Checkbox(
-                                                value: hoypedidos[index].seleccionado,
+                                                value: hoyexpress[index]
+                                                    .seleccionado,
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    hoyexpress[index].seleccionado = value ?? false;
-                                                    obtenerPedidoSeleccionado =hoyexpress.where((element) => element.seleccionado).toList();
-                                                    if(value == true){
-                                                      hoyexpress[index].estado = "en proceso";
+                                                    hoyexpress[index]
+                                                            .seleccionado =
+                                                        value ?? false;
+                                                    obtenerPedidoSeleccionado =
+                                                        hoyexpress
+                                                            .where((element) =>
+                                                                element
+                                                                    .seleccionado)
+                                                            .toList();
+                                                    if (value == true) {
+                                                      hoyexpress[index].estado =
+                                                          "en proceso";
                                                       // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
                                                       // esto con la finalidad de que se maneje el estado en la database
                                                       actualizarObtenidos();
-                                                    }
-                                                    else{
-                                                      hoyexpress[index].estado = 'pendiente';
+                                                    } else {
+                                                      hoyexpress[index].estado =
+                                                          'pendiente';
                                                       // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
                                                       // esto con la finalidad de que se maneje el estado en la database
                                                       actualizarObtenidos();
@@ -606,18 +743,38 @@ class _ArmadoState extends State<Armado> {
                                                 },
                                               ),
                                               title: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text('Pedido ID: ${hoyexpress[index].id}'),
-                                                  Text('Cliente ID: ${hoyexpress[index].cliente_id}'),
-                                                  Text('Monto Total: ${hoyexpress[index].monto_total}'),
-                                                  Text('Estado: ${hoyexpress[index].estado}',
-                                                  style: TextStyle(color:hoyexpress[index].estado== 'pendiente' ? Colors.red
-                                                  :hoyexpress[index].estado == 'en proceso' ? Colors.blue
-                                                  :hoyexpress[index].estado == 'entregado' ? Colors.green
-                                                  : Colors.black),),
-                                                  Text('Fecha: ${hoyexpress[index].fecha}'),
-                                                  Text('Tipo: ${hoyexpress[index].tipo}'),
+                                                  Text(
+                                                      'Pedido ID: ${hoyexpress[index].id}'),
+                                                  Text(
+                                                      'Cliente ID: ${hoyexpress[index].cliente_id}'),
+                                                  Text(
+                                                      'Monto Total: ${hoyexpress[index].monto_total}'),
+                                                  Text(
+                                                    'Estado: ${hoyexpress[index].estado}',
+                                                    style: TextStyle(
+                                                        color: hoyexpress[index]
+                                                                    .estado ==
+                                                                'pendiente'
+                                                            ? Colors.red
+                                                            : hoyexpress[index]
+                                                                        .estado ==
+                                                                    'en proceso'
+                                                                ? Colors.blue
+                                                                : hoyexpress[index]
+                                                                            .estado ==
+                                                                        'entregado'
+                                                                    ? Colors
+                                                                        .green
+                                                                    : Colors
+                                                                        .black),
+                                                  ),
+                                                  Text(
+                                                      'Fecha: ${hoyexpress[index].fecha}'),
+                                                  Text(
+                                                      'Tipo: ${hoyexpress[index].tipo}'),
                                                 ],
                                               ),
                                               /*trailing: Row(*/
@@ -673,7 +830,9 @@ class _ArmadoState extends State<Armado> {
                                           Expanded(
                                             child: ListView.builder(
                                               reverse: true,
-                                              itemCount: obtenerPedidoSeleccionado.length,
+                                              itemCount:
+                                                  obtenerPedidoSeleccionado
+                                                      .length,
                                               itemBuilder: (context, index) {
                                                 return Container(
                                                     margin:
@@ -692,13 +851,16 @@ class _ArmadoState extends State<Armado> {
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        Text("Pedido ID: ${obtenerPedidoSeleccionado[index].id} "),
+                                                        Text(
+                                                            "Pedido ID: ${obtenerPedidoSeleccionado[index].id} "),
                                                         Text(
                                                             "Cliente ID: ${obtenerPedidoSeleccionado[index].cliente_id}"),
                                                         Text(
                                                             "Monto Total: ${obtenerPedidoSeleccionado[index].monto_total}"),
-                                                        Text("Fecha: ${obtenerPedidoSeleccionado[index].fecha}"),
-                                                        Text("Tipo: ${obtenerPedidoSeleccionado[index].tipo}")
+                                                        Text(
+                                                            "Fecha: ${obtenerPedidoSeleccionado[index].fecha}"),
+                                                        Text(
+                                                            "Tipo: ${obtenerPedidoSeleccionado[index].tipo}")
                                                       ],
                                                     ));
                                               },
@@ -717,7 +879,7 @@ class _ArmadoState extends State<Armado> {
                                           borderRadius:
                                               BorderRadius.circular(20),
                                           color:
-                                              Color.fromARGB(255, 13, 153, 18)),
+                                              Color.fromARGB(255, 62, 205, 67)),
                                       child: Column(
                                         children: [
                                           Text(
@@ -731,30 +893,70 @@ class _ArmadoState extends State<Armado> {
                                           ),
                                           Expanded(
                                             child: ListView.builder(
-                                              itemCount: 10,
+                                              itemCount: conductores.length,
                                               itemBuilder: (context, index) {
                                                 return Container(
-                                                  margin: const EdgeInsets.only(
-                                                      top: 10),
-                                                  padding:
-                                                      const EdgeInsets.all(20),
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.yellow,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20)),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        "C1: Paul",
-                                                        style: TextStyle(
-                                                            fontSize: 20),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            top: 10),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            20),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.yellow,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20)),
+                                                    child: ListTile(
+                                                      title: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                              "C1:${conductores[index].id}"),
+                                                          Text(
+                                                              "Nombres:${conductores[index].nombres}"),
+                                                          Text(
+                                                              "Apellidos:${conductores[index].apellidos}"),
+                                                          Text(
+                                                              "Dni:${conductores[index].dni}")
+                                                        ],
                                                       ),
-                                                      Icon(Icons
-                                                          .account_circle_outlined)
-                                                    ],
-                                                  ),
-                                                );
+                                                      trailing: Checkbox(
+                                                        value:
+                                                            conductores[index]
+                                                                .seleccionado,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            conductores[index]
+                                                                    .seleccionado =
+                                                                value ?? false;
+                                                            obtenerConductor =
+                                                                conductores
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .seleccionado)
+                                                                    .toList();
+                                                            if (value == true) {
+                                                              /*conductores[index]
+                                                                      .estado =
+                                                                  "Go >>";*/
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              //actualizarObtenidos();
+                                                            } else {
+                                                              /* conductores[index]
+                                                                      .estado =
+                                                                  'Ready >>';*/
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              //actualizarObtenidos();
+                                                            }
+                                                          });
+                                                        },
+                                                      ),
+                                                    ));
                                               },
                                             ),
                                           )
@@ -859,368 +1061,66 @@ class _ArmadoState extends State<Armado> {
                               ),
                             ),
                           ),
-                          /* Container(
-                              decoration: const BoxDecoration(color: Colors.grey),
-                              margin: const EdgeInsets.only(top: 10, left: 20),
-                              child: Text(
-                                "CRUD rutas",
-                                style: TextStyle(fontSize: 30),
+
+                          // SUPERVISION
+                          Container(
+                            margin: const EdgeInsets.only(left: 20),
+                            child: Text("Supervisión de Rutas",
+                            style: TextStyle(fontSize: 25,fontWeight:FontWeight.w500),),
+                          ),
+                          
+                          Row(
+                            children: [
+                              Container(
+                                  width: 300, height: 400, color: Colors.grey),
+                              const SizedBox(
+                                width: 30,
                               ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(left: 20),
-                              padding: const EdgeInsets.all(5),
-                              color: Colors.red,
-                              // width: 700,
-                              height: 600,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                //mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(5),
-                                    width: 700,
-                                    height: 500,
-                                    color: Colors.yellow,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // LISTA DE CONDUCTORES
-                                        Text(
-                                          "Iniciemos las Rutas",
-                                          style: TextStyle(fontSize: 25),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(5),
-                                          height: 190,
-                                          width: 500,
-                                          color: Colors.purple,
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                height: 150,
-                                                width: 240,
-                                                color: Colors.blue,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                        "Conductores Disponibles"),
-                                                    Container(
-                                                      color: Colors.pink,
-                                                      height: 130,
-                                                      child: ListView.builder(
-                                                        itemCount: 19,
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          return Container(
-                                                            color: Colors.white,
-                                                            margin:
-                                                                const EdgeInsets
-                                                                    .only(top: 5),
-                                                            child: Row(
-                                                              children: [
-                                                                Text(
-                                                                    "C$index : Jhon"),
-                                                                Icon(Icons
-                                                                    .co_present_outlined),
-                                                              ],
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 150,
-                                                width: 240,
-                                                decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(15),
-                                                    image: DecorationImage(
-                                                        image: AssetImage(
-                                                            'lib/imagenes/ruteando.jpg'),
-                                                        fit: BoxFit.fill)),
-                      
-                                                //color: Colors.white,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                      
-                                        // RANGOS Y PUNTOS : PEDIDOS
-                                        Container(
-                                          height: 220,
-                                          width: 600,
-                                          color: Colors.brown,
-                                          padding: const EdgeInsets.all(15),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                height: 90,
-                                                color: Colors.cyan,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text("Rango de Pedidos"),
-                                                    const SizedBox(
-                                                      height: 15,
-                                                    ),
-                                                    Row(
-                                                      //mainAxisAlignment: MainAxisAlignment.start,
-                                                      //crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Del"),
-                                                        const SizedBox(
-                                                          width: 19,
-                                                        ),
-                                                        Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            // borderRadius: BorderRadius.circular(10),
-                                                            color: Colors
-                                                                .amberAccent,
-                                                          ),
-                                                          width: 60,
-                                                          height: 30,
-                                                          child: TextField(
-                                                            decoration:
-                                                                InputDecoration(
-                                                                    labelText:
-                                                                        'Px'),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 19,
-                                                        ),
-                                                        Text("al"),
-                                                        const SizedBox(
-                                                          width: 19,
-                                                        ),
-                                                        Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            //borderRadius: BorderRadius.circular(10),
-                                                            color: Colors
-                                                                .amberAccent,
-                                                          ),
-                                                          width: 60,
-                                                          height: 30,
-                                                          child: TextField(
-                                                            decoration:
-                                                                InputDecoration(
-                                                                    labelText:
-                                                                        'Py'),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 19,
-                                                        ),
-                                                        Text("asignado a"),
-                                                        const SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            // borderRadius: BorderRadius.circular(10),
-                                                            color: Colors
-                                                                .amberAccent,
-                                                          ),
-                                                          width: 60,
-                                                          height: 30,
-                                                          child: TextField(
-                                                            decoration:
-                                                                InputDecoration(
-                                                                    labelText:
-                                                                        'Cx'),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              // borderRadius: BorderRadius.circular(10),
-                                                              color: Colors
-                                                                  .amberAccent,
-                                                            ),
-                                                            width: 60,
-                                                            height: 50,
-                                                            child: Icon(
-                                                              Icons
-                                                                  .add_circle_outline_outlined,
-                                                              size: 50,
-                                                              color: Colors
-                                                                  .pinkAccent,
-                                                            )),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 100,
-                                                color: Colors.grey,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text("Puntos Pedidos"),
-                                                    const SizedBox(
-                                                      height: 15,
-                                                    ),
-                                                    Row(
-                                                      //mainAxisAlignment: MainAxisAlignment.start,
-                                                      //crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text("Del"),
-                                                        const SizedBox(
-                                                          width: 19,
-                                                        ),
-                                                        Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            // borderRadius: BorderRadius.circular(10),
-                                                            color: Colors
-                                                                .amberAccent,
-                                                          ),
-                                                          width: 160,
-                                                          height: 30,
-                                                          child: TextField(
-                                                            decoration:
-                                                                InputDecoration(
-                                                                    labelText:
-                                                                        'Px'),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 19,
-                                                        ),
-                                                        Text("asignado a"),
-                                                        const SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            // borderRadius: BorderRadius.circular(10),
-                                                            color: Colors
-                                                                .amberAccent,
-                                                          ),
-                                                          width: 60,
-                                                          height: 30,
-                                                          child: TextField(
-                                                            decoration:
-                                                                InputDecoration(
-                                                                    labelText:
-                                                                        'Cx'),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              // borderRadius: BorderRadius.circular(10),
-                                                              color: Colors
-                                                                  .amberAccent,
-                                                            ),
-                                                            width: 60,
-                                                            height: 60,
-                                                            child: IconButton(
-                                                                onPressed: () {},
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .add_circle_outline,
-                                                                  size: 50,
-                                                                ))),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                              Container(
+                                width: 800,
+                                height: 400,
+                                color: Colors.grey,
+                                child: FlutterMap(
+                                  options: MapOptions(
+                                    initialCenter:
+                                        LatLng(-16.4055657, -71.5719081),
+                                    initialZoom: 15.2,
+                                  ),
+                                  children: [
+                                    TileLayer(
+                                      urlTemplate:
+                                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                      userAgentPackageName: 'com.example.app',
+                                    ),
+                                    PolylineLayer(polylines: [
+                                      Polyline(
+                                          points: routePoints,
+                                          color: Colors.pinkAccent),
+                                    ]),
+                                    MarkerLayer(
+                                      markers: [
+                                        map.Marker(
+                                          point: currentLcocation,
+                                          width: 80,
+                                          height: 80,
+                                          child: Icon(
+                                            Icons.directions_car,
+                                            color: Colors.red,
+                                            size: 45.0,
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  const SizedBox(
-                                    width: 8,
-                                  ),
-                                  Container(
-                                    height: 150,
-                                    width: 240,
-                                    padding: const EdgeInsets.all(5),
-                                    color:
-                                        const Color.fromARGB(255, 33, 243, 159),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Rutas asignados"),
-                                        Container(
-                                          color: Colors.pink,
-                                          height: 130,
-                                          child: ListView.builder(
-                                            itemCount: 19,
-                                            itemBuilder: (context, index) {
-                                              return Container(
-                                                color: Colors.white,
-                                                margin:
-                                                const EdgeInsets.only(top: 5),
-                                                child: Row(
-                                                  children: [
-                                                    Text("R$index :P$index >> C$index Jhon"),
-                                                    IconButton(onPressed: (){},
-                                                     icon: Icon(Icons.delete)
-                                                    )
-                                                  ],
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10,),
-                            Container(
-                              margin: const EdgeInsets.only(left: 20),
-                              color: Colors.green,
-                              child: Text("Supervisión Rutas"),
-                      
-                            ),
-                            const SizedBox(height: 20,),
-                            Container(
-                              margin: const EdgeInsets.only(left: 20),
-                              height: 700,
-                              color:Colors.blueGrey,
-                              child: Text("s"),
-                            ),
-                      
-                          */
+                            ],
+                          ),
+
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Container(),
                         ],
                       ),
                     ),

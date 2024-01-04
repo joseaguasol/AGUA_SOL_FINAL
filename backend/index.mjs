@@ -14,6 +14,8 @@ import routerDetallePedido from "./routes/relaciones_detallepedido_route.mjs";
 
 /** INICIA LA APP Y EL PUERTO */
 const app_sol = express();
+//VARIABLE
+const ubicacion = 12.3;
 
 const server = http.createServer(app_sol);
 const io = new Server(server, {
@@ -24,12 +26,20 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
     console.log('Cliente conectado');
-    console.log("holaa")
+    console.log("holaa");
+
     socket.on('disconnect', () => {
         console.log('Cliente desconectado');
     });
 
-    // Puedes manejar eventos específicos aquí si es necesario
+    // RECIBIENDO 
+    socket.on('recibiendoUbicacion',(data) => {
+        console.log(data);
+        io.emit('enviandoCoordenadas',data);
+    });
+    
+    
+    
 });
 
 // Asigna el servidor HTTP a socket.io

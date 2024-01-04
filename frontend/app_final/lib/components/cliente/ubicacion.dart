@@ -4,6 +4,9 @@ import 'package:lottie/lottie.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'dart:async';
+import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class Maps extends StatefulWidget{
   const Maps({super.key});
@@ -13,9 +16,10 @@ class Maps extends StatefulWidget{
 }
 
 class _MapsState extends State<Maps>{
-
+  late io.Socket socket;
+  LatLng currentLcocation = LatLng(0, 0);
   final urlubi = "https://lottie.host/9fb0f0a1-28e8-495b-ab6f-298264567685/fIaQSM6s3n.json";
-  double latitud = 0.0;
+  /*double latitud = 0.0;
   double longitud = 0.0;
   String direccion = "";
 
@@ -50,15 +54,75 @@ class _MapsState extends State<Maps>{
       });
     }
     
-  }
+  }*/
 
+  void connectToServer() {
+  print("Dentro de connectToServer");
+  // Reemplaza la URL con la URL de tu servidor Socket.io
+  socket = io.io('http://10.0.2.2:8004',<String, dynamic>{
+    'transports': ['websocket'],
+    'autoConnect': false,
+    'reconnect': true,
+    'reconnectionAttempts': 5,
+    'reconnectionDelay': 1000,
+  });
+
+  socket.connect();
+
+  socket.onConnect((_) {
+    print('Conexión establecida: CONDUCTOR');
+    // Inicia la transmisión de ubicación cuando se conecta
+    iniciarTransmisionUbicacion();
+  });
+
+  socket.onDisconnect((_) {
+    print('Conexión desconectada: CONDUCTOR');
+  });
+
+ 
+
+  socket.onConnectError((error) {
+    print("Error de conexión $error");
+  });
+
+  socket.onError((error) {
+    print("Error de socket, $error");
+  });
+}
+ 
+void iniciarTransmisionUbicacion() {
+ // var geolocator = Geolocator();
+  final LocationSettings locationSettings = LocationSettings(
+    accuracy: LocationAccuracy.high,
+    distanceFilter: 10,
+  );
+
+  // Utiliza el stream de ubicación para enviar continuamente la ubicación
+ Geolocator.getPositionStream(
+    locationSettings: locationSettings
+  )
+  .listen((Position position) {
+    socket.emit('recibiendoUbicacion', {
+      
+      'x': position.latitude,
+      'y': position.longitude,
+    });
+  });
+}
+
+ @override
+  void initState() {
+    super.initState();
+    // Llama a la función de conexión al iniciar el widget
+    connectToServer();
+  }
   
   
   @override
   Widget build (BuildContext context){
 
    // final double screenHeight =MediaQuery.of(context).size.height;
-   void getCurrentLocation()async{
+  /* void getCurrentLocation()async{
     
     try {
     Position position = await determinarPosicion();
@@ -74,17 +138,17 @@ class _MapsState extends State<Maps>{
     print('---------------------------');
     print('$position.longitude');
 
-    Timer(Duration(seconds: 2), () {
+   /* Timer(Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Bienvenido()), // Reemplaza "OtraVista" con el nombre de tu nueva vista
       );
-    });
+    });*/
 
   } catch (e) {
     print('Error al obtener la ubicación actual: $e');
   }
-  }
+  }*/
 
     return Scaffold(
       body: SafeArea(
@@ -101,7 +165,9 @@ class _MapsState extends State<Maps>{
             child: Center(
               child:Column(
                 children:  [
-                  const SizedBox(height: 20,),
+                  Container(
+                    child: Text("ubi"),)
+                 /* const SizedBox(height: 20,),
                  Text("$latitud"),
                   const SizedBox(height: 2,),
                  Text("$longitud"),
@@ -124,7 +190,7 @@ class _MapsState extends State<Maps>{
                     backgroundColor: MaterialStateProperty.all(Colors.blue)
                    ),
                    child: Text("Ubicación",style:TextStyle(fontWeight:FontWeight.bold,fontSize:25,color:Colors.white)),
-                )
+                )*/
             ])),
           ),
         ),

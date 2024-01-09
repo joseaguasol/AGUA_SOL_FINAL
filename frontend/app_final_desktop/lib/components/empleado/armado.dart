@@ -1,3 +1,4 @@
+import 'package:app_final_desktop/components/empleado/login.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart';
@@ -95,8 +96,8 @@ class _ArmadoState extends State<Armado> {
     _scrollController = ScrollController();
 
     connectToServer();
-    //getPedidos();
-    //getConductores();
+    getPedidos();
+    getConductores();
   }
 
   void actualizarObtenidos() {
@@ -175,16 +176,7 @@ class _ArmadoState extends State<Armado> {
 
   void connectToServer() {
     print("-----CONEXIÓN------");
-    // Reemplaza la URL con la URL de tu servidor Socket.io
 
-    /*  socket = io.io('http://127.0.0.1:8004', <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'reconnect': true,
-      'reconnectionAttempts': 5,
-      'reconnectionDelay': 1000,
-    
-    });*/
     socket = io.io('http://127.0.0.1:8004', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
@@ -204,7 +196,7 @@ class _ArmadoState extends State<Armado> {
     });
 
     // CREATE PEDIDO
-    /*  socket.on('nuevoPedido', (data) {
+    socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
       setState(() {
         DateTime fechaparseada = DateTime.parse(data['fecha'].toString());
@@ -257,8 +249,6 @@ class _ArmadoState extends State<Armado> {
       );
     });
 
-    */
-
     socket.onConnectError((error) {
       print("error de conexion $error");
     });
@@ -280,19 +270,6 @@ class _ArmadoState extends State<Armado> {
     });
   }
 
-  /* void dihola(){
-    print("hoaaaa");
-    print("s");
-    socket.on('car', (data) {
-      print("--------CARRITO ------");
-      setState(() {
-        
-        //LatLng
-        currentLcocation = LatLng(data['x'], data['y']);
-      });
-    });
-  }*/
-
   @override
   void dispose() {
     socket.disconnect();
@@ -303,828 +280,986 @@ class _ArmadoState extends State<Armado> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // drawer: Drawer(),
+        backgroundColor: Color.fromARGB(255, 191, 195, 199),
         body: SafeArea(
-            child: Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Row(children: [
-                  NavigationRail(
-                    backgroundColor: Color.fromRGBO(2, 84, 151, 1),
-                    //extended: true,
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.water_drop,
-                            size: 50, color: Colors.white),
-                        label: Text(
-                          'Inicio',
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        ),
-                      ),
-                      //const SizedBox(height: 2,),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.assistant_direction_outlined,
-                            size: 50, color: Colors.white),
-                        label: Text(
-                          'Rutear',
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        ),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.sensor_occupied,
-                            size: 50, color: Colors.white),
-                        label: Text(
-                          'Supervisión',
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        ),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.my_library_books,
-                            size: 50, color: Colors.white),
-                        label: Text(
-                          'Informe',
-                          style: TextStyle(color: Colors.white, fontSize: 10),
-                        ),
-                      ),
-                    ],
-                    selectedIndex: 0,
-                    labelType: NavigationRailLabelType.none,
-                    onDestinationSelected: (value) {
-                      print('selected: $value');
-                    },
+          child: Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: SingleChildScrollView(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, left: 20),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    Login(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+                              var offsetAnimation = animation.drive(tween);
+                              return SlideTransition(
+                                  position: offsetAnimation, child: child);
+                            },
+                          ),
+                        );
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              Color.fromARGB(255, 33, 76, 110))),
+                      child: Text("<< Sistema de Pedido",
+                          style: TextStyle(color: Colors.white)),
+                    ),
                   ),
 
-                  // CONTENIDO
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("${MediaQuery.of(context).size.width}"),
-                          Text("${MediaQuery.of(context).size.height}"),
-
-                          // TITULOS
-                          Container(
-                            //color: Colors.grey,
-                            margin: const EdgeInsets.only(top: 0, left: 20),
-                            child: Row(
-                              children: [
-                                const Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Vamos a Rutear!",
-                                      style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w300),
-                                    ),
-                                    Text(
-                                      "Aquí está la info de los pedidos",
-                                      style: TextStyle(fontSize: 30),
-                                    )
-                                  ],
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(left: 50),
-                                  height: 150,
-                                  width: 150,
-                                  child:
-                                      Lottie.asset('lib/imagenes/rutita.json'),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // PEDIDOS
-                          Row(
-                            children: [
-                              // AGENDADOS
-                              Container(
-                                //color: Colors.amber,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.amber),
-                                margin: const EdgeInsets.only(left: 20),
-                                padding: const EdgeInsets.all(15),
-                                width: 500,
-                                height: 300,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Agendados",
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    TextField(
-                                      controller: _searchController,
-                                      onChanged: (value) {
-                                        setState(
-                                            () {}); // Actualiza el estado al cambiar el texto
-                                      },
-                                      decoration: InputDecoration(
-                                        labelText: 'Buscar',
-                                        suffixIcon: IconButton(
-                                          icon: const Icon(Icons.search),
-                                          onPressed: () {
-                                            // Puedes realizar acciones de búsqueda aquí si es necesario
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        reverse: true,
-                                        scrollDirection: Axis.vertical,
-                                        //controller: _scrollControllerAgendados,
-                                        itemCount: agendados.length,
-                                        itemBuilder: (context, index) {
-                                          return Container(
-                                            margin:
-                                                const EdgeInsets.only(top: 10),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                color: Colors.white),
-                                            child: ListTile(
-                                              trailing: Checkbox(
-                                                value: agendados[index]
-                                                    .seleccionado,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    agendados[index]
-                                                            .seleccionado =
-                                                        value ?? false;
-                                                    obtenerPedidoSeleccionado =
-                                                        agendados
-                                                            .where((element) =>
-                                                                element
-                                                                    .seleccionado)
-                                                            .toList();
-                                                    if (value == true) {
-                                                      agendados[index].estado =
-                                                          "en proceso";
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      actualizarObtenidos();
-                                                    } else {
-                                                      agendados[index].estado =
-                                                          'pendiente';
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      actualizarObtenidos();
-                                                    }
-                                                  });
-                                                },
-                                              ),
-                                              title: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      'Pedido ID: ${agendados[index].id}'),
-                                                  Text(
-                                                      'Cliente ID: ${agendados[index].cliente_id}'),
-                                                  Text(
-                                                      'Monto Total: ${agendados[index].monto_total}'),
-                                                  Text(
-                                                    'Estado: ${agendados[index].estado}',
-                                                    style: TextStyle(
-                                                        color: agendados[index]
-                                                                    .estado ==
-                                                                'pendiente'
-                                                            ? Colors.red
-                                                            : agendados[index]
-                                                                        .estado ==
-                                                                    'en proceso'
-                                                                ? Colors.blue
-                                                                : agendados[index]
-                                                                            .estado ==
-                                                                        'entregado'
-                                                                    ? Colors
-                                                                        .green
-                                                                    : Colors
-                                                                        .black),
-                                                  ),
-                                                  Text(
-                                                      'Fecha: ${agendados[index].fecha}'),
-                                                ],
-                                              ),
-                                              /*trailing: Row(*/
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // HOY
-                              Container(
-                                //color: Colors.amber,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 137, 108, 139)),
-                                margin: const EdgeInsets.only(left: 20),
-                                padding: const EdgeInsets.all(15),
-                                width: 500,
-                                height: 300,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Hoy",
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    ),
-                                    TextField(
-                                      controller: _searchController,
-                                      onChanged: (value) {
-                                        setState(
-                                            () {}); // Actualiza el estado al cambiar el texto
-                                      },
-                                      decoration: InputDecoration(
-                                        labelStyle: const TextStyle(
-                                            color: Colors.white),
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors
-                                                  .grey), // Cambia el color del cursor cuando el TextField no está enfocado
-                                        ),
-                                        labelText: 'Buscar cliente',
-                                        suffixIcon: IconButton(
-                                          icon: const Icon(
-                                            Icons.search,
-                                            color: Colors.white,
-                                          ),
-                                          onPressed: () {
-                                            // Puedes realizar acciones de búsqueda aquí si es necesario
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        reverse: true,
-                                        controller: _scrollController,
-                                        itemCount: hoypedidos.length,
-                                        itemBuilder: (context, index) {
-                                          return Container(
-                                            margin:
-                                                const EdgeInsets.only(top: 10),
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: ListTile(
-                                              trailing: Checkbox(
-                                                value: hoypedidos[index]
-                                                    .seleccionado,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    hoypedidos[index]
-                                                            .seleccionado =
-                                                        value ?? false;
-                                                    obtenerPedidoSeleccionado =
-                                                        hoypedidos
-                                                            .where((element) =>
-                                                                element
-                                                                    .seleccionado)
-                                                            .toList();
-                                                    if (value == true) {
-                                                      hoypedidos[index].estado =
-                                                          "en proceso";
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      actualizarObtenidos();
-                                                    } else {
-                                                      hoypedidos[index].estado =
-                                                          'pendiente';
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      actualizarObtenidos();
-                                                    }
-                                                  });
-                                                },
-                                              ),
-                                              title: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      'Pedido ID: ${hoypedidos[index].id}'),
-                                                  Text(
-                                                      'Cliente ID: ${hoypedidos[index].cliente_id}'),
-                                                  Text(
-                                                      'Monto Total: ${hoypedidos[index].monto_total}'),
-                                                  Text(
-                                                    'Estado: ${hoypedidos[index].estado}',
-                                                    style: TextStyle(
-                                                        color: hoypedidos[index]
-                                                                    .estado ==
-                                                                'pendiente'
-                                                            ? Colors.red
-                                                            : hoypedidos[index]
-                                                                        .estado ==
-                                                                    'en proceso'
-                                                                ? Colors.blue
-                                                                : hoypedidos[index]
-                                                                            .estado ==
-                                                                        'entregado'
-                                                                    ? Colors
-                                                                        .green
-                                                                    : Colors
-                                                                        .black),
-                                                  ),
-                                                  Text(
-                                                      'Fecha: ${hoypedidos[index].fecha}'),
-                                                  Text(
-                                                      'Tipo: ${hoypedidos[index].tipo}'),
-                                                ],
-                                              ),
-                                              /*trailing: Row(*/
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              // EXPRESS
-                              Container(
-                                //color: Colors.amber,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Color.fromARGB(255, 209, 94, 132),
-                                ),
-                                margin: const EdgeInsets.only(left: 20),
-                                padding: const EdgeInsets.all(15),
-                                width: 500,
-                                height: 300,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  //crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Express",
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    ),
-                                    TextField(
-                                      controller: _searchController,
-                                      onChanged: (value) {
-                                        setState(
-                                            () {}); // Actualiza el estado al cambiar el texto
-                                      },
-                                      decoration: InputDecoration(
-                                        labelStyle: const TextStyle(
-                                            color: Colors.white),
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors
-                                                  .grey), // Cambia el color del cursor cuando el TextField no está enfocado
-                                        ),
-                                        labelText: 'Buscar',
-                                        suffixIcon: IconButton(
-                                          icon: const Icon(
-                                            Icons.search,
-                                            color: Colors.white,
-                                          ),
-                                          onPressed: () {
-                                            // Puedes realizar acciones de búsqueda aquí si es necesario
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        controller: _scrollControllerExpress,
-                                        reverse: true,
-                                        itemCount: hoyexpress.length,
-                                        itemBuilder: (context, index) {
-                                          return Container(
-                                            margin:
-                                                const EdgeInsets.only(top: 10),
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: ListTile(
-                                              trailing: Checkbox(
-                                                value: hoyexpress[index]
-                                                    .seleccionado,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    hoyexpress[index]
-                                                            .seleccionado =
-                                                        value ?? false;
-                                                    obtenerPedidoSeleccionado =
-                                                        hoyexpress
-                                                            .where((element) =>
-                                                                element
-                                                                    .seleccionado)
-                                                            .toList();
-                                                    if (value == true) {
-                                                      hoyexpress[index].estado =
-                                                          "en proceso";
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      actualizarObtenidos();
-                                                    } else {
-                                                      hoyexpress[index].estado =
-                                                          'pendiente';
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      actualizarObtenidos();
-                                                    }
-                                                  });
-                                                },
-                                              ),
-                                              title: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      'Pedido ID: ${hoyexpress[index].id}'),
-                                                  Text(
-                                                      'Cliente ID: ${hoyexpress[index].cliente_id}'),
-                                                  Text(
-                                                      'Monto Total: ${hoyexpress[index].monto_total}'),
-                                                  Text(
-                                                    'Estado: ${hoyexpress[index].estado}',
-                                                    style: TextStyle(
-                                                        color: hoyexpress[index]
-                                                                    .estado ==
-                                                                'pendiente'
-                                                            ? Colors.red
-                                                            : hoyexpress[index]
-                                                                        .estado ==
-                                                                    'en proceso'
-                                                                ? Colors.blue
-                                                                : hoyexpress[index]
-                                                                            .estado ==
-                                                                        'entregado'
-                                                                    ? Colors
-                                                                        .green
-                                                                    : Colors
-                                                                        .black),
-                                                  ),
-                                                  Text(
-                                                      'Fecha: ${hoyexpress[index].fecha}'),
-                                                  Text(
-                                                      'Tipo: ${hoyexpress[index].tipo}'),
-                                                ],
-                                              ),
-                                              /*trailing: Row(*/
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // CREAR RUTA
-                          Container(
-                            margin: const EdgeInsets.only(top: 20, left: 20),
-                            child: Text(
-                              "Creando rutas",
+                  // TITULOS
+                  Container(
+                    //color: Colors.grey,
+                    margin: const EdgeInsets.only(top: 20, left: 20),
+                    child: Row(
+                      children: [
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Sistema de Ruteo",
                               style: TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.w500),
+                                  fontSize: 25, fontWeight: FontWeight.bold),
                             ),
-                          ),
-                          Container(
-                            // color: Colors.grey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(25),
-                                      margin: const EdgeInsets.only(
-                                          top: 20, left: 20),
-                                      height: 300,
-                                      width: 300,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color: Color.fromARGB(
-                                              255, 153, 13, 146)),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "Pedidos Seleccionados",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Expanded(
-                                            child: ListView.builder(
-                                              reverse: true,
-                                              itemCount:
-                                                  obtenerPedidoSeleccionado
-                                                      .length,
-                                              itemBuilder: (context, index) {
-                                                return Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            top: 10),
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            10),
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.yellow,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20)),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                            "Pedido ID: ${obtenerPedidoSeleccionado[index].id} "),
-                                                        Text(
-                                                            "Cliente ID: ${obtenerPedidoSeleccionado[index].cliente_id}"),
-                                                        Text(
-                                                            "Monto Total: ${obtenerPedidoSeleccionado[index].monto_total}"),
-                                                        Text(
-                                                            "Fecha: ${obtenerPedidoSeleccionado[index].fecha}"),
-                                                        Text(
-                                                            "Tipo: ${obtenerPedidoSeleccionado[index].tipo}")
-                                                      ],
-                                                    ));
-                                              },
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 500,
-                                      height: 300,
-                                      margin: const EdgeInsets.only(
-                                          top: 20, left: 20),
-                                      padding: const EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color:
-                                              Color.fromARGB(255, 62, 205, 67)),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "Conductores",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white),
-                                          ),
-                                          const SizedBox(
-                                            height: 19,
-                                          ),
-                                          Expanded(
-                                            child: ListView.builder(
-                                              itemCount: conductores.length,
-                                              itemBuilder: (context, index) {
-                                                return Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            top: 10),
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            20),
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.yellow,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20)),
-                                                    child: ListTile(
-                                                      title: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                              "C1:${conductores[index].id}"),
-                                                          Text(
-                                                              "Nombres:${conductores[index].nombres}"),
-                                                          Text(
-                                                              "Apellidos:${conductores[index].apellidos}"),
-                                                          Text(
-                                                              "Dni:${conductores[index].dni}")
-                                                        ],
-                                                      ),
-                                                      trailing: Checkbox(
-                                                        value:
-                                                            conductores[index]
-                                                                .seleccionado,
-                                                        onChanged: (value) {
-                                                          setState(() {
-                                                            conductores[index]
-                                                                    .seleccionado =
-                                                                value ?? false;
-                                                            obtenerConductor =
-                                                                conductores
-                                                                    .where((element) =>
-                                                                        element
-                                                                            .seleccionado)
-                                                                    .toList();
-                                                            if (value == true) {
-                                                              /*conductores[index]
-                                                                      .estado =
-                                                                  "Go >>";*/
-                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                              // esto con la finalidad de que se maneje el estado en la database
-                                                              //actualizarObtenidos();
-                                                            } else {
-                                                              /* conductores[index]
-                                                                      .estado =
-                                                                  'Ready >>';*/
-                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                              // esto con la finalidad de que se maneje el estado en la database
-                                                              //actualizarObtenidos();
-                                                            }
-                                                          });
-                                                        },
-                                                      ),
-                                                    ));
-                                              },
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.all(10),
-                                      margin: const EdgeInsets.only(
-                                          top: 20, left: 20),
-                                      width: 700,
-                                      height: 300,
-                                      decoration: BoxDecoration(
-                                        color:
-                                            Color.fromARGB(255, 13, 151, 153),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: FlutterMap(
-                                          options: MapOptions(
-                                            initialCenter: LatLng(
-                                                -16.4055657, -71.5719081),
-                                            initialZoom: 15.2,
-                                          ),
-                                          children: [
-                                            TileLayer(
-                                              urlTemplate:
-                                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                              userAgentPackageName:
-                                                  'com.example.app',
-                                            ),
-                                          ]),
-                                    ),
-                                  ],
-                                ),
-                                Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 20, left: 320),
-                                  height: 50,
-                                  width: 190,
-                                  // color: Colors.black,
-                                  child: ElevatedButton(
-                                    onPressed: () {},
-                                    child: Text(
-                                      "¿ Crear ?",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Color.fromARGB(255, 13, 90, 153)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                            Text(
+                              "Pedidos",
+                              style: TextStyle(fontSize: 20),
+                            )
+                          ],
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 50),
+                          height: 80,
+                          width: 80,
+                          child: Lottie.asset('lib/imagenes/hangloose.json'),
+                        ),
+                      ],
+                    ),
+                  ),
 
-                          // RESUMEN
-                          Container(
-                            margin: const EdgeInsets.only(left: 20, top: 20),
-                            child: Text(
-                              "Resumen de rutas",
-                              style: TextStyle(
-                                  fontSize: 25, fontWeight: FontWeight.w500),
+                  // PEDIDOS
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // AGENDADOS
+                      Container(
+                        //color: Colors.amber,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.amber),
+                        margin: const EdgeInsets.only(left: 20),
+                        padding: const EdgeInsets.all(15),
+                        width: 500,
+                        height: 300,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Agendados",
+                              style: TextStyle(fontSize: 20),
                             ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            margin: const EdgeInsets.only(
-                                left: 20, top: 20, bottom: 20),
-                            height: 300,
-                            width: 1380,
-                            decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 13, 90, 153),
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Expanded(
+                            TextField(
+                              controller: _searchController,
+                              onChanged: (value) {
+                                setState(
+                                    () {}); // Actualiza el estado al cambiar el texto
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Buscar',
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.search),
+                                  onPressed: () {
+                                    // Puedes realizar acciones de búsqueda aquí si es necesario
+                                  },
+                                ),
+                              ),
+                            ),
+                            Expanded(
                               child: ListView.builder(
-                                itemCount: 15,
+                                reverse: true,
+                                scrollDirection: Axis.vertical,
+                                //controller: _scrollControllerAgendados,
+                                itemCount: agendados.length,
                                 itemBuilder: (context, index) {
                                   return Container(
-                                    margin: const EdgeInsets.only(top: 20),
-                                    padding: const EdgeInsets.all(20),
+                                    margin: const EdgeInsets.only(top: 10),
                                     decoration: BoxDecoration(
-                                        color: Colors.yellow,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white),
                                     child: ListTile(
+                                      trailing: Checkbox(
+                                        value: agendados[index].seleccionado,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            agendados[index].seleccionado =
+                                                value ?? false;
+                                            obtenerPedidoSeleccionado =
+                                                agendados
+                                                    .where((element) =>
+                                                        element.seleccionado)
+                                                    .toList();
+                                            if (value == true) {
+                                              agendados[index].estado =
+                                                  "en proceso";
+                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                              // esto con la finalidad de que se maneje el estado en la database
+                                              actualizarObtenidos();
+                                            } else {
+                                              agendados[index].estado =
+                                                  'pendiente';
+                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                              // esto con la finalidad de que se maneje el estado en la database
+                                              actualizarObtenidos();
+                                            }
+                                          });
+                                        },
+                                      ),
                                       title: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "R:$index C:$index Pedidos:P$index P$index P$index",
-                                            style: TextStyle(fontSize: 20),
+                                              'Pedido ID: ${agendados[index].id}'),
+                                          Text(
+                                              'Cliente ID: ${agendados[index].cliente_id}'),
+                                          Text(
+                                              'Monto Total: ${agendados[index].monto_total}'),
+                                          Text(
+                                            'Estado: ${agendados[index].estado}',
+                                            style: TextStyle(
+                                                color: agendados[index]
+                                                            .estado ==
+                                                        'pendiente'
+                                                    ? Colors.red
+                                                    : agendados[index].estado ==
+                                                            'en proceso'
+                                                        ? Colors.blue
+                                                        : agendados[index]
+                                                                    .estado ==
+                                                                'entregado'
+                                                            ? Colors.green
+                                                            : Colors.black),
                                           ),
+                                          Text(
+                                              'Fecha: ${agendados[index].fecha}'),
                                         ],
                                       ),
+                                      /*trailing: Row(*/
                                     ),
                                   );
                                 },
                               ),
                             ),
-                          ),
-
-                          // SUPERVISION
-                          Container(
-                            margin: const EdgeInsets.only(left: 20),
-                            child: Text("Supervisión de Rutas",
-                            style: TextStyle(fontSize: 25,fontWeight:FontWeight.w500),),
-                          ),
-                          
-                          Row(
-                            children: [
-                              Container(
-                                  width: 300, height: 400, color: Colors.grey),
-                              const SizedBox(
-                                width: 30,
-                              ),
-                              Container(
-                                width: 800,
-                                height: 400,
-                                color: Colors.grey,
-                                child: FlutterMap(
-                                  options: MapOptions(
-                                    initialCenter:
-                                        LatLng(-16.4055657, -71.5719081),
-                                    initialZoom: 15.2,
+                          ],
+                        ),
+                      ),
+                      // HOY
+                      Container(
+                        //color: Colors.amber,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Color.fromARGB(255, 209, 94, 132)),
+                        margin: const EdgeInsets.only(left: 20),
+                        padding: const EdgeInsets.all(15),
+                        width: 500,
+                        height: 300,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Hoy",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                            TextField(
+                              controller: _searchController,
+                              onChanged: (value) {
+                                setState(
+                                    () {}); // Actualiza el estado al cambiar el texto
+                              },
+                              decoration: InputDecoration(
+                                labelStyle:
+                                    const TextStyle(color: Colors.white),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .grey), // Cambia el color del cursor cuando el TextField no está enfocado
+                                ),
+                                labelText: 'Buscar cliente',
+                                suffixIcon: IconButton(
+                                  icon: const Icon(
+                                    Icons.search,
+                                    color: Colors.white,
                                   ),
-                                  children: [
-                                    TileLayer(
-                                      urlTemplate:
-                                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                      userAgentPackageName: 'com.example.app',
-                                    ),
-                                    PolylineLayer(polylines: [
-                                      Polyline(
-                                          points: routePoints,
-                                          color: Colors.pinkAccent),
-                                    ]),
-                                    MarkerLayer(
-                                      markers: [
-                                        map.Marker(
-                                          point: currentLcocation,
-                                          width: 80,
-                                          height: 80,
-                                          child: Icon(
-                                            Icons.directions_car,
-                                            color: Colors.red,
-                                            size: 45.0,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                  onPressed: () {
+                                    // Puedes realizar acciones de búsqueda aquí si es necesario
+                                  },
                                 ),
                               ),
-                            ],
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                reverse: true,
+                                controller: _scrollController,
+                                itemCount: hoypedidos.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: ListTile(
+                                      trailing: Checkbox(
+                                        value: hoypedidos[index].seleccionado,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            hoypedidos[index].seleccionado =
+                                                value ?? false;
+                                            obtenerPedidoSeleccionado =
+                                                hoypedidos
+                                                    .where((element) =>
+                                                        element.seleccionado)
+                                                    .toList();
+                                            if (value == true) {
+                                              hoypedidos[index].estado =
+                                                  "en proceso";
+                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                              // esto con la finalidad de que se maneje el estado en la database
+                                              actualizarObtenidos();
+                                            } else {
+                                              hoypedidos[index].estado =
+                                                  'pendiente';
+                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                              // esto con la finalidad de que se maneje el estado en la database
+                                              actualizarObtenidos();
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              'Pedido ID: ${hoypedidos[index].id}'),
+                                          Text(
+                                              'Cliente ID: ${hoypedidos[index].cliente_id}'),
+                                          Text(
+                                              'Monto Total: ${hoypedidos[index].monto_total}'),
+                                          Text(
+                                            'Estado: ${hoypedidos[index].estado}',
+                                            style: TextStyle(
+                                                color: hoypedidos[index]
+                                                            .estado ==
+                                                        'pendiente'
+                                                    ? Colors.red
+                                                    : hoypedidos[index]
+                                                                .estado ==
+                                                            'en proceso'
+                                                        ? Colors.blue
+                                                        : hoypedidos[index]
+                                                                    .estado ==
+                                                                'entregado'
+                                                            ? Colors.green
+                                                            : Colors.black),
+                                          ),
+                                          Text(
+                                              'Fecha: ${hoypedidos[index].fecha}'),
+                                          Text(
+                                              'Tipo: ${hoypedidos[index].tipo}'),
+                                        ],
+                                      ),
+                                      /*trailing: Row(*/
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // EXPRESS
+                      Container(
+                        //color: Colors.amber,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Color.fromARGB(255, 209, 94, 132),
+                        ),
+                        margin: const EdgeInsets.only(left: 20),
+                        padding: const EdgeInsets.all(15),
+                        width: 500,
+                        height: 300,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          //crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Express",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                            TextField(
+                              controller: _searchController,
+                              onChanged: (value) {
+                                setState(
+                                    () {}); // Actualiza el estado al cambiar el texto
+                              },
+                              decoration: InputDecoration(
+                                labelStyle:
+                                    const TextStyle(color: Colors.white),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors
+                                          .grey), // Cambia el color del cursor cuando el TextField no está enfocado
+                                ),
+                                labelText: 'Buscar',
+                                suffixIcon: IconButton(
+                                  icon: const Icon(
+                                    Icons.search,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    // Puedes realizar acciones de búsqueda aquí si es necesario
+                                  },
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: ListView.builder(
+                                controller: _scrollControllerExpress,
+                                reverse: true,
+                                itemCount: hoyexpress.length,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    margin: const EdgeInsets.only(top: 10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: ListTile(
+                                      trailing: Checkbox(
+                                        value: hoyexpress[index].seleccionado,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            hoyexpress[index].seleccionado =
+                                                value ?? false;
+                                            obtenerPedidoSeleccionado =
+                                                hoyexpress
+                                                    .where((element) =>
+                                                        element.seleccionado)
+                                                    .toList();
+                                            if (value == true) {
+                                              hoyexpress[index].estado =
+                                                  "en proceso";
+                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                              // esto con la finalidad de que se maneje el estado en la database
+                                              actualizarObtenidos();
+                                            } else {
+                                              hoyexpress[index].estado =
+                                                  'pendiente';
+                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                              // esto con la finalidad de que se maneje el estado en la database
+                                              actualizarObtenidos();
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              'Pedido ID: ${hoyexpress[index].id}'),
+                                          Text(
+                                              'Cliente ID: ${hoyexpress[index].cliente_id}'),
+                                          Text(
+                                              'Monto Total: ${hoyexpress[index].monto_total}'),
+                                          Text(
+                                            'Estado: ${hoyexpress[index].estado}',
+                                            style: TextStyle(
+                                                color: hoyexpress[index]
+                                                            .estado ==
+                                                        'pendiente'
+                                                    ? Colors.red
+                                                    : hoyexpress[index]
+                                                                .estado ==
+                                                            'en proceso'
+                                                        ? Colors.blue
+                                                        : hoyexpress[index]
+                                                                    .estado ==
+                                                                'entregado'
+                                                            ? Colors.green
+                                                            : Colors.black),
+                                          ),
+                                          Text(
+                                              'Fecha: ${hoyexpress[index].fecha}'),
+                                          Text(
+                                              'Tipo: ${hoyexpress[index].tipo}'),
+                                        ],
+                                      ),
+                                      /*trailing: Row(*/
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Container(
+                        width: 250,
+                        height: 250,
+                        decoration: BoxDecoration(
+                            //color: Colors.amber,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Text(
+                            "Informe PDF",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 25,
+                                fontWeight: FontWeight.w400),
                           ),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.amber)),
+                        ),
+                      )
+                    ],
+                  ),
 
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(),
-                        ],
+                  // CREAR RUTA
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, left: 20),
+                    child: Text(
+                      "Creando rutas",
+                      style: TextStyle(
+                        fontSize: 20,
                       ),
                     ),
                   ),
-                ]))));
+                  Container(
+                    // color: Colors.grey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            // PEDIDOS
+                            Container(
+                              padding: const EdgeInsets.all(25),
+                              margin: const EdgeInsets.only(top: 20, left: 20),
+                              height: 300,
+                              width: 300,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color.fromARGB(255, 53, 102, 142),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Pedidos Seleccionados",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Expanded(
+                                    child: ListView.builder(
+                                      reverse: true,
+                                      itemCount:
+                                          obtenerPedidoSeleccionado.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                            margin:
+                                                const EdgeInsets.only(top: 10),
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Pedido ID: ${obtenerPedidoSeleccionado[index].id} ",
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                Text(
+                                                  "Cliente ID: ${obtenerPedidoSeleccionado[index].cliente_id}",
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                Text(
+                                                  "Monto Total: ${obtenerPedidoSeleccionado[index].monto_total}",
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                Text(
+                                                  "Fecha: ${obtenerPedidoSeleccionado[index].fecha}",
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                Text(
+                                                  "Tipo: ${obtenerPedidoSeleccionado[index].tipo}",
+                                                  style: const TextStyle(
+                                                      color: Colors.white),
+                                                )
+                                              ],
+                                            ));
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+
+                            // CONDUCTORES
+                            Container(
+                              width: 500,
+                              height: 300,
+                              margin: const EdgeInsets.only(top: 20, left: 20),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: const Color.fromARGB(255, 53, 102, 142),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Conductores",
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.white),
+                                  ),
+                                  const SizedBox(
+                                    height: 19,
+                                  ),
+                                  Expanded(
+                                    child: ListView.builder(
+                                      itemCount: conductores.length,
+                                      itemBuilder: (context, index) {
+                                        return Container(
+                                            margin:
+                                                const EdgeInsets.only(top: 10),
+                                            padding: const EdgeInsets.all(20),
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(20)),
+                                            child: ListTile(
+                                              title: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "C1:${conductores[index].id}",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "Nombres:${conductores[index].nombres}",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "Apellidos:${conductores[index].apellidos}",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "Dni:${conductores[index].dni}",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  )
+                                                ],
+                                              ),
+                                              trailing: Checkbox(
+                                                value: conductores[index]
+                                                    .seleccionado,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    conductores[index]
+                                                            .seleccionado =
+                                                        value ?? false;
+                                                    obtenerConductor = conductores
+                                                        .where((element) =>
+                                                            element
+                                                                .seleccionado)
+                                                        .toList();
+                                                    if (value == true) {
+                                                      /*conductores[index]
+                                                                      .estado =
+                                                                  "Go >>";*/
+                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                      // esto con la finalidad de que se maneje el estado en la database
+                                                      //actualizarObtenidos();
+                                                    } else {
+                                                      /* conductores[index]
+                                                                      .estado =
+                                                                  'Ready >>';*/
+                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                      // esto con la finalidad de que se maneje el estado en la database
+                                                      //actualizarObtenidos();
+                                                    }
+                                                  });
+                                                },
+                                              ),
+                                            ));
+                                      },
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+
+                            // MAPA
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.only(top: 20, left: 20),
+                              width: 700,
+                              height: 300,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 53, 102, 142),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Stack(
+                                children: [
+                                  FlutterMap(
+                                      options: MapOptions(
+                                        initialCenter:
+                                            LatLng(-16.4055657, -71.5719081),
+                                        initialZoom: 15.2,
+                                      ),
+                                      children: [
+                                        TileLayer(
+                                          urlTemplate:
+                                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                          userAgentPackageName:
+                                              'com.example.app',
+                                        ),
+                                      ]),
+                                  Positioned(
+                                    bottom:
+                                        16.0, // Ajusta la posición vertical según tus necesidades
+                                    right:
+                                        16.0, // Ajusta la posición horizontal según tus necesidades
+                                    child: FloatingActionButton(
+                                      onPressed: () {
+                                        // Acciones al hacer clic en el FloatingActionButton
+                                      },
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 53, 102, 142),
+                                      child: const Icon(Icons.my_location,
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // BOTON CREAR
+                            Container(
+                              margin: const EdgeInsets.only(left: 20),
+                              height: 250,
+                              width: 250,
+                              // color: Colors.black,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "Crear \u{2795}",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 35),
+                                ),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                    Color.fromARGB(255, 53, 102, 142),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // SUPERVISION
+                  Container(
+                    margin: const EdgeInsets.only(top: 20, left: 20, bottom: 0),
+                    child: Text(
+                      "Supervisión de Rutas",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+
+                  // RUTAS
+
+                  Container(
+                      margin: const EdgeInsets.only(left: 20, top: 20),
+                      height: 500,
+                      width: 1300,
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 53, 102, 142),
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Column(
+                        children: [
+                          Text("Ruta del conductor"),
+                          Expanded(
+                            child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                reverse: true,
+                                itemCount: 4,
+                                itemBuilder: (context, index) {
+                                  return Row(
+                                    children: [
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            top: 20, left: 20),
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              Color.fromARGB(255, 53, 102, 142),
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        width: 1100,
+                                        height: 400,
+                                        child: Stack(
+                                          children: [
+                                            FlutterMap(
+                                              options: MapOptions(
+                                                initialCenter: LatLng(
+                                                    -16.4055657, -71.5719081),
+                                                initialZoom: 15.2,
+                                              ),
+                                              children: [
+                                                TileLayer(
+                                                  urlTemplate:
+                                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                                  userAgentPackageName:
+                                                      'com.example.app',
+                                                ),
+                                                PolylineLayer(polylines: [
+                                                  Polyline(
+                                                      points: routePoints,
+                                                      color: Colors.pinkAccent),
+                                                ]),
+                                                MarkerLayer(
+                                                  markers: [
+                                                    map.Marker(
+                                                      point: currentLcocation,
+                                                      width: 80,
+                                                      height: 80,
+                                                      child: Icon(
+                                                        Icons.directions_car,
+                                                        color: Colors.red,
+                                                        size: 45.0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Positioned(
+                                              bottom:
+                                                  16.0, // Ajusta la posición vertical según tus necesidades
+                                              right:
+                                                  16.0, // Ajusta la posición horizontal según tus necesidades
+                                              child: FloatingActionButton(
+                                                onPressed: () {
+                                                  // Acciones al hacer clic en el FloatingActionButton
+                                                },
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 53, 102, 142),
+                                                child: const Icon(
+                                                    Icons.my_location,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 400,
+                                        height: 400,
+                                        margin: const EdgeInsets.only(
+                                            top: 20, left: 20),
+                                        decoration: BoxDecoration(
+                                            color: Color.fromARGB(
+                                                255, 142, 129, 53),
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                        child: Column(children: [
+                                          Container(
+                                            child: Text("s"),
+                                          )
+                                        ]),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ],
+                      )),
+                  const SizedBox(
+                    width: 30,
+                  ),
+
+                  /* Container(
+                    height: 500,
+                    width: 1500,
+                    // color:Colors.red,
+                    child: 
+                    Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                          reverse: true,
+                          itemCount: 4,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: const EdgeInsets.only(top: 20),
+                              width: 200,
+                              height: 200,
+                              color: const Color.fromARGB(255, 119, 118, 104),
+                              child: Text("s"),
+
+                            );/*Row(
+                              children: [
+                                Container(
+                                  margin:
+                                      const EdgeInsets.only(top: 20, left: 20),
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(255, 53, 102, 142),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  width: 1100,
+                                  height: 400,
+                                  child: Stack(
+                                    children: [
+                                      FlutterMap(
+                                        options: MapOptions(
+                                          initialCenter:
+                                              LatLng(-16.4055657, -71.5719081),
+                                          initialZoom: 15.2,
+                                        ),
+                                        children: [
+                                          TileLayer(
+                                            urlTemplate:
+                                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                            userAgentPackageName:
+                                                'com.example.app',
+                                          ),
+                                          PolylineLayer(polylines: [
+                                            Polyline(
+                                                points: routePoints,
+                                                color: Colors.pinkAccent),
+                                          ]),
+                                          MarkerLayer(
+                                            markers: [
+                                              map.Marker(
+                                                point: currentLcocation,
+                                                width: 80,
+                                                height: 80,
+                                                child: Icon(
+                                                  Icons.directions_car,
+                                                  color: Colors.red,
+                                                  size: 45.0,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Positioned(
+                                        bottom:
+                                            16.0, // Ajusta la posición vertical según tus necesidades
+                                        right:
+                                            16.0, // Ajusta la posición horizontal según tus necesidades
+                                        child: FloatingActionButton(
+                                          onPressed: () {
+                                            // Acciones al hacer clic en el FloatingActionButton
+                                          },
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 53, 102, 142),
+                                          child: const Icon(Icons.my_location,
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                Container(
+                                  width: 400,
+                                  height: 400,
+                                  margin:
+                                      const EdgeInsets.only(top: 20, left: 20),
+                                  decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 53, 102, 142),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Column(children: [Container()]),
+                                ),
+                              ],
+                            );*/
+                          }),
+                    ),
+                  ),
+*/
+
+                  // COPPYRIGHT
+                  Container(
+                    //Text('Click \u{2795} to add')
+                    margin: const EdgeInsets.all(30),
+                    child: Center(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            width: 50,
+                            height: 50,
+                            child: Image.asset('lib/imagenes/logo_sol.png')),
+                        Text(" v.1.0.0 ", style: TextStyle(fontSize: 20)),
+                        Text(
+                          "Copyright \u00a9 COTECSA - 2024",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w400),
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }

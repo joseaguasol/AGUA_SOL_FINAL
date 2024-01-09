@@ -1,3 +1,5 @@
+import 'package:app_final/components/test/hola.dart';
+import 'package:app_final/components/test/ubicacion.dart';
 import 'package:flutter/material.dart';
 
 class Login2 extends StatefulWidget {
@@ -10,11 +12,8 @@ class Login2 extends StatefulWidget {
 class _Login2State extends State<Login2> {
   @override
   Widget build(BuildContext context) {
-
-      final anchoActual = MediaQuery.of(context).size.width;
-      final largoActual = MediaQuery.of(context).size.height;
-
-
+    final anchoActual = MediaQuery.of(context).size.width;
+    final largoActual = MediaQuery.of(context).size.height;
 
     return Scaffold(
       body: SafeArea(
@@ -119,11 +118,16 @@ class _Login2State extends State<Login2> {
               Container(
                   width: 200,
                   height: MediaQuery.of(context).size.height < 480 ? 40 : 50,
-                  margin:const EdgeInsets.only(left: 20),
+                  margin: const EdgeInsets.only(left: 20),
                   child: ElevatedButton(
                       onPressed: () {
                         print(largoActual);
                         print(anchoActual);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Ubicacion()),
+                        );
                       },
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(
@@ -135,34 +139,62 @@ class _Login2State extends State<Login2> {
                             fontSize: 20,
                             fontWeight: FontWeight.w300),
                       ))),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Container(
                 width: 200,
                 //color:Colors.red,
                 margin: const EdgeInsets.only(left: 20),
                 child: const Center(child: Text("o continua con:")),
               ),
-              const SizedBox(height: 3,),
+              const SizedBox(
+                height: 3,
+              ),
               Container(
-               //color:Colors.red,
-                margin: const EdgeInsets.only(left: 20,right: 20),
-                width: 200,
-                child: Row(
-                  //crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(width: 50,),
-                  Image.asset('lib/imagenes/google.png',height: 40,),
-                  Expanded(child: Container(),),
-                  Image.asset('lib/imagenes/facebook.png',height: 40,),
-                  const SizedBox(width: 50,),
-                ],
-              )),
-              const SizedBox(height: 20,),
-              Container(
-                //color: Colors.red,
-                margin: const EdgeInsets.only(left: 20,right: 20),
-               // padding: EdgeInsets.all(20),
-                child: Image.asset('lib/imagenes/pareja.jpg'),
+                  //color:Colors.red,
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  width: 200,
+                  child: Row(
+                    //crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        width: 50,
+                      ),
+                      Image.asset(
+                        'lib/imagenes/google.png',
+                        height: 40,
+                      ),
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Image.asset(
+                        'lib/imagenes/facebook.png',
+                        height: 40,
+                      ),
+                      const SizedBox(
+                        width: 50,
+                      ),
+                    ],
+                  )),
+              const SizedBox(
+                height: 20,
+              ),
+              Center(
+                child: Container(
+                  //color: Colors.red,
+                  height: 300,
+                  width: 400,
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('lib/imagenes/bodegoncito.jpg'),
+                      fit: BoxFit.fitHeight
+                    )
+                  ),
+                  // padding: EdgeInsets.all(20),
+                 // child: Image.asset('lib/imagenes/BIDON7.png'),
+                ),
               ),
             ],
           ),

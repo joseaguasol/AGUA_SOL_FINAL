@@ -159,10 +159,10 @@ create table ventas.vehiculo(
 --Table: ventas.venta
 create table ventas.venta(
 	id serial primary key,
-	administrador_id int not null,
-	conductor_id int not null,
-	fecha timestamp not null,
-	foto varchar(200) not null
+	administrador_id int,
+	conductor_id int,
+	fecha timestamp,
+	foto varchar(200)
 );
 
 --Table: ventas.zona_trabajo

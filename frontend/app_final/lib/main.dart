@@ -12,6 +12,7 @@ import 'package:app_final/components/test/formulario.dart';
 import 'package:app_final/components/test/hola.dart';
 import 'package:app_final/components/test/holaconductor.dart';
 import 'package:app_final/components/test/pedido.dart';
+import 'package:app_final/components/test/presenta.dart';
 import 'package:app_final/components/test/promos.dart';
 import 'package:app_final/components/test/ubicacion.dart';
 import 'package:app_final/components/test/productos.dart';
@@ -59,7 +60,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/diseño',
       routes: {
-        '/diseño':(context) =>Maps(),
+        '/diseño':(context) =>Presenta(),
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
         '/c_bienvenido':(context) => BienvenidaConductor(),

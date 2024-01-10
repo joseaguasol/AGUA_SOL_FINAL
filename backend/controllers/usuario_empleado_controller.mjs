@@ -24,9 +24,7 @@ export const updateUserEmpleados = async (req,res)=>{
     try {
         const {userEmpleadoId} = req.params;
         const id = parseInt(userEmpleadoId,10);
-        console.log('el id',id);
         const data = req.body;
-        console.log('data',data)
         const updateUserEmpleado = await modelUserEmpleado.updateUserEmpleado(id,data);
         res.json(updateUserEmpleado);
     } catch (error) {

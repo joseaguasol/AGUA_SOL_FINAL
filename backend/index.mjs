@@ -4,6 +4,8 @@ import morgan from "morgan";
 import http from "http";
 import {Server} from "socket.io";
 import multer from 'multer';
+import routerVentasPromocion from "./routes/ventas_promocion_route.mjs";
+import routerProductoPromocion from "./routes/relacion_producto_promocion_route.mjs";
 import routerVentasPedido from "./routes/ventas_pedido_route.mjs";
 import routerUserConductor from "./routes/usuario_conductor_route.mjs";
 import routerUserEmpleado from "./routes/usuario_empleado_route.mjs";
@@ -61,7 +63,8 @@ app_sol.use('/api',routerLogin);
 app_sol.use('/api',routerVentasPedido);
 app_sol.use('/api',routerDetallePedido);
 app_sol.use('/api',routerVentasVenta);
-
+app_sol.use('/api',routerVentasPromocion);
+app_sol.use('/api',routerProductoPromocion);
 
 
 server.listen(port, ()=>{

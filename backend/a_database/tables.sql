@@ -148,6 +148,17 @@ create table ventas.producto(
 	foto varchar(200)
 );
 
+--Table: ventas.promos
+create table ventas.promocion(
+	id serial primary key,
+	nombre varchar(200) not null,
+	precio float not null,
+	descripcion varchar(200) not null,
+	fecha_inicio timestamp not null,
+	fecha_limite timestamp not null,
+	foto varchar(200)
+);
+
 -- Table: ventas.vehiculo
 create table ventas.vehiculo(
 	id serial primary key,
@@ -188,6 +199,14 @@ create table relaciones.detalle_pedido(
 	cantidad int not null
 );
 
+--Table: productos.pedido
+create table relaciones.producto_promocion(
+	id serial primary key,
+	promocion_id int not null,
+	producto_id int not null,
+	cantidad int not null
+);
+
 ---------------------------------
 -- CONSTRAINTS
 ---------------------------------
@@ -219,7 +238,7 @@ ALTER TABLE ventas.venta ADD CONSTRAINT fk_venta_conductor FOREIGN KEY (conducto
 
 -- COMPRA
 ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_producto FOREIGN KEY (producto_id) REFERENCES ventas.producto (id);
-ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_pedido FOREIGN KEY (pedido_id) REFERENCES ventas.pedido (id);
+ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_pedido FOREIGN KEY (pedido_id) REFERENCES ventas.pedido (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ROLES
 ALTER TABLE personal.usuario ADD CONSTRAINT fk_usuario_rol FOREIGN KEY (rol_id) REFERENCES relaciones.roles(id);

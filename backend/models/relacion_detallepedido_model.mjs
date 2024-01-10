@@ -1,55 +1,28 @@
-import modelProductoPromocion from "../models/relacion_detallepromocion_model.mjs";
+import { db_pool } from "../config.mjs";
 
-export const createProductoPromociones = async (req,res) => {
-    try {
-        const nuevaRelacion = req.body
-        const relacionCreada= await modelProductoPromocion.createProductoPromocion(nuevaRelacion);
-        
-        res.json(relacionCreada);
-    } catch (error) {
-        res.status(500).json({error:error.message});
+const modelDetallePedido = {
+    createDetallePedido: async (detalle) =>{
+        try {
+            console.log(".......modelo detalle_pedido   ");
+            // Obtener el último ID de pedido
+            const lastPedido = await db_pool.one('SELECT id FROM ventas.pedido WHERE cliente_id = $1 ORDER BY id DESC LIMIT 1', [detalle.cliente_id]);
 
-    }
-}
+            const detallepedido = await db_pool.one('INSERT INTO relaciones.detalle_pedido(pedido_id, producto_id, cantidad) VALUES($1, $2, $3) RETURNING *',
+                [lastPedido.id, detalle.producto_id, detalle.cantidad]
+            );
 
-
-export const getProductoPromociones =  async (req,res) => {
-    console.log("id llego")
-    try {
-        const getProductoPromociones = await modelProductoPromocion.getProductoPromocion();
-        res.json(getProductoPromociones)
-    } catch (error) {
-        res.status(500).json({erro:error.message})
-    }
-}
-
-
-export const deleteProductoPromociones = async (req,res) => {
-    console.log("id llego")
-    try {
-        const { relacionID } = req.params;
-        const id = parseInt(relacionID, 10);
-        const deleteProductoPromociones = await modelProductoPromocion.deleteProductoPromocion(id);
-
-        if (deleteProductoPromociones) {
-            res.json({ mensaje: 'La relacion producto promocion ha sido eliminada exitosamente' });
-        } else {
-            // Si rowCount no es 1, significa que no se encontró un cliente con ese ID
-            res.status(404).json({ error: 'No se encontró la ruta con el ID proporcionado' });
+            return detallepedido;
+        } catch (error) {
+            throw new Error(`Error query create: ${error}`);
         }
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    },
+    getDetallePedido: async () => {
+        try {
+            const pedidos = await db_pool.any('SELECT * FROM relaciones.detalle_pedido')
+            return pedidos
+        } catch (error) {
+            throw new Error(`Error query get: ${error}`);
+        }
     }
 }
-
-export const updateProductoPromociones = async (req,res)=>{
-    try {
-        const {relacionID} = req.params;
-        const id = parseInt(relacionID,10);
-        const data = req.body;
-        const updateProductoPromociones = await modelProductoPromocion.updateProductoPromocion(id,data);
-        res.json(updateProductoPromociones);
-    } catch (error) {
-        res.status(500).json({error:error.message});
-    }
-}
+export default modelDetallePedido;

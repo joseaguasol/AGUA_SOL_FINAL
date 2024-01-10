@@ -39,7 +39,31 @@ const modelPedido = {
         } catch (error) {
             throw new Error(`Error getting pedido: ${error}`)
         }
-    }
+    },
+
+    deletePedido: async (id) => {
+        try {
+            const result = await db_pool.result('DELETE FROM ventas.pedido WHERE ID = $1', [id]);
+            return result.rowCount === 1; // Devuelve true si se eliminó un registro, false si no se encontró el registro
+        } catch (error) {
+            throw new Error(`Error en la eliminación del pedido: ${error.message}`);
+        }
+    },
+    
+    updatePedido: async (id, pedido) => {
+
+        try {
+            const result = await db_pool.oneOrNone('UPDATE ventas.pedido SET ruta_id = $1, monto_total = $2, fecha = $3, estado = $4, tipo = $5 WHERE id = $6 RETURNING *',
+                [pedido.ruta_id,pedido.monto_total,pedido.fecha,pedido.estado,pedido.tipo,id]);
+
+            if (!result) {
+                throw new Error(`No se encontró un pedido con ID ${id}.`);
+            }
+            return { result }
+        } catch (error) {
+            throw new Error(`Error en la actualización del pedido: ${error.message}`);
+        }
+    },
 }
 
 export default modelPedido;

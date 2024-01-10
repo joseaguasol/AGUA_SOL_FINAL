@@ -1,4 +1,33 @@
+import 'package:app_final/components/test/hola.dart';
+import 'package:app_final/components/test/pedido.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:lottie/lottie.dart';
+
+
+class Producto {
+  
+  final String nombre;
+  final double precio;
+  final String descripcion;
+  
+  final String foto;
+  //String estado;
+
+  //bool seleccionado; // Nuevo campo para rastrear la selección
+
+  Producto(
+      {
+      required this.nombre,
+      required this.precio,
+      required this.descripcion,
+      
+      required this.foto
+      });
+      //this.seleccionado = false});
+}
 
 class Productos extends StatefulWidget {
   const Productos({super.key});
@@ -8,12 +37,59 @@ class Productos extends StatefulWidget {
 }
 
 class _ProductosState extends State<Productos> {
+
+  String apiProducts = 'http://10.0.2.2:8004/api/products';
+  List<Producto>listProducto = [];
+
+  @override
+  void initState(){
+    super.initState();
+    getProducts();
+  }
+
+  Future<dynamic>getProducts() async{
+    print("-------get products---------");
+    var res = await http.get(Uri.parse(apiProducts),
+    headers: {"Content-type":"application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Producto> tempProducto = data.map<Producto>((mapa) {
+          return Producto(
+              
+              nombre: mapa['nombre'],
+              precio:mapa['precio'].toDouble(),
+              descripcion: mapa['descripcion'],
+              foto:
+                  'http://10.0.2.2:8004/images/${mapa['foto'].replaceAll(r'\\', '/')}'
+          );
+        }).toList();
+
+        setState(() {
+          listProducto = tempProducto;
+          //conductores = tempConductor;
+        });
+        print("....lista productos");
+        print(listProducto);
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+
+
+  }
+
   @override
   Widget build(BuildContext context) {
     //final TabController _tabController = TabController(length: 2, vsync: this);
 
     return Scaffold(
     //  backgroundColor:Color.fromARGB(255, 65, 68, 67),
+        appBar: AppBar(
+          title: Text(""),
+        ),
         body: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -82,15 +158,16 @@ class _ProductosState extends State<Productos> {
                     const SizedBox(height: 25,),
                     Container(
                       margin: const EdgeInsets.only(left: 20,right: 20),
+                      padding:const EdgeInsets.all(6),
                       height: 400,
-                      padding: const EdgeInsets.all(5),
+                      
                       decoration: BoxDecoration(
                       //  color:Color.fromARGB(255, 246, 197, 255),
                         borderRadius: BorderRadius.circular(15),
                        border: Border.all(
-                          color: Color.fromARGB(255, 21, 168, 14),
+                          color: const Color.fromARGB(255, 21, 168, 14),
                                // color:Color.fromARGB(255, 68, 102, 132),
-                                width: 1.0
+                                width: 3.0
                          )
                       ),
 
@@ -98,25 +175,31 @@ class _ProductosState extends State<Productos> {
                       
                       child:ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: 10,
+                        itemCount: listProducto.length,
                         itemBuilder: (context,index){
-
+                          Producto producto = listProducto[index];
                           return Container(
                             margin: const EdgeInsets.only(left: 10),
                             height: 100,
                             width: 295,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color:Color.fromARGB(255, 75, 108, 134),
+                           // color: Color.fromARGB(255, 165, 165, 165)
+                              
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  margin: const EdgeInsets.only(left: 20) ,
+                                  margin:  const EdgeInsets.only(left: 20) ,
                                   height: 250,
                                   width: 160,
-                                  decoration: const BoxDecoration(
+                                  decoration:  BoxDecoration(
                                   //  color: Color.fromARGB(255, 217, 215, 215),
                                     image: DecorationImage(
-                                      image: AssetImage('lib/imagenes/BIDON7.png'),
-                                      fit: BoxFit.fill
+                                      image: NetworkImage(producto.foto),
+                                      fit: BoxFit.scaleDown
                                     )
                                   ),
                                 ),
@@ -128,9 +211,10 @@ class _ProductosState extends State<Productos> {
                                     //crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Text("Presentación de 700ml",
-                                      style:TextStyle(fontSize: 20,color:Color.fromARGB(255, 0, 51, 93)),),
-                                      const Text("S/.2",style: TextStyle(fontSize:25,color: Color.fromARGB(255, 0, 44, 81)),),
+                                       Text('Presentación ${producto.nombre}',
+                                      style:const TextStyle(fontSize: 15,color:Color.fromARGB(255, 255, 255, 255)),),
+                                      Text("S/.${producto.precio}  ${producto.descripcion} ",
+                                      style: const TextStyle(fontSize:20,color: Color.fromARGB(255, 248, 249, 250)),),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                        // mainAxisAlignment: MainAxisAlignment.start,
@@ -140,9 +224,11 @@ class _ProductosState extends State<Productos> {
                                         color: const Color.fromARGB(255, 0, 57, 103),
                                          icon:const Icon(Icons.remove_circle_outline,color: Colors.amber,),),
                                         const Text("10",
-                                        style: TextStyle(color: Color.fromARGB(255, 0, 50, 90),
+                                        style: TextStyle(color: Color.fromARGB(255, 236, 237, 238),
                                         fontSize:27),),
-                                        IconButton(onPressed: (){},
+                                        IconButton(onPressed: (){
+
+                                        },
                                         iconSize: 30,
                                         color: const Color.fromARGB(255, 0, 49, 89),
                                          icon:const Icon(Icons.add_circle_outline,color: Colors.purpleAccent,),),
@@ -153,10 +239,7 @@ class _ProductosState extends State<Productos> {
                                 Container(),
                               ],
                             ),
-                            decoration:const BoxDecoration(
-                            //color: Color.fromARGB(255, 165, 165, 165)
-                              
-                            ),
+                            
                           );
                         }
                         ) ,
@@ -182,13 +265,28 @@ class _ProductosState extends State<Productos> {
                     //const SizedBox(height: 20,),
                     Container(
                       margin: const EdgeInsets.only(left: 20),
-                      width: 100,
-                      height: 50,
-                      child:ElevatedButton(onPressed: (){},
-                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 3, 92, 165))
-                       ),
-                       child: const Text("Sí",style: TextStyle(fontWeight: FontWeight.w300,fontSize: 25,color: Colors.white),)),
+                      width: 200,
+                      height: 100,
+                      //color:Colors.grey,
+                      child:Row(
+                        children: [
+                          ElevatedButton(onPressed: (){
+                            print("si");
+                            Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Pedido()),
+                    );
+                          },
+                           style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 3, 92, 165))
+                           ),
+                           child: const Text("Sí",style: TextStyle(fontWeight: FontWeight.w300,fontSize: 25,color: Colors.white),)),
+                          Container(
+                            height: 100,
+                            width: 100,
+                            child: Lottie.asset('lib/imagenes/cajita.json'))
+                        ],
+                      ),
                     ),
 
                   ],

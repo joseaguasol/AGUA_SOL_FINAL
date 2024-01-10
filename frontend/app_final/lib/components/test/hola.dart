@@ -1,5 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
+
+class Producto {
+  final String nombre;
+  final double precio;
+  final String descripcion;
+
+  final String foto;
+
+  Producto(
+      {required this.nombre,
+      required this.precio,
+      required this.descripcion,
+      required this.foto});
+}
+
 class Hola extends StatefulWidget {
   const Hola({super.key});
 
@@ -8,50 +26,147 @@ class Hola extends StatefulWidget {
 }
 
 class _HolaState extends State<Hola> with TickerProviderStateMixin {
+  String apiProducts = 'http://10.0.2.2:8004/api/products';
+  List<Producto> listProducto = [];
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startAutoScroll();
+    });
+    getProducts();
+  }
+
+  bool _autoScrollInProgress = false;
+
+  void _startAutoScroll() {
+    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      if (!_autoScrollInProgress) {
+        _autoScroll();
+      }
+    });
+  }
+
+  void _autoScroll() async {
+    // Marcar que el desplazamiento automático está en progreso
+    _autoScrollInProgress = true;
+
+    print("Auto-scroll initiated");
+
+    // Espera 5 segundos antes de iniciar el desplazamiento automático
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (_scrollController.hasClients) {
+      print("ScrollController has clients");
+
+      // Desplázate hacia abajo
+      await _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(seconds: 5),
+        curve: Curves.easeInOut,
+      );
+
+      // Espera 4 segundos antes de volver a la posición inicial
+      await Future.delayed(const Duration(seconds: 4));
+
+      // Desplázate de nuevo hacia arriba
+      await _scrollController.animateTo(
+        0.0,
+        duration: const Duration(seconds: 5),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      print("ScrollController has no clients");
+    }
+
+    // Marcar que el desplazamiento automático ha terminado
+    _autoScrollInProgress = false;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<dynamic> getProducts() async {
+    print("-------get products---------");
+    var res = await http.get(
+      Uri.parse(apiProducts),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Producto> tempProducto = data.map<Producto>((mapa) {
+          return Producto(
+              nombre: mapa['nombre'],
+              precio: mapa['precio'].toDouble(),
+              descripcion: mapa['descripcion'],
+              foto:
+                  'http://10.0.2.2:8004/images/${mapa['foto'].replaceAll(r'\\', '/')}');
+        }).toList();
+
+        setState(() {
+          listProducto = tempProducto;
+          //conductores = tempConductor;
+        });
+        print("....lista productos");
+        print(listProducto[0].foto);
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final TabController _tabController = TabController(length: 2, vsync: this);
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
-      key: _scaffoldKey,
+        key: _scaffoldKey,
         drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 2, 68, 122),
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+          child: ListView(
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 2, 68, 122),
+                ),
+                child: const Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              title: Text('Opción 1'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Opción 2'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(
-              height: 200,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  //Navigator.pushReplacementNamed(context, '/loginsol');
+              ListTile(
+                title: Text('Opción 1'),
+                onTap: () {
+                  Navigator.pop(context);
                 },
-                child: Text("Salir")),
-          ],
+              ),
+              ListTile(
+                title: Text('Opción 2'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(
+                height: 200,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    //Navigator.pushReplacementNamed(context, '/loginsol');
+                  },
+                  child: Text("Salir")),
+            ],
+          ),
         ),
-      ),
         body: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -65,9 +180,11 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            IconButton(onPressed: (){
-                              _scaffoldKey.currentState?.openDrawer();
-                            }, icon: Icon(Icons.menu)),
+                            IconButton(
+                                onPressed: () {
+                                  _scaffoldKey.currentState?.openDrawer();
+                                },
+                                icon: Icon(Icons.menu)),
                             Container(
                               child: ClipRRect(
                                 child: Image.asset('lib/imagenes/chica.jpg'),
@@ -118,9 +235,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                       Container(
                         height: 70,
                         margin: const EdgeInsets.only(left: 20),
-                       // color: Colors.grey,
+                        // color: Colors.grey,
                         child: Row(
-                         // mainAxisAlignment: CrossAxisAlignment.center,
+                          // mainAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
                               "Disfruta!",
@@ -130,9 +247,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                   color: Color.fromARGB(255, 3, 34, 60)),
                             ),
                             Container(
-                              //height: 80,
-                             // width: 80,
-                              child: Lottie.asset('lib/imagenes/vasito.json'))
+                                //height: 80,
+                                // width: 80,
+                                child: Lottie.asset('lib/imagenes/vasito.json'))
                           ],
                         ),
                       ),
@@ -172,41 +289,57 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                           controller: _tabController,
                           children: [
                             ListView.builder(
+                                controller: _scrollController,
                                 scrollDirection: Axis.horizontal,
-                                itemCount: 10,
+                                itemCount: 5,
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(left: 10),
-                                    height: 300,
-                                    width: 300,
-                                    decoration: BoxDecoration(
-                                        color:
-                                            Color.fromARGB(255, 75, 108, 134),
-                                        borderRadius: BorderRadius.circular(50),
-                                        image: const DecorationImage(
-                                          image: AssetImage(
-                                              'lib/imagenes/bodegon.png'),
-                                          fit: BoxFit.cover,
-                                        )),
+                                  return GestureDetector(
+                                    onTap: (){
+                                      Navigator.pushNamed(
+                                          context, '/promos');
+                                    },
+                                    
+                                    child: Container(
+                                      margin: const EdgeInsets.only(left: 10),
+                                      height: 300,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color.fromARGB(255, 71, 106, 133),
+                                          borderRadius: BorderRadius.circular(50),
+                                          image: const DecorationImage(
+                                            image: AssetImage(
+                                                'lib/imagenes/bodegon.png'),
+                                            fit: BoxFit.cover,
+                                          )),
+                                    ),
                                   );
                                 }),
                             ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                itemCount: 10,
+                                controller: _scrollController,
+                                itemCount: listProducto.length,
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(left: 10),
-                                    height: 300,
-                                    width: 300,
-                                    decoration: BoxDecoration(
-                                        color:
-                                            Color.fromARGB(255, 75, 108, 134),
-                                        borderRadius: BorderRadius.circular(50),
-                                        image: const DecorationImage(
-                                          image: AssetImage(
-                                              'lib/imagenes/BIDON7.png'),
-                                          fit: BoxFit.cover,
-                                        )),
+                                  Producto producto = listProducto[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, '/productos');
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(left: 10),
+                                      height: 300,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color.fromARGB(255, 75, 108, 134),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          image: DecorationImage(
+                                            image: NetworkImage(producto.foto),
+                                            fit: BoxFit.cover,
+                                          )),
+                                    ),
                                   );
                                 }),
                           ],
@@ -224,25 +357,27 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                           children: [
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
-                              children:[
+                              children: [
                                 Container(
-                                  margin: const EdgeInsets.only(right: 90),
+                                    margin: const EdgeInsets.only(right: 90),
                                     child: const Text(
-                                  "Mejora!",
-                                  style: TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w300,
-                                      color: Color.fromARGB(255, 2, 46, 83)),
-                                )),
+                                      "Mejora!",
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w300,
+                                          color:
+                                              Color.fromARGB(255, 2, 46, 83)),
+                                    )),
                                 Container(
-                                  margin: const EdgeInsets.only(right:80),
-                                  //color:Colors.grey,
-                                    child:const Text(
-                                  "Tú vida",
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      color: Color.fromARGB(255, 3, 31, 54)),
-                                )),
+                                    margin: const EdgeInsets.only(right: 80),
+                                    //color:Colors.grey,
+                                    child: const Text(
+                                      "Tú vida",
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          color:
+                                              Color.fromARGB(255, 3, 31, 54)),
+                                    )),
                               ],
                             ),
                             const Text(
@@ -255,7 +390,6 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      
                       Container(
                         margin: const EdgeInsets.only(left: 20, right: 20),
                         child: Row(children: [
@@ -272,7 +406,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    Icons.attach_money_outlined, // Reemplaza con el icono que desees
+                                    Icons
+                                        .attach_money_outlined, // Reemplaza con el icono que desees
                                     size: 24,
                                     color: Colors.white,
                                   ),
@@ -326,6 +461,5 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         ]),
                       ),
                     ]))));
-        
   }
 }

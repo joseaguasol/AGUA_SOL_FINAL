@@ -1,3 +1,4 @@
+import 'package:app_final/components/test/pedido.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -14,6 +15,9 @@ class _PromosState extends State<Promos> {
     //final TabController _tabController = TabController(length: 2, vsync: this);
 
     return Scaffold(
+        appBar: AppBar(
+          title: Text(""),
+        ),
         body: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -24,7 +28,7 @@ class _PromosState extends State<Promos> {
                       Container(
                         //height: 0,
                        // color: Colors.grey,
-                        margin: const EdgeInsets.only(top:20,left: 20),
+                        margin: const EdgeInsets.only(top:10,left: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -76,10 +80,12 @@ class _PromosState extends State<Promos> {
                         ]),
                       ),
                       const SizedBox(height: 30,),
+
+                      // PROMOS PRODUCTO
                       Container(
                         margin: const EdgeInsets.only(left: 20),
                         decoration: BoxDecoration(
-                          color:Color.fromARGB(255, 255, 255, 255),
+                          color:Color.fromARGB(255, 51, 106, 99),
                           borderRadius: BorderRadius.circular(20)
                         ),
                         padding: const EdgeInsets.all(8),
@@ -107,6 +113,7 @@ class _PromosState extends State<Promos> {
                                     width: 390,
                                     height: 220,
                                     decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
                                       //color:Colors.orange,
                                       image: DecorationImage(
                                          image: AssetImage('lib/imagenes/bodegoncito.jpg'),
@@ -126,10 +133,10 @@ class _PromosState extends State<Promos> {
 
                                         Text("Llévate la promo 3 x S/.20",
                                         style: TextStyle(fontSize:20,
-                                        color:const Color.fromARGB(255, 2, 79, 141))),
+                                        color:Color.fromARGB(255, 255, 255, 255))),
                                         Text("Válido por 1 mes",
                                         style: TextStyle(fontSize:20,
-                                        color:const Color.fromARGB(255, 0, 89, 161))),
+                                        color:Color.fromARGB(255, 255, 255, 255))),
                                         const SizedBox(height: 5,),
                                         Container(
                                           height: 50,
@@ -142,7 +149,7 @@ class _PromosState extends State<Promos> {
                                               color:Colors.amber,
                                               icon: Icon(Icons.remove_circle_outline)),
                                               Text(" 1 ",
-                                              style: TextStyle(color:const Color.fromARGB(255, 0, 82, 149),
+                                              style: TextStyle(color:Color.fromARGB(255, 255, 255, 255),
                                               fontSize: 30),),
                                               IconButton(onPressed: (){},
                                                 iconSize: 40,
@@ -185,11 +192,17 @@ class _PromosState extends State<Promos> {
                         Container(
                           height: 50,
                           width: 150,
-                          child: ElevatedButton(onPressed:(){},
+                          child: ElevatedButton(onPressed:(){
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Pedido()),
+                          );
+                          },
                            child: Text("Si !",style: TextStyle(
                             fontSize:20,color:Colors.white),),
                            style:ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 2, 91, 164))
+                            backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 48, 107, 100),)
                            )),
                         ),
                          const SizedBox(width: 20,),

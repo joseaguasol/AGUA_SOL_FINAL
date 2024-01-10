@@ -3,7 +3,7 @@ import { db_pool } from "../config.mjs";
 const modelProduct = {
     getProduct:async () => {
         try{
-            const product = await db_pool.any('select * from ventas.producto');
+            const product = await db_pool.any('select nombre,precio,descripcion,foto from ventas.producto');
             return product;
         }
         catch(e){

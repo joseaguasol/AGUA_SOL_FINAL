@@ -1,6 +1,8 @@
 import 'package:app_final/components/test/hola.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Ubicacion extends StatefulWidget {
   const Ubicacion({super.key});
@@ -11,7 +13,17 @@ class Ubicacion extends StatefulWidget {
 
 class _UbicacionState extends State<Ubicacion> {
   bool _isloading = false;
+  String apiCliente = '';
 
+  // UPDATE UBICACIÓN
+  Future<dynamic>updateLocation(ubicacion)async{
+    await http.put(Uri.parse(apiCliente),
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "ubicacion":ubicacion.toString()
+    }));}
+
+  // GET UBICACIÓN
   Future<void> currentLocation() async {
     var location = new Location();
 
@@ -50,7 +62,8 @@ class _UbicacionState extends State<Ubicacion> {
     // Obtener la ubicación
     try {
       _locationData = await location.getLocation();
-
+      //updateLocation(_locationData);
+      
       print("----ubicación--");
       print(_locationData);
       // Aquí puedes utilizar la ubicación obtenida (_locationData)
@@ -60,9 +73,32 @@ class _UbicacionState extends State<Ubicacion> {
     } finally {
       setState(() {
         _isloading = false;
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const Hola()),
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Ubicación'
+              ,style: TextStyle(fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 4, 80, 143)),),
+              content:const Text('Gracias por compartir tu ubicación!',
+              style: TextStyle(fontSize:20,fontWeight: FontWeight.w600),),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cierra el AlertDialog
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Hola()),
+                    );
+                  },
+                  child: const Text('OK',
+                  style: TextStyle(fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                  color: Color.fromARGB(255, 13, 58, 94)),),
+                ),
+              ],
+            );
+          },
         );
       });
     }
@@ -134,10 +170,12 @@ class _UbicacionState extends State<Ubicacion> {
                 child: ElevatedButton(
                   onPressed: () {
                     currentLocation();
+                  
                   },
                   child: _isloading
-                      ? CircularProgressIndicator()
-                      : Text(
+                      ?   
+                      CircularProgressIndicator()
+                      : const Text(
                           ">> Aquí",
                           style: TextStyle(
                               color: Colors.white,

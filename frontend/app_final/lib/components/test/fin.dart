@@ -1,4 +1,6 @@
+import 'package:app_final/components/test/hola.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 
 class Fin extends StatefulWidget {
@@ -51,7 +53,7 @@ class _FinState extends State<Fin> {
                               height: 100,
                               width: 100,
                               
-                              child: Lottie.asset('lib/imagenes/party.json'))
+                              child: Lottie.asset('lib/imagenes/arboles.json'))
                         ],
                       ),
                     ),
@@ -61,7 +63,7 @@ class _FinState extends State<Fin> {
                       //color: Colors.grey,
                       width: 100,
                       height: 150,
-                      child: Image.asset('lib/imagenes/logo_sol_tiny.png'),
+                      child: Image.asset('lib/imagenes/logo_sol_tiny.png').animate().fade(delay:1500.ms ).then().shake(),
                     ),
                     const SizedBox(height: 20,),
 
@@ -70,7 +72,12 @@ class _FinState extends State<Fin> {
                       height: 60,
                       //color:Colors.grey,
                       width: 140,
-                      child: ElevatedButton(onPressed: (){},
+                      child: ElevatedButton(onPressed: (){
+                        Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Hola()),
+                    );
+                      },
                        child: Text("<< Menú",
                        style: TextStyle(fontSize: 20,color:Colors.white),),
                       style: ButtonStyle(

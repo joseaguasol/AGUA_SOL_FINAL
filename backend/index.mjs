@@ -3,6 +3,11 @@ import cors from 'cors';
 import morgan from "morgan";
 import http from "http";
 import {Server} from "socket.io";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+
 import multer from 'multer';
 import routerVentasPedido from "./routes/ventas_pedido_route.mjs";
 import routerUserConductor from "./routes/usuario_conductor_route.mjs";
@@ -41,6 +46,8 @@ io.on('connection', (socket) => {
     
 });
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const port = 8004;
 //app_sol.use(multer())
@@ -49,7 +56,9 @@ app_sol.use(express.json());
 app_sol.use(morgan('combined'))
 
 
+// SERVIR IMAGENES
 
+app_sol.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 
 /** CONFIGURAMOS LAS RUTAS */
 app_sol.use('/api',routerUserAdmin);

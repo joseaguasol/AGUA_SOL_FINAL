@@ -60,18 +60,18 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/diseño',
       routes: {
-        '/diseño':(context) =>Presenta(),
+        '/diseño':(context) =>Ubicacion(),
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
         '/c_bienvenido':(context) => BienvenidaConductor(),
         '/presentacion':(context) => Presentacion(),
         '/programacion':(context) => Programacion(),
-        '/promociones':(context) => Promocion(),
+        
         '/armadoruta':(context) => ArmadoRuta(),
-        //'/empleado_ruta':(context) => Programacion(),
+        '/promos':(context) => Promos(),
         '/loginsol':(context)=> const Login3(),
         '/bienvenido':(context)=> const Bienvenido(),
-        //'/productos':(context) => const Productos(),
+        '/productos':(context) => const Productos(),
         '/maps':(context) => const Maps(),
 
       },

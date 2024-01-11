@@ -1,22 +1,37 @@
 import 'package:app_final/components/test/fin.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:app_final/components/test/productos.dart';
 
 class Pedido extends StatefulWidget {
-  const Pedido({super.key});
+
+  // ATRIBUTOS DE LA CLASE - datos inmutables con FINAL
+  final List<Producto> seleccionados;
+  final double total;
+
+  const Pedido({
+    Key? key,
+    required this.seleccionados,
+    required this.total,
+  }) : super(key: key);
 
   @override
   State<Pedido> createState() => _PedidoState();
 }
 
 class _PedidoState extends State<Pedido> {
+
+  double express = 4.0;
+  double totalVenta = 0.0;
+
+
   @override
   Widget build(BuildContext context) {
     //final TabController _tabController = TabController(length: 2, vsync: this);
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(""),
+          title: const Text(""),
         ),
         body: SafeArea(
             child: Padding(
@@ -111,25 +126,28 @@ class _PedidoState extends State<Pedido> {
                               width: 4,
                               color: Color.fromARGB(255, 218, 222, 3))),
                       child: ListView.builder(
-                          itemCount: 8,
+                          itemCount: widget.seleccionados.length,
                           itemBuilder: (context, index) {
                             return Container(
                               margin: const EdgeInsets.only(left: 20),
-                              child: const Row(
+                              padding: const EdgeInsets.all(10),
+                              child:  Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                //mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.water_drop_outlined,
                                     color: Color.fromARGB(255, 2, 77, 138),
                                     size: 40,
                                   ),
                                   const SizedBox(
-                                    width: 50,
+                                    width: 10,
                                   ),
                                   Text(
-                                    "Bidón 20L cantidad: 3",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: const Color.fromARGB(
+                                    "Producto:${widget.seleccionados[index].nombre}-${widget.seleccionados[index].descripcion}",
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color:  Color.fromARGB(
                                             255, 1, 75, 135)),
                                   ),
                                 ],
@@ -145,7 +163,7 @@ class _PedidoState extends State<Pedido> {
                       //color:Colors.grey,
                       height: 50,
                       child: Text(
-                        "El total es de: S/.200.00",
+                        "El total es de: S/.${widget.total}",
                         style: TextStyle(
                             color: Color.fromARGB(255, 0, 70, 123),
                             fontSize: 28,
@@ -205,7 +223,7 @@ class _PedidoState extends State<Pedido> {
                             child: Lottie.asset('lib/imagenes/anim_13.json'),
                           ),
                           Text(
-                            " + S/.10 conviértelo en Pedido express",
+                            " + S/.4.0 conviértelo en Pedido express",
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -221,6 +239,11 @@ class _PedidoState extends State<Pedido> {
                       width: 180,
                       child: ElevatedButton(
                         onPressed: () {
+                          setState(() {
+                            totalVenta = widget.total + express;
+                          });
+                          
+                          print(totalVenta);
                           Navigator.push(
                             context,
                             MaterialPageRoute(

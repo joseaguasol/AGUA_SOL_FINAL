@@ -40,7 +40,7 @@ class _ProductosState extends State<Productos> {
   int cantidadP = 0;
   bool almenosUno = false;
   List<Producto> productosContabilizados = [];
-  List<Producto> newproduct = [];
+ 
 
   @override
   void initState() {
@@ -97,10 +97,29 @@ class _ProductosState extends State<Productos> {
           listProducto.where((producto) => producto.cantidad > 0).toList();
       print("${productosContabilizados.isEmpty} <--isEmpty?");
       almenosUno = productosContabilizados.isNotEmpty;
+
+      print("PContabilizados: ${productosContabilizados}");
     });
+  }
+
+  double obtenerTotal() {
+    double stotal = 0;
+
+    productosContabilizados =
+        listProducto.where((producto) => producto.cantidad > 0).toList();
+
+    for (var producto in productosContabilizados) {
+      print("Cantidad: ${producto.cantidad}, Precio: ${producto.precio}");
+      stotal += producto.cantidad * producto.precio;
+    }
+
+    print("Total: $stotal");
+
+    return stotal;
   }
   @override
   Widget build(BuildContext context) {
+    double total = obtenerTotal();
     //final TabController _tabController = TabController(length: 2, vsync: this);
 
     return Scaffold(
@@ -253,7 +272,7 @@ class _ProductosState extends State<Productos> {
                                                 setState(() {
                                                // cantidadP = producto.cantidad++;
                                                disminuir(index);
-                                               print("${cantidadP}");
+                                               print("disminuir ${producto.cantidad}");
                                               });
                                               },
                                               iconSize: 30,
@@ -276,7 +295,7 @@ class _ProductosState extends State<Productos> {
                                               setState(() {
                                                // cantidadP = producto.cantidad++;
                                                incrementar(index);
-                                               print("${cantidadP}");
+                                               print("incrementar ${producto.cantidad}");
                                               });
                                                
                                               },
@@ -315,8 +334,8 @@ class _ProductosState extends State<Productos> {
                     ),
                     Container(
                       margin: const EdgeInsets.only(left: 20),
-                      child: const Text(
-                        "S/.200.00",
+                      child: Text(
+                        "S/.${total}",
                         style: TextStyle(
                             fontWeight: FontWeight.w300,
                             fontSize: 30,
@@ -350,7 +369,10 @@ class _ProductosState extends State<Productos> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const Pedido()),
+                                      builder: (context) =>  Pedido(
+                                        seleccionados: productosContabilizados,
+                                        total: obtenerTotal(),
+                                      )),
                                 );
                               },
                               style: ButtonStyle(

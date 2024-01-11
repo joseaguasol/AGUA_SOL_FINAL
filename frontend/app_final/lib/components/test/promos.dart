@@ -193,11 +193,11 @@ class _PromosState extends State<Promos> {
                           height: 50,
                           width: 150,
                           child: ElevatedButton(onPressed:(){
-                            Navigator.push(
+                           /* Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const Pedido()),
-                          );
+                          );*/
                           },
                            child: Text("Si !",style: TextStyle(
                             fontSize:20,color:Colors.white),),

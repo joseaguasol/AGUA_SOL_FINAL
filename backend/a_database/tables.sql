@@ -184,7 +184,7 @@ create table ventas.zona_trabajo(
 	departamento varchar(50),
 	provincia varchar(50),
 	distrito varchar(50),
-	superadmin_id int not null
+	superadmin_id int
 );
 
 ---------------------------------

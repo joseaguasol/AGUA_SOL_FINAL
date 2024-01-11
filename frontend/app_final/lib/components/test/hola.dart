@@ -1,3 +1,4 @@
+import 'package:app_final/components/test/asistencia.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
@@ -294,11 +295,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                 itemCount: 5,
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
-                                    onTap: (){
-                                      Navigator.pushNamed(
-                                          context, '/promos');
+                                    onTap: () {
+                                      Navigator.pushNamed(context, '/promos');
                                     },
-                                    
                                     child: Container(
                                       margin: const EdgeInsets.only(left: 10),
                                       height: 300,
@@ -306,7 +305,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                       decoration: BoxDecoration(
                                           color:
                                               Color.fromARGB(255, 71, 106, 133),
-                                          borderRadius: BorderRadius.circular(50),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
                                           image: const DecorationImage(
                                             image: AssetImage(
                                                 'lib/imagenes/bodegon.png'),
@@ -370,7 +370,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     )),
                                 Container(
                                     margin: const EdgeInsets.only(right: 80),
-                                    //color:Colors.grey,
+                                    // color:Colors.grey,
                                     child: const Text(
                                       "Tú vida",
                                       style: TextStyle(
@@ -380,12 +380,16 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     )),
                               ],
                             ),
-                            const Text(
-                              "Tranquilo",
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w300,
-                                  color: Color.fromARGB(255, 6, 46, 78)),
+                            Container(
+                              margin: const EdgeInsets.only(top: 20),
+                              // color:Colors.amber,
+                              child: Text(
+                                "Necesitas",
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 6, 46, 78)),
+                              ),
                             )
                           ],
                         ),
@@ -397,7 +401,45 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                             width: 150,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'PRONTO',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(
+                                                255, 4, 80, 143)),
+                                      ),
+                                      content: const Text(
+                                        'Muy pronto te sorprenderemos!',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Cierra el AlertDialog
+                                            
+                                          },
+                                          child: const Text(
+                                            'OK',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 25,
+                                                color: Color.fromARGB(
+                                                    255, 13, 58, 94)),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
                                     const Color.fromARGB(255, 0, 59, 108)),
@@ -430,7 +472,13 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                             width: 200,
                             height: 50,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Asistencia()),
+                                );
+                              },
                               style: ButtonStyle(
                                 backgroundColor: MaterialStateProperty.all(
                                     const Color.fromARGB(255, 0, 59, 108)),

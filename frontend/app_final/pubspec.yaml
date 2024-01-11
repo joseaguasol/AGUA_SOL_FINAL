@@ -52,6 +52,7 @@ dependencies:
   camera: ^0.10.5+7
   socket_io_client: ^2.0.3+1
   location: ^5.0.3
+  url_launcher: ^6.2.3
   
 
 dev_dependencies:

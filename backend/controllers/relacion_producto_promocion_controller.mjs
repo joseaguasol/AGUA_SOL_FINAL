@@ -1,4 +1,4 @@
-import modelProductoPromocion from "../models/relacion_detallepromocion_model.mjs";
+import modelProductoPromocion from "../models/relacion_producto_promocion_model.mjs";
 
 export const createProductoPromociones = async (req,res) => {
     try {

@@ -84,11 +84,11 @@ INSERT INTO ventas.pedido (conductor_id, ruta_id, empleado_id, cliente_id, monto
   
   -- Insertar registros en la tabla producto
 INSERT INTO ventas.producto (nombre, precio, descripcion, stock,foto) VALUES
-  ('botella 700ml',10.00,'paquete x 15 und.',1000,'imagenes\\BIDON0.png'),
-  ('botella 3l',9.00,'paquete x 9 und.',1000,'imagenes\\BIDON03.png'),
-  ('botella 7l',5.50,'und.',1000,'imagenes\\BIDON7.png'),
-  ('bidon 20l',20.00,'und.',1000,'imagenes\\BIDON20.png'),
-  ('recarga',10.00,'und.',0,'imagenes\\RECARGA.png');
+  ('botella 700ml',10.00,'paquete x 15 und.',1000,'BIDON0.png'),
+  ('botella 3l',9.00,'paquete x 9 und.',1000,'BIDON03.png'),
+  ('botella 7l',5.50,'und.',1000,'BIDON7.png'),
+  ('bidon 20l',20.00,'und.',1000,'BIDON20.png'),
+  ('recarga',10.00,'und.',0,'RECARGA.png');
 
 
 

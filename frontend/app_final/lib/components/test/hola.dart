@@ -1,6 +1,7 @@
 import 'package:app_final/components/test/asistencia.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+<<<<<<< Updated upstream
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -18,9 +19,12 @@ class Producto {
       required this.descripcion,
       required this.foto});
 }
+=======
+>>>>>>> Stashed changes
 
 class Hola extends StatefulWidget {
-  const Hola({super.key});
+  final String? url;
+  const Hola({this.url, Key? key}) : super(key: key);
 
   @override
   State<Hola> createState() => _HolaState();
@@ -188,7 +192,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                 icon: Icon(Icons.menu)),
                             Container(
                               child: ClipRRect(
-                                child: Image.asset('lib/imagenes/chica.jpg'),
+                                child: widget.url != null
+                                    ? Image.network(widget.url!)
+                                    : Image.asset('lib/imagenes/chica.jpg'),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               decoration: BoxDecoration(
@@ -370,7 +376,11 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     )),
                                 Container(
                                     margin: const EdgeInsets.only(right: 80),
+<<<<<<< Updated upstream
                                     // color:Colors.grey,
+=======
+                                    //color:Colors.grey,
+>>>>>>> Stashed changes
                                     child: const Text(
                                       "Tú vida",
                                       style: TextStyle(

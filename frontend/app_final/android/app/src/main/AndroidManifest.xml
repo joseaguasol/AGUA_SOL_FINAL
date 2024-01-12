@@ -47,6 +47,7 @@
     <queries>
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
     </queries>
+<<<<<<< Updated upstream
     <queries>
         <!-- If your app checks for SMS support -->
         <intent>
@@ -64,3 +65,6 @@
         </intent>
       </queries>
 </manifest>
+=======
+</manifest>
+>>>>>>> Stashed changes

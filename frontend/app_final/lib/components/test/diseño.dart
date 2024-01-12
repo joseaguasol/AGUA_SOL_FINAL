@@ -1,15 +1,12 @@
 import 'package:app_final/components/test/hola.dart';
 import 'package:app_final/components/test/ubicacion.dart';
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
 import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:async';
-=======
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
->>>>>>> Stashed changes
 class Login2 extends StatefulWidget {
   const Login2({super.key});
 
@@ -18,8 +15,7 @@ class Login2 extends StatefulWidget {
 }
 
 class _Login2State extends State<Login2> {
-<<<<<<< Updated upstream
-double opacity = 0.0;
+  double opacity = 0.0;
 
   @override
   void initState() {
@@ -32,7 +28,6 @@ double opacity = 0.0;
     });
   }
 
-=======
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<dynamic> signInWithGoogle() async {
@@ -81,7 +76,6 @@ double opacity = 0.0;
     }
     return null;
   }
->>>>>>> Stashed changes
 
   @override
   Widget build(BuildContext context) {
@@ -90,38 +84,6 @@ double opacity = 0.0;
 
     return Scaffold(
       body: SafeArea(
-<<<<<<< Updated upstream
-        child: AnimatedOpacity(
-          opacity: opacity,
-          duration: Duration(seconds: 1),
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                //Text("Ancho X largo: ${anchoActual}x ${largoActual.toStringAsFixed(2)}"),
-                Container(
-                  //color: Colors.amber,
-                  margin: const EdgeInsets.only(top: 30, left: 20),
-                  height: 150,
-                  width: 150,
-                  child: Opacity(
-                      opacity: 1,
-                      child: Image.asset('lib/imagenes/logo_sol_tiny.png')),
-                ).animate().fade().then().shake(),
-                Container(
-                  margin: const EdgeInsets.only(top: 0, left: 20),
-                  child: const Text(
-                    "Agua Sol",
-                    style: TextStyle(
-                        fontSize: 40,
-                        fontFamily: 'Pacifico',
-                        color: Color.fromARGB(255, 1, 43, 78)),
-                  ),
-                ),
-                const SizedBox(
-                  height: 0,
-=======
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: Column(
@@ -215,36 +177,32 @@ double opacity = 0.0;
                         fontWeight: FontWeight.w200),
                   ),
                   obscureText: true,
->>>>>>> Stashed changes
                 ),
-                Container(
-                  margin: const EdgeInsets.only(left: 20),
-<<<<<<< Updated upstream
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                child: ElevatedButton(
+                  onPressed: () {
+                    print(largoActual);
+                    print(anchoActual);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Ubicacion()),
+                    );
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                          const Color.fromARGB(255, 1, 61, 109))),
                   child: const Text(
-                    "Llevando vida a tu hogar !",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w300),
+                    "Bienvenido",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300),
                   ),
-=======
-                  child: ElevatedButton(
-                      onPressed: () {
-                        print(largoActual);
-                        print(anchoActual);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Ubicacion()),
-                        );
-                      },
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color.fromARGB(255, 1, 61, 109))),
-                      child: const Text(
-                        "Bienvenido",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w300),
-                      ))),
+                ),
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -327,197 +285,170 @@ double opacity = 0.0;
                     ),
                   ],
                 ),
-                /*
-                  Row(
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Center(
+                  child: Container(
+                //color: Colors.red,
+                height: 100,
+                width: 200,
+                margin: const EdgeInsets.only(left: 20, right: 20),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('lib/imagenes/bodegoncito.jpg'),
+                        fit: BoxFit.fitHeight)),
+                // padding: EdgeInsets.all(20),
+                // child: Image.asset('lib/imagenes/BIDON7.png'),
+              )),
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                child: const Text(
+                  "Conoce la mejor agua del Sur.",
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                width: 200, //MediaQuery.of(context).size.width*0.5,
+                height: 50, //MediaQuery.of(context).size.height * 0.5,
+                child: const TextField(
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 0, 36, 97))),
+
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    //border:OutlineInputBorder(),
+                    labelText: 'Usuario',
+                    labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 8, 62, 107),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w200),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                width: 200, //MediaQuery.of(context).size.width*0.5,
+                height: 50, //MediaQuery.of(context).size.height * 0.5,
+                child: const TextField(
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        borderSide:
+                            BorderSide(color: Color.fromARGB(255, 0, 36, 97))),
+
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50)),
+                    ),
+                    //border:OutlineInputBorder(),
+                    labelText: 'Contraseña',
+                    labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 8, 62, 107),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w200),
+                  ),
+                  obscureText: true,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                  width: 200,
+                  height: MediaQuery.of(context).size.height < 480 ? 40 : 50,
+                  margin: const EdgeInsets.only(left: 20),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        print(largoActual);
+                        print(anchoActual);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Ubicacion()),
+                        );
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              const Color.fromARGB(255, 1, 61, 109))),
+                      child: const Text(
+                        "Bienvenido",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w300),
+                      ))),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: 200,
+                //color:Colors.red,
+                margin: const EdgeInsets.only(left: 20),
+                child: const Center(child: Text("o continua con:")),
+              ),
+              const SizedBox(
+                height: 3,
+              ),
+              Container(
+                  //color:Colors.red,
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  width: 200,
+                  child: Row(
                     //crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(
-                        width: 20,
+                        width: 50,
                       ),
                       Image.asset(
                         'lib/imagenes/google.png',
-                        height: 20,
+                        height: 40,
                       ),
                       Expanded(
                         child: Container(),
                       ),
                       Image.asset(
                         'lib/imagenes/facebook.png',
-                        height: 20,
+                        height: 40,
                       ),
                       const SizedBox(
-                        width: 20,
+                        width: 50,
                       ),
                     ],
-                  )
-                  */
-              ),
+                  )),
               const SizedBox(
                 height: 20,
               ),
               Center(
                 child: Container(
                   //color: Colors.red,
-                  height: 100,
-                  width: 200,
+                  height: 300,
+                  width: 400,
                   margin: const EdgeInsets.only(left: 20, right: 20),
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('lib/imagenes/bodegoncito.jpg'),
+                          image: AssetImage('lib/imagenes/pareja.jpg'),
                           fit: BoxFit.fitHeight)),
                   // padding: EdgeInsets.all(20),
                   // child: Image.asset('lib/imagenes/BIDON7.png'),
->>>>>>> Stashed changes
                 ),
-                Container(
-                  margin: const EdgeInsets.only(left: 20),
-                  child: const Text(
-                    "Conoce la mejor agua del Sur.",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 20),
-                  width: 200, //MediaQuery.of(context).size.width*0.5,
-                  height: 50, //MediaQuery.of(context).size.height * 0.5,
-                  child: const TextField(
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          borderSide:
-                              BorderSide(color: Color.fromARGB(255, 0, 36, 97))),
-          
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                      ),
-                      //border:OutlineInputBorder(),
-                      labelText: 'Usuario',
-                      labelStyle: TextStyle(
-                          color: Color.fromARGB(255, 8, 62, 107),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w200),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 20),
-                  width: 200, //MediaQuery.of(context).size.width*0.5,
-                  height: 50, //MediaQuery.of(context).size.height * 0.5,
-                  child: const TextField(
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(30)),
-                          borderSide:
-                              BorderSide(color: Color.fromARGB(255, 0, 36, 97))),
-          
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                      ),
-                      //border:OutlineInputBorder(),
-                      labelText: 'Contraseña',
-                      labelStyle: TextStyle(
-                          color: Color.fromARGB(255, 8, 62, 107),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w200),
-                    ),
-                    obscureText: true,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                    width: 200,
-                    height: MediaQuery.of(context).size.height < 480 ? 40 : 50,
-                    margin: const EdgeInsets.only(left: 20),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          print(largoActual);
-                          print(anchoActual);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Ubicacion()),
-                          );
-                        },
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                                const Color.fromARGB(255, 1, 61, 109))),
-                        child: const Text(
-                          "Bienvenido",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w300),
-                        ))),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  width: 200,
-                  //color:Colors.red,
-                  margin: const EdgeInsets.only(left: 20),
-                  child: const Center(child: Text("o continua con:")),
-                ),
-                const SizedBox(
-                  height: 3,
-                ),
-                Container(
-                    //color:Colors.red,
-                    margin: const EdgeInsets.only(left: 20, right: 20),
-                    width: 200,
-                    child: Row(
-                      //crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 50,
-                        ),
-                        Image.asset(
-                          'lib/imagenes/google.png',
-                          height: 40,
-                        ),
-                        Expanded(
-                          child: Container(),
-                        ),
-                        Image.asset(
-                          'lib/imagenes/facebook.png',
-                          height: 40,
-                        ),
-                        const SizedBox(
-                          width: 50,
-                        ),
-                      ],
-                    )),
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: Container(
-                    //color: Colors.red,
-                    height: 300,
-                    width: 400,
-                    margin: const EdgeInsets.only(left: 20, right: 20),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('lib/imagenes/pareja.jpg'),
-                        fit: BoxFit.fitHeight
-                      )
-                    ),
-                    // padding: EdgeInsets.all(20),
-                   // child: Image.asset('lib/imagenes/BIDON7.png'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
+      //),
     );
   }
 }

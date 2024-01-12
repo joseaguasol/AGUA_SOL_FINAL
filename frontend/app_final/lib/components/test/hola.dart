@@ -1,7 +1,6 @@
 import 'package:app_final/components/test/asistencia.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-<<<<<<< Updated upstream
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
@@ -19,8 +18,6 @@ class Producto {
       required this.descripcion,
       required this.foto});
 }
-=======
->>>>>>> Stashed changes
 
 class Hola extends StatefulWidget {
   final String? url;
@@ -376,11 +373,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     )),
                                 Container(
                                     margin: const EdgeInsets.only(right: 80),
-<<<<<<< Updated upstream
-                                    // color:Colors.grey,
-=======
                                     //color:Colors.grey,
->>>>>>> Stashed changes
                                     child: const Text(
                                       "Tú vida",
                                       style: TextStyle(
@@ -434,7 +427,6 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                           onPressed: () {
                                             Navigator.of(context)
                                                 .pop(); // Cierra el AlertDialog
-                                            
                                           },
                                           child: const Text(
                                             'OK',

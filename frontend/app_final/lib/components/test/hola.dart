@@ -30,7 +30,12 @@ class Hola extends StatefulWidget {
 class _HolaState extends State<Hola> with TickerProviderStateMixin {
   String apiProducts = 'http://10.0.2.2:8004/api/products';
   List<Producto> listProducto = [];
-  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+  List<String> list = <String>[
+    'Ca. Rosas N 200,P.Camarones',
+    'Ca. Rosas N 200,P.Camarones',
+    'Ca. Rosas N 200,P.Camarones',
+    'Ca. Rosas N 200,P.Camarones'
+  ];
   late String dropdownValue = list.first;
 
   final ScrollController _scrollController = ScrollController();
@@ -184,34 +189,133 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            // MENU
                             IconButton(
                                 onPressed: () {
                                   _scaffoldKey.currentState?.openDrawer();
                                 },
-                                icon: Icon(Icons.menu)),
+                                icon: const Icon(Icons.menu)),
+
+                            // LOCATION
                             Container(
-                              width: 100,
-                              height: 50,
+                              width: 300,
+                              height: 100,
                               decoration: BoxDecoration(
-                                //color: Colors.grey,
-                                borderRadius: BorderRadius.circular(20)
-                              ),
-                              child: DropdownMenu<String>(
-                                initialSelection: list.first,
-                                onSelected: (String? value) {
-                                  // This is called when the user selects an item.
-                                  setState(() {
-                                    dropdownValue = value!;
-                                  });
-                                },
-                                dropdownMenuEntries: list
-                                    .map<DropdownMenuEntry<String>>(
-                                        (String value) {
-                                  return DropdownMenuEntry<String>(
-                                      value: value, label: value);
-                                }).toList(),
+                                  //color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "¿Donde lo entregamos?",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color.fromARGB(255, 7, 135, 50)),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            color: Colors.green),
+                                        child: IconButton(
+                                          onPressed: () {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return Container(
+                                                  height: 700,
+                                                  width: MediaQuery.of(context).size.width,
+                                                  padding: const EdgeInsets.all(16.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      const Text(
+                                                        'Agregar Ubicación',
+                                                        style: TextStyle(
+                                                          color:Color.fromARGB(255, 3, 64, 113),
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 10),
+                                                      
+                                                      
+                                                      const SizedBox(height: 10),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          print("ubi añadidda");
+                                                          // Aquí puedes manejar la lógica para agregar la ubicación
+                                                          //String nuevaUbicacion = ubicacionController.text;
+                                                          // ... lógica para agregar la ubicación ...
+                                                          // Cerrar el modal después de agregar la ubicación
+                                                         /* Navigator.pop(
+                                                              context);*/
+                                                        },
+                                                        child: const Row(
+                                                          children: [
+                                                            Icon(Icons.add_location_alt_outlined,color: Colors.blue,size: 25,),
+                                                            Text(' Agregar ubicación actual ?',
+                                                            style: TextStyle(fontSize:20,
+                                                            fontWeight: FontWeight.w400,
+                                                            color: Color.fromARGB(255, 77, 231, 82)),),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          },
+                                          icon: Icon(
+                                              Icons.add_location_alt_outlined,
+                                              size: 30,
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                      DropdownMenu<String>(
+                                        menuStyle: MenuStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  Color.fromARGB(
+                                                      255, 197, 251, 0)),
+                                        ),
+                                        initialSelection: list.first,
+                                        onSelected: (String? value) {
+                                          // This is called when the user selects an item.
+                                          setState(() {
+                                            dropdownValue = value!;
+                                          });
+                                        },
+                                        dropdownMenuEntries: list
+                                            .map<DropdownMenuEntry<String>>(
+                                                (String value) {
+                                          return DropdownMenuEntry<String>(
+                                              value: value,
+                                              label: value.length > 20
+                                                  ? '${value.substring(0, 17)}...'
+                                                  : value);
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
+
+                            // USER PHOTO
                             Container(
                               child: ClipRRect(
                                 child: widget.url != null
@@ -268,7 +372,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         child: Row(
                           // mainAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
+                            const Text(
                               "Disfruta!",
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
@@ -292,14 +396,14 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         child: TabBar(
                             controller: _tabController,
                             indicatorWeight: 10,
-                            labelStyle: TextStyle(
+                            labelStyle: const TextStyle(
                                 fontSize:
                                     20), // Ajusta el tamaño del texto de la pestaña seleccionada
-                            unselectedLabelStyle: TextStyle(fontSize: 16),
+                            unselectedLabelStyle: const TextStyle(fontSize: 16),
                             labelColor: const Color.fromARGB(255, 0, 52, 95),
                             unselectedLabelColor: Colors.grey,
-                            indicatorColor: Color.fromARGB(255, 21, 168, 14),
-                            tabs: [
+                            indicatorColor: const Color.fromARGB(255, 21, 168, 14),
+                            tabs:const  [
                               Tab(
                                 text: "Promociones",
                               ),
@@ -411,7 +515,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                             Container(
                               margin: const EdgeInsets.only(top: 20),
                               // color:Colors.amber,
-                              child: Text(
+                              child: const Text(
                                 "Necesitas",
                                 style: TextStyle(
                                     fontSize: 25,

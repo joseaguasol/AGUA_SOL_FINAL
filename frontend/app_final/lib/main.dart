@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/loginsol',
       routes: {
-<<<<<<< HEAD
+//<<<<<<< HEAD
         '/diseño':(context) =>Hola(),
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
         '/bienvenido':(context)=> const Bienvenido(),
         '/productos':(context) => const Productos(),
         '/maps':(context) => const Maps(),
-
+/*
 =======
         '/diseño': (context) => Hola(),
         '/historial': (context) => Historial(),
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         '/bienvenido': (context) => const Bienvenido(),
         '/productos': (context) => const Productos(),
         '/maps': (context) => const Maps(),
->>>>>>> 9fcb71a67fb42580013b116248a674e1431fd44c
+>>>>>>> 9fcb71a67fb42580013b116248a674e1431fd44c*/
       },
       //home: const Login3(),
     );

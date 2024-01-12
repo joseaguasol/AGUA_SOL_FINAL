@@ -47,7 +47,7 @@
     <queries>
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
     </queries>
-<<<<<<< Updated upstream
+<!--<<<<<< Updated upstream-->
     <queries>
         <!-- If your app checks for SMS support -->
         <intent>
@@ -64,7 +64,6 @@
           <action android:name="android.support.customtabs.action.CustomTabsService" />
         </intent>
       </queries>
+
+
 </manifest>
-=======
-</manifest>
->>>>>>> Stashed changes

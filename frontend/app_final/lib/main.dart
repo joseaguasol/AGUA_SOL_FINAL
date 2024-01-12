@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
     
       ),
-      initialRoute: '/productos',
+      initialRoute: '/loginsol',
       routes: {
         '/diseño':(context) =>Hola(),
         '/historial':(context) => Historial(),
@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
         '/conductor':(context) => HolaConductor(),
         '/armadoruta':(context) => ArmadoRuta(),
         '/promos':(context) => Promos(),
-        '/loginsol':(context)=> const Login3(),
+        '/loginsol':(context)=> const Login2(),
         '/bienvenido':(context)=> const Bienvenido(),
         '/productos':(context) => const Productos(),
         '/maps':(context) => const Maps(),

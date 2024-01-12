@@ -1,3 +1,4 @@
+import 'package:app_final/components/test/holaconductor.dart';
 import 'package:app_final/main.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -103,9 +104,7 @@ class _CamaraState extends State<Camara> {
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText: 'S/. Monto',
-                                    
                                     labelStyle: TextStyle(
-                                        
                                         color: Color.fromARGB(255, 2, 31, 55)),
                                     focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
@@ -141,49 +140,66 @@ class _CamaraState extends State<Camara> {
                           height: 20,
                         ),
                         Container(
-                          margin: const EdgeInsets.only(left: 20,right: 0),
+                          margin: const EdgeInsets.only(left: 20, right: 0),
                           height: 300,
-                          width: MediaQuery.of(context).size.width <=480 ? 430 : 300,
+                          width: MediaQuery.of(context).size.width <= 480
+                              ? 430
+                              : 300,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                           color: Color.fromARGB(255, 134, 129, 129),
-                            
-                            borderRadius: BorderRadius.circular(20)
-                          ),
+                              color: Color.fromARGB(255, 134, 129, 129),
+                              borderRadius: BorderRadius.circular(20)),
                           // width: 300,
                           child: CameraPreview(cameraController),
-                          
                         ),
                         Container(
-                          margin: const EdgeInsets.only(left: 50,right: 50),
+                          margin: const EdgeInsets.only(left: 50, right: 50),
                           height: 100,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              ElevatedButton(onPressed: (){},
-                               child:Text("X",style: TextStyle(fontSize:20,color:Colors.white),),
-                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 2, 46, 83))
-                               ),),
-
-                               Container(
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "X",
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        const Color.fromARGB(255, 2, 46, 83))),
+                              ),
+                              Container(
                                 height: 60,
-                                 child: ElevatedButton(onPressed: (){},
-                                 child:Icon(Icons.photo_camera,color: Colors.white,),
-                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 2, 46, 83))
-                                 ),),
-                               ),
-
-                               ElevatedButton(onPressed: (){},
-                               child:Icon(Icons.check,color: Colors.white,),
-                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 2, 46, 83))
-                               ),),
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  child: Icon(
+                                    Icons.photo_camera,
+                                    color: Colors.white,
+                                  ),
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              const Color.fromARGB(
+                                                  255, 2, 46, 83))),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                ),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        const Color.fromARGB(255, 2, 46, 83))),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         Container(
                           margin: const EdgeInsets.only(left: 20),
                           height: 89,
@@ -193,29 +209,49 @@ class _CamaraState extends State<Camara> {
                             children: [
                               Container(
                                 height: 60,
-                                child: ElevatedButton(onPressed:(){},
-                                 child: Text("<< Menu"
-                                 ,style: TextStyle(fontSize: 18,color: Colors.white),),
-                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 0, 31, 56))
-                                 ),),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const HolaConductor()),
+                                    );
+                                  },
+                                  child: Text(
+                                    "<< Menu",
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              const Color.fromARGB(
+                                                  255, 0, 31, 56))),
+                                ),
                               ),
-                              const SizedBox(width: 25,),
+                              const SizedBox(
+                                width: 25,
+                              ),
                               Container(
                                 child: Column(
-                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("Genial!",style: TextStyle(fontSize: 29),),
-                                    Text("sigamos con los pedidos",
-                                    style:TextStyle(fontSize: 23,fontWeight: FontWeight.w300),)
+                                    Text(
+                                      "Genial!",
+                                      style: TextStyle(fontSize: 29),
+                                    ),
+                                    Text(
+                                      "sigamos con los pedidos",
+                                      style: TextStyle(
+                                          fontSize: 23,
+                                          fontWeight: FontWeight.w300),
+                                    )
                                   ],
                                 ),
                               ),
-                              
                             ],
                           ),
                         ),
-                      
                       ]))));
     } else {
       return Scaffold(

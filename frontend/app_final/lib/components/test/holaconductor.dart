@@ -1,3 +1,4 @@
+import 'package:app_final/components/test/camara.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -285,7 +286,13 @@ class _HolaConductorState extends State<HolaConductor> {
                           Container(
                             width: 100,
                             height: 60,
-                            child: ElevatedButton(onPressed: (){},
+                            child: ElevatedButton(onPressed: (){
+                              Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Camara()),
+                          );
+                            },
                              style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 2, 86, 155))
                              ),

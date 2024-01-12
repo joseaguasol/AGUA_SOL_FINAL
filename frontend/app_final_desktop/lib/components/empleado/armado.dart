@@ -476,7 +476,7 @@ class _ArmadoState extends State<Armado> {
                             color: Color.fromARGB(255, 209, 94, 132)),
                         margin: const EdgeInsets.only(left: 20),
                         padding: const EdgeInsets.all(15),
-                        width: 500,
+                        width: 350,
                         height: 300,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -604,7 +604,7 @@ class _ArmadoState extends State<Armado> {
                         ),
                         margin: const EdgeInsets.only(left: 20),
                         padding: const EdgeInsets.all(15),
-                        width: 500,
+                        width: 300,
                         height: 300,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -840,7 +840,7 @@ class _ArmadoState extends State<Armado> {
 
                             // CONDUCTORES
                             Container(
-                              width: 500,
+                              width: 350,
                               height: 300,
                               margin: const EdgeInsets.only(top: 20, left: 20),
                               padding: const EdgeInsets.all(20),
@@ -940,7 +940,7 @@ class _ArmadoState extends State<Armado> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               margin: const EdgeInsets.only(top: 20, left: 20),
-                              width: 700,
+                              width: 500,
                               height: 300,
                               decoration: BoxDecoration(
                                 color: Color.fromARGB(255, 53, 102, 142),
@@ -1021,14 +1021,14 @@ class _ArmadoState extends State<Armado> {
                   Container(
                       margin: const EdgeInsets.only(left: 20, top: 20),
                       height: 500,
-                      width: 1300,
+                      width: 1450,
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                           color: Color.fromARGB(255, 53, 102, 142),
                           borderRadius: BorderRadius.circular(20)),
                       child: Column(
                         children: [
-                          Text("Ruta del conductor"),
+                          Text("Ruta del conductor",style:TextStyle(color:Colors.white,fontSize:25)),
                           Expanded(
                             child: ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -1047,7 +1047,7 @@ class _ArmadoState extends State<Armado> {
                                           borderRadius:
                                               BorderRadius.circular(20),
                                         ),
-                                        width: 1100,
+                                        width: 900,
                                         height: 400,
                                         child: Stack(
                                           children: [
@@ -1117,7 +1117,13 @@ class _ArmadoState extends State<Armado> {
                                                 BorderRadius.circular(20)),
                                         child: Column(children: [
                                           Container(
-                                            child: Text("s"),
+                                            child: Text("Conductor : -------",style: TextStyle(color:Colors.white,fontSize: 25),),
+                                          ),
+                                          Container(
+                                            child: Text("AUTO : -------",style: TextStyle(color:Colors.white,fontSize: 25),),
+                                          ),
+                                          Container(
+                                            child: Text("PLACA : -------",style: TextStyle(color:Colors.white,fontSize: 25),),
                                           )
                                         ]),
                                       ),

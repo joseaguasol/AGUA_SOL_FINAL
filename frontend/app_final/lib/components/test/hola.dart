@@ -29,6 +29,8 @@ class Hola extends StatefulWidget {
 class _HolaState extends State<Hola> with TickerProviderStateMixin {
   String apiProducts = 'http://10.0.2.2:8004/api/products';
   List<Producto> listProducto = [];
+  List<String> list = <String>['One', 'Two', 'Three', 'Four'];
+  late String dropdownValue = list.first;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -186,6 +188,29 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                   _scaffoldKey.currentState?.openDrawer();
                                 },
                                 icon: Icon(Icons.menu)),
+                            Container(
+                              width: 100,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                //color: Colors.grey,
+                                borderRadius: BorderRadius.circular(20)
+                              ),
+                              child: DropdownMenu<String>(
+                                initialSelection: list.first,
+                                onSelected: (String? value) {
+                                  // This is called when the user selects an item.
+                                  setState(() {
+                                    dropdownValue = value!;
+                                  });
+                                },
+                                dropdownMenuEntries: list
+                                    .map<DropdownMenuEntry<String>>(
+                                        (String value) {
+                                  return DropdownMenuEntry<String>(
+                                      value: value, label: value);
+                                }).toList(),
+                              ),
+                            ),
                             Container(
                               child: ClipRRect(
                                 child: Image.asset('lib/imagenes/chica.jpg'),
@@ -424,7 +449,6 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                           onPressed: () {
                                             Navigator.of(context)
                                                 .pop(); // Cierra el AlertDialog
-                                            
                                           },
                                           child: const Text(
                                             'OK',

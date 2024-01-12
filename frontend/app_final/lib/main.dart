@@ -31,18 +31,15 @@ import 'package:app_final/components/empleado/programacion.dart';
 
 late List<CameraDescription> camera;
 
-Future<void> main() async{
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   camera = await availableCameras();
   //await Geolocator.requestPermission();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => UsuarioProvider(),
-      child: const MyApp(),
-    )
-    
-    );
+  runApp(ChangeNotifierProvider(
+    create: (context) => UsuarioProvider(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -56,10 +53,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-    
       ),
       initialRoute: '/loginsol',
       routes: {
+<<<<<<< HEAD
         '/diseño':(context) =>Hola(),
         '/historial':(context) => Historial(),
         '/c_felicitaciones':(context) => FelicitacionesConductor(),
@@ -74,6 +71,21 @@ class MyApp extends StatelessWidget {
         '/productos':(context) => const Productos(),
         '/maps':(context) => const Maps(),
 
+=======
+        '/diseño': (context) => Hola(),
+        '/historial': (context) => Historial(),
+        '/c_felicitaciones': (context) => FelicitacionesConductor(),
+        '/c_bienvenido': (context) => BienvenidaConductor(),
+        '/presentacion': (context) => Presentacion(),
+        '/programacion': (context) => Programacion(),
+        '/conductor': (context) => HolaConductor(),
+        '/armadoruta': (context) => ArmadoRuta(),
+        '/promos': (context) => Promos(),
+        '/loginsol': (context) => const Login3(),
+        '/bienvenido': (context) => const Bienvenido(),
+        '/productos': (context) => const Productos(),
+        '/maps': (context) => const Maps(),
+>>>>>>> 9fcb71a67fb42580013b116248a674e1431fd44c
       },
       //home: const Login3(),
     );

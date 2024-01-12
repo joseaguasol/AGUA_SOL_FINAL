@@ -20,7 +20,8 @@ class Producto {
 }
 
 class Hola extends StatefulWidget {
-  const Hola({super.key});
+  final String? url;
+  const Hola({this.url, Key? key}) : super(key: key);
 
   @override
   State<Hola> createState() => _HolaState();
@@ -213,7 +214,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                             ),
                             Container(
                               child: ClipRRect(
-                                child: Image.asset('lib/imagenes/chica.jpg'),
+                                child: widget.url != null
+                                    ? Image.network(widget.url!)
+                                    : Image.asset('lib/imagenes/chica.jpg'),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               decoration: BoxDecoration(
@@ -395,7 +398,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     )),
                                 Container(
                                     margin: const EdgeInsets.only(right: 80),
-                                    // color:Colors.grey,
+                                    //color:Colors.grey,
                                     child: const Text(
                                       "Tú vida",
                                       style: TextStyle(

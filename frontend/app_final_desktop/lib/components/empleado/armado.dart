@@ -315,8 +315,8 @@ class _ArmadoState extends State<Armado> {
                       },
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(
-                              Color.fromARGB(255, 33, 76, 110))),
-                      child: Text("<< Sistema de Pedido",
+                              const Color.fromARGB(255, 33, 76, 110))),
+                      child: const Text("<< Sistema de Pedido",
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
@@ -726,6 +726,8 @@ class _ArmadoState extends State<Armado> {
                       const SizedBox(
                         width: 20,
                       ),
+
+                      // INFORME PDF
                       Container(
                         width: 250,
                         height: 250,
@@ -737,9 +739,9 @@ class _ArmadoState extends State<Armado> {
                           child: Text(
                             "Informe PDF",
                             style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 25,
-                                fontWeight: FontWeight.w400),
+                                color: Color.fromARGB(255, 26, 44, 78),
+                                fontSize: 29,
+                                fontWeight: FontWeight.w500),
                           ),
                           style: ButtonStyle(
                               backgroundColor:
@@ -774,7 +776,7 @@ class _ArmadoState extends State<Armado> {
                               width: 300,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: const Color.fromARGB(255, 53, 102, 142),
+                                color: Color.fromARGB(255, 16, 63, 100),
                               ),
                               child: Column(
                                 children: [
@@ -797,7 +799,8 @@ class _ArmadoState extends State<Armado> {
                                                 const EdgeInsets.only(top: 10),
                                             padding: const EdgeInsets.all(10),
                                             decoration: BoxDecoration(
-                                                color: Colors.grey,
+                                                color: Color.fromARGB(
+                                                    255, 59, 166, 63),
                                                 borderRadius:
                                                     BorderRadius.circular(20)),
                                             child: Column(
@@ -822,18 +825,90 @@ class _ArmadoState extends State<Armado> {
                                                 Text(
                                                   "Fecha: ${obtenerPedidoSeleccionado[index].fecha}",
                                                   style: const TextStyle(
-                                                      color: Colors.white),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color.fromARGB(
+                                                        255, 44, 42, 22),
+                                                  ),
                                                 ),
                                                 Text(
-                                                  "Tipo: ${obtenerPedidoSeleccionado[index].tipo}",
-                                                  style: const TextStyle(
-                                                      color: Colors.white),
-                                                )
+                                                    "Tipo: ${obtenerPedidoSeleccionado[index].tipo}",
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      color: Colors.yellow,
+                                                    ))
                                               ],
                                             ));
                                       },
                                     ),
                                   )
+                                ],
+                              ),
+                            ),
+
+                            // MAPA
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.only(top: 20, left: 20),
+                              width: 500,
+                              height: 300,
+                              decoration: BoxDecoration(
+                                color: Color.fromARGB(255, 16, 63, 100),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Stack(
+                                children: [
+                                  FlutterMap(
+                                      options: MapOptions(
+                                        initialCenter:
+                                            LatLng(-16.4055657, -71.5719081),
+                                        initialZoom: 15.2,
+                                      ),
+                                      children: [
+                                        TileLayer(
+                                          urlTemplate:
+                                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                          userAgentPackageName:
+                                              'com.example.app',
+                                        ),
+                                         MarkerLayer(
+                                          markers: [
+                                            map.Marker(
+                                              point: LatLng(-16.4096926,-71.5682048),
+                                              width: 80,
+                                              height: 80,
+                                              child: Container(
+                                                height: 60,
+                                                width: 60,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  color:Colors.green,
+                                                  image: DecorationImage(
+                                                    image: AssetImage('lib/imagenes/pocion.jpg'),
+                                                    fit: BoxFit.cover
+                                                  )
+                                                ),
+                                                
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ]),
+                                  Positioned(
+                                    bottom:
+                                        16.0, // Ajusta la posición vertical según tus necesidades
+                                    right:
+                                        16.0, // Ajusta la posición horizontal según tus necesidades
+                                    child: FloatingActionButton(
+                                      onPressed: () {
+                                        // Acciones al hacer clic en el FloatingActionButton
+                                      },
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 53, 102, 142),
+                                      child: const Icon(Icons.my_location,
+                                          color: Colors.white),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -846,7 +921,7 @@ class _ArmadoState extends State<Armado> {
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: const Color.fromARGB(255, 53, 102, 142),
+                                color: const Color.fromARGB(255, 16, 63, 100),
                               ),
                               child: Column(
                                 children: [
@@ -867,7 +942,8 @@ class _ArmadoState extends State<Armado> {
                                                 const EdgeInsets.only(top: 10),
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
-                                                color: Colors.grey,
+                                                color: Color.fromARGB(
+                                                    255, 59, 166, 63),
                                                 borderRadius:
                                                     BorderRadius.circular(20)),
                                             child: ListTile(
@@ -935,52 +1011,6 @@ class _ArmadoState extends State<Armado> {
                                 ],
                               ),
                             ),
-
-                            // MAPA
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(top: 20, left: 20),
-                              width: 500,
-                              height: 300,
-                              decoration: BoxDecoration(
-                                color: Color.fromARGB(255, 53, 102, 142),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Stack(
-                                children: [
-                                  FlutterMap(
-                                      options: MapOptions(
-                                        initialCenter:
-                                            LatLng(-16.4055657, -71.5719081),
-                                        initialZoom: 15.2,
-                                      ),
-                                      children: [
-                                        TileLayer(
-                                          urlTemplate:
-                                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                          userAgentPackageName:
-                                              'com.example.app',
-                                        ),
-                                      ]),
-                                  Positioned(
-                                    bottom:
-                                        16.0, // Ajusta la posición vertical según tus necesidades
-                                    right:
-                                        16.0, // Ajusta la posición horizontal según tus necesidades
-                                    child: FloatingActionButton(
-                                      onPressed: () {
-                                        // Acciones al hacer clic en el FloatingActionButton
-                                      },
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 53, 102, 142),
-                                      child: const Icon(Icons.my_location,
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
                             // BOTON CREAR
                             Container(
                               margin: const EdgeInsets.only(left: 20),
@@ -996,7 +1026,7 @@ class _ArmadoState extends State<Armado> {
                                 ),
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
-                                    Color.fromARGB(255, 53, 102, 142),
+                                    Color.fromARGB(255, 16, 63, 100),
                                   ),
                                 ),
                               ),
@@ -1024,11 +1054,13 @@ class _ArmadoState extends State<Armado> {
                       width: 1450,
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 53, 102, 142),
+                          color: Color.fromARGB(255, 16, 63, 100),
                           borderRadius: BorderRadius.circular(20)),
                       child: Column(
                         children: [
-                          Text("Ruta del conductor",style:TextStyle(color:Colors.white,fontSize:25)),
+                          Text("Ruta del conductor",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 25)),
                           Expanded(
                             child: ListView.builder(
                                 scrollDirection: Axis.vertical,
@@ -1043,7 +1075,7 @@ class _ArmadoState extends State<Armado> {
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                           color:
-                                              Color.fromARGB(255, 53, 102, 142),
+                                              Color.fromARGB(255, 16, 63, 100),
                                           borderRadius:
                                               BorderRadius.circular(20),
                                         ),
@@ -1108,24 +1140,46 @@ class _ArmadoState extends State<Armado> {
                                       Container(
                                         width: 400,
                                         height: 400,
+                                        padding: const EdgeInsets.all(20),
                                         margin: const EdgeInsets.only(
                                             top: 20, left: 20),
                                         decoration: BoxDecoration(
                                             color: Color.fromARGB(
-                                                255, 142, 129, 53),
+                                                255, 59, 166, 63),
                                             borderRadius:
                                                 BorderRadius.circular(20)),
-                                        child: Column(children: [
-                                          Container(
-                                            child: Text("Conductor : -------",style: TextStyle(color:Colors.white,fontSize: 25),),
-                                          ),
-                                          Container(
-                                            child: Text("AUTO : -------",style: TextStyle(color:Colors.white,fontSize: 25),),
-                                          ),
-                                          Container(
-                                            child: Text("PLACA : -------",style: TextStyle(color:Colors.white,fontSize: 25),),
-                                          )
-                                        ]),
+                                        child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                child: Text(
+                                                  "Conductor : Paul Perez Perez",
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 25,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                              ),
+                                              Container(
+                                                child: Text(
+                                                  "AUTO : T-KING",
+                                                  style: TextStyle(
+                                                      color: Colors.yellow,
+                                                      fontSize: 25),
+                                                ),
+                                              ),
+                                              Container(
+                                                child: Text(
+                                                  "PLACA : XV-234",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 25),
+                                                ),
+                                              ),
+                                              Container(),
+                                            ]),
                                       ),
                                     ],
                                   );
@@ -1136,110 +1190,6 @@ class _ArmadoState extends State<Armado> {
                   const SizedBox(
                     width: 30,
                   ),
-
-                  /* Container(
-                    height: 500,
-                    width: 1500,
-                    // color:Colors.red,
-                    child: 
-                    Expanded(
-                      child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                          reverse: true,
-                          itemCount: 4,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.only(top: 20),
-                              width: 200,
-                              height: 200,
-                              color: const Color.fromARGB(255, 119, 118, 104),
-                              child: Text("s"),
-
-                            );/*Row(
-                              children: [
-                                Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 20, left: 20),
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 53, 102, 142),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  width: 1100,
-                                  height: 400,
-                                  child: Stack(
-                                    children: [
-                                      FlutterMap(
-                                        options: MapOptions(
-                                          initialCenter:
-                                              LatLng(-16.4055657, -71.5719081),
-                                          initialZoom: 15.2,
-                                        ),
-                                        children: [
-                                          TileLayer(
-                                            urlTemplate:
-                                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                            userAgentPackageName:
-                                                'com.example.app',
-                                          ),
-                                          PolylineLayer(polylines: [
-                                            Polyline(
-                                                points: routePoints,
-                                                color: Colors.pinkAccent),
-                                          ]),
-                                          MarkerLayer(
-                                            markers: [
-                                              map.Marker(
-                                                point: currentLcocation,
-                                                width: 80,
-                                                height: 80,
-                                                child: Icon(
-                                                  Icons.directions_car,
-                                                  color: Colors.red,
-                                                  size: 45.0,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Positioned(
-                                        bottom:
-                                            16.0, // Ajusta la posición vertical según tus necesidades
-                                        right:
-                                            16.0, // Ajusta la posición horizontal según tus necesidades
-                                        child: FloatingActionButton(
-                                          onPressed: () {
-                                            // Acciones al hacer clic en el FloatingActionButton
-                                          },
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 53, 102, 142),
-                                          child: const Icon(Icons.my_location,
-                                              color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 30,
-                                ),
-                                Container(
-                                  width: 400,
-                                  height: 400,
-                                  margin:
-                                      const EdgeInsets.only(top: 20, left: 20),
-                                  decoration: BoxDecoration(
-                                      color: Color.fromARGB(255, 53, 102, 142),
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: Column(children: [Container()]),
-                                ),
-                              ],
-                            );*/
-                          }),
-                    ),
-                  ),
-*/
 
                   // COPPYRIGHT
                   Container(

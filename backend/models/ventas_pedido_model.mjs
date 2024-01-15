@@ -9,8 +9,8 @@ const modelPedido = {
 
            // const io = await app_sol.get('io');
 
-            const pedidos = await db_pool.one('INSERT INTO ventas.pedido (cliente_id,monto_total,fecha,tipo,estado) VALUES ($1,$2,$3,$4,$5) RETURNING *',
-            [pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.tipo,pedido.estado]);
+            const pedidos = await db_pool.one('INSERT INTO ventas.pedido (ruta_id,cliente_id,monto_total,fecha,tipo,estado) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+            [pedido.ruta_id,pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.tipo,pedido.estado]);
             
            // const io = app_sol.get(io);
             //EMITIR UN EVENTO
@@ -33,7 +33,7 @@ const modelPedido = {
     },
     getPedido: async ()=> {
         try {
-            const pedidos = await db_pool.any('SELECT id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido');
+            const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido');
             return pedidos
 
         } catch (error) {

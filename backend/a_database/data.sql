@@ -90,33 +90,22 @@ INSERT INTO ventas.venta (administrador_id, conductor_id, fecha, foto) VALUES
   (1, 1, '2023-03-25 12:15:00', 'foto3.jpg');
 
 -- Insertar registros en la tabla ruta
-INSERT INTO ventas.ruta (conductor_id, administrador_id, empleado_id, multipuntos, distancia_km, tiempo_ruta, zona_trabajo_id) VALUES
-  (1, 1, 1, '16.78,71.22;-16.88,16.12', 50, 120, 1),
-  (2, 1, 1, '16.78,71.22;-16.88,16.12', 80, 480, 1),
-  (3, 1, 1, '16.78,71.22;-16.88,16.12', 83, 480, 1),
-  (3, 1, 1, '16.78,71.22;-16.88,16.12', 94, 560, 1);
+INSERT INTO ventas.ruta (conductor_id, administrador_id, empleado_id, distancia_km, tiempo_ruta, zona_trabajo_id) VALUES
+  (1, 1, 1, 50, 120, 1),
+  (2, 1, 1, 80, 480, 1),
+  (3, 1, 1, 83, 480, 1),
+  (3, 1, 1, 94, 560, 1);
   
 
   
 -- Insertar registros en la tabla pedido
-INSERT INTO ventas.pedido (ruta_id, empleado_id, cliente_id, monto_total, fecha, tipo, estado) VALUES
-  ( 1, 1, 1, 100, current_timestamp,'express','pendiente'),
-  ( 1, 1, 2, 50, current_timestamp,'normal','pendiente'),
-  ( 1, 1, 3, 40, current_timestamp,'normal','pendiente'),
-  ( 2, 1, 4, 35, current_timestamp,'normal','pendiente'),
-  ( 2, 1, 5, 200, current_timestamp,'express','pendiente'),
-  ( 2, 1, 6, 250, current_timestamp,'normal','pendiente'),
-  ( 2, 1, 7, 39, current_timestamp,'normal','pendiente'),
-  ( 3, 1, 8, 57, current_timestamp,'normal','pendiente'),
-  ( 3, 1, 1, 140, current_timestamp,'normal','pendiente'),
-  ( 3, 1, 2, 200, current_timestamp,'express','pendiente'),
-  ( 3, 1, 3, 35, current_timestamp,'normal','pendiente'),
-  ( 3, 1, 4, 43, current_timestamp,'normal','pendiente'),
-  ( 4, 1, 5, 21, current_timestamp,'normal','pendiente'),
-  ( 4, 1, 6, 56, current_timestamp,'normal','pendiente'),
-  ( 4, 1, 7, 596, current_timestamp,'normal','pendiente'),
-  ( 4, 1, 8, 305, current_timestamp,'normal','pendiente'),
-  ( 4, 1, 1, 200, current_timestamp,'normal','pendiente');
+INSERT INTO ventas.pedido (ruta_id, cliente_id, monto_total, fecha, tipo, estado) VALUES
+  ( 1, 1, 100, current_timestamp,'express','pendiente'),
+  ( 1,  2, 50, current_timestamp,'normal','pendiente'),
+  ( 1,  3, 40, current_timestamp,'normal','pendiente'),
+  ( 2,  4, 35, current_timestamp,'normal','pendiente'),
+  ( 2,  5, 200, current_timestamp,'express','pendiente'),
+  ( 4, 1, 200, current_timestamp,'normal','pendiente');
   
   
   -- Insertar registros en la tabla producto
@@ -144,21 +133,4 @@ INSERT INTO relaciones.detalle_pedido(pedido_id, producto_id, cantidad) VALUES
   (3, 1, 8),
   (4, 2, 10),
   (5, 5, 4),
-  (6, 1, 1),
-  (7, 3, 13),
-  (7, 4, 14),
-  (8, 2, 1),
-  (8, 4, 6),
-  (9, 3, 9),
-  (10, 1, 2),
-  (11, 2, 1),
-  (11, 5, 3),
-  (11, 4, 6),
-  (12, 5, 1),
-  (13, 2, 9),
-  (14, 3, 3),
-  (14, 1, 13),
-  (15, 5, 3),
-  (16, 1, 34),
-  (17, 4, 40),
-  (17, 1, 11);
+  (6, 1, 1);

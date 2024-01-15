@@ -116,18 +116,16 @@ create table ventas.cliente_noregistrado(
 create table ventas.ruta(
 	id serial primary key,
 	conductor_id int,
-	administrador_id int not null,
-	empleado_id int not null,
-	multipuntos varchar(1000), --GEOMETRY(MULTIPOINT,4326),
-	distancia_km int not null,
-	tiempo_ruta int not null,
-	zona_trabajo_id int not null
+	empleado_id int,
+	distancia_km int,
+	tiempo_ruta int,
+	administrador_id int,
+	zona_trabajo_id int
 );
 
 -- Table: ventas.pedido
 create table ventas.pedido(
 	id serial primary key,
-	empleado_id int,
 	ruta_id int,
 	cliente_id int,
 	cliente_nr_id int,
@@ -219,7 +217,6 @@ ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_zona_trabajo FOREIGN KEY (zona_tr
 
 -- PEDIDO
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_ruta FOREIGN KEY (ruta_id) REFERENCES ventas.ruta (id) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_empleado FOREIGN KEY (empleado_id) REFERENCES personal.empleado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- pedido-cliente nr

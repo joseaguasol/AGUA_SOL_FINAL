@@ -10,6 +10,7 @@ import 'package:flutter_map/flutter_map.dart' as map;
 
 class Pedido {
   final int id;
+  int? ruta_id;
   final int cliente_id;
   final int? cliente_nr_id;
   final int monto_total;
@@ -21,6 +22,7 @@ class Pedido {
 
   Pedido(
       {required this.id,
+      required  this.ruta_id,
       required this.cliente_id,
       required this.cliente_nr_id,
       required this.monto_total,
@@ -96,8 +98,8 @@ class _ArmadoState extends State<Armado> {
     _scrollController = ScrollController();
 
     connectToServer();
-    getPedidos();
-    getConductores();
+   getPedidos();
+   getConductores();
   }
 
   void actualizarObtenidos() {
@@ -149,6 +151,7 @@ class _ArmadoState extends State<Armado> {
         List<Pedido> pedidos = data.map<Pedido>((mapa) {
           return Pedido(
             id: mapa['id'],
+            ruta_id: mapa['ruta_id'],
             cliente_id: mapa['cliente_id'],
             cliente_nr_id: mapa['cliente_nr_id'],
             monto_total: mapa['monto_total'],
@@ -172,7 +175,7 @@ class _ArmadoState extends State<Armado> {
       throw Exception('Error en la solicitud: $e');
     }
   }
-  /**/
+  
 
   void connectToServer() {
     print("-----CONEXIÓN------");
@@ -208,6 +211,7 @@ class _ArmadoState extends State<Armado> {
             fechaparseada.day == now.day) {
           Pedido nuevoHoy = Pedido(
               id: data['id'],
+              ruta_id: data['ruta_id'],
               cliente_id: data['cliente_id'],
               cliente_nr_id: data['cliente_nr_id'],
               monto_total: data['monto_total'],
@@ -224,6 +228,7 @@ class _ArmadoState extends State<Armado> {
             fechaparseada.day == now.day) {
           Pedido nuevoExpress = Pedido(
               id: data['id'],
+              ruta_id: data['ruta_id'],
               cliente_id: data['cliente_id'],
               cliente_nr_id: data['cliente_nr_id'],
               monto_total: data['monto_total'],
@@ -289,6 +294,8 @@ class _ArmadoState extends State<Armado> {
                 // mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  // SISTEMA DE PEDIDO
                   Container(
                     margin: const EdgeInsets.only(top: 20, left: 20),
                     child: ElevatedButton(
@@ -355,6 +362,7 @@ class _ArmadoState extends State<Armado> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+
                       // AGENDADOS
                       Container(
                         //color: Colors.amber,
@@ -468,6 +476,7 @@ class _ArmadoState extends State<Armado> {
                           ],
                         ),
                       ),
+                      
                       // HOY
                       Container(
                         //color: Colors.amber,
@@ -496,8 +505,8 @@ class _ArmadoState extends State<Armado> {
                               decoration: InputDecoration(
                                 labelStyle:
                                     const TextStyle(color: Colors.white),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
+                                enabledBorder: const UnderlineInputBorder(
+                                  borderSide:BorderSide(
                                       color: Colors
                                           .grey), // Cambia el color del cursor cuando el TextField no está enfocado
                                 ),
@@ -595,6 +604,7 @@ class _ArmadoState extends State<Armado> {
                           ],
                         ),
                       ),
+                     
                       // EXPRESS
                       Container(
                         //color: Colors.amber,
@@ -723,6 +733,7 @@ class _ArmadoState extends State<Armado> {
                           ],
                         ),
                       ),
+                      
                       const SizedBox(
                         width: 20,
                       ),
@@ -754,13 +765,14 @@ class _ArmadoState extends State<Armado> {
                   // CREAR RUTA
                   Container(
                     margin: const EdgeInsets.only(top: 20, left: 20),
-                    child: Text(
+                    child: const Text(
                       "Creando rutas",
                       style: TextStyle(
                         fontSize: 20,
                       ),
                     ),
                   ),
+
                   Container(
                     // color: Colors.grey,
                     child: Column(
@@ -768,7 +780,8 @@ class _ArmadoState extends State<Armado> {
                       children: [
                         Row(
                           children: [
-                            // PEDIDOS
+
+                            // PEDIDOS SELECCIONADOS
                             Container(
                               padding: const EdgeInsets.all(25),
                               margin: const EdgeInsets.only(top: 20, left: 20),
@@ -776,11 +789,11 @@ class _ArmadoState extends State<Armado> {
                               width: 300,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color: Color.fromARGB(255, 16, 63, 100),
+                                color:const Color.fromARGB(255, 16, 63, 100),
                               ),
                               child: Column(
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Pedidos Seleccionados",
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 20),
@@ -799,7 +812,7 @@ class _ArmadoState extends State<Armado> {
                                                 const EdgeInsets.only(top: 10),
                                             padding: const EdgeInsets.all(10),
                                             decoration: BoxDecoration(
-                                                color: Color.fromARGB(
+                                                color: const Color.fromARGB(
                                                     255, 59, 166, 63),
                                                 borderRadius:
                                                     BorderRadius.circular(20)),
@@ -817,6 +830,8 @@ class _ArmadoState extends State<Armado> {
                                                   style: const TextStyle(
                                                       color: Colors.white),
                                                 ),
+                                                Text("Ruta ID: ${obtenerPedidoSeleccionado[index].ruta_id}",
+                                                style:const TextStyle(color: Colors.purple),),
                                                 Text(
                                                   "Monto Total: ${obtenerPedidoSeleccionado[index].monto_total}",
                                                   style: const TextStyle(
@@ -875,11 +890,11 @@ class _ArmadoState extends State<Armado> {
                                           markers: [
                                             map.Marker(
                                               point: LatLng(-16.4096926,-71.5682048),
-                                              width: 80,
-                                              height: 80,
+                                              width: 40,
+                                              height: 50,
                                               child: Container(
-                                                height: 60,
-                                                width: 60,
+                                                height: 30,
+                                                width: 30,
                                                 decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(20),
                                                   color:Colors.green,
@@ -925,7 +940,8 @@ class _ArmadoState extends State<Armado> {
                               ),
                               child: Column(
                                 children: [
-                                  Text(
+                                  const Text(
+
                                     "Conductores",
                                     style: TextStyle(
                                         fontSize: 20, color: Colors.white),
@@ -942,7 +958,7 @@ class _ArmadoState extends State<Armado> {
                                                 const EdgeInsets.only(top: 10),
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
-                                                color: Color.fromARGB(
+                                                color:const  Color.fromARGB(
                                                     255, 59, 166, 63),
                                                 borderRadius:
                                                     BorderRadius.circular(20)),
@@ -1011,6 +1027,7 @@ class _ArmadoState extends State<Armado> {
                                 ],
                               ),
                             ),
+                            
                             // BOTON CREAR
                             Container(
                               margin: const EdgeInsets.only(left: 20),
@@ -1018,7 +1035,19 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                //  lastRutaEmpleado(); //LA ULTIMA RUTA CREADA POR EMPLEADO ESPECIFICO
+
+                                  for (var i=0;i<obtenerPedidoSeleccionado.length;i++){
+                                    setState(() {
+                                      obtenerPedidoSeleccionado[i].ruta_id =5;
+                                    });
+                                    
+                                    print("iterando");
+                                    print(obtenerPedidoSeleccionado[i].ruta_id);
+                                  }
+
+                                },
                                 child: Text(
                                   "Crear \u{2795}",
                                   style: TextStyle(

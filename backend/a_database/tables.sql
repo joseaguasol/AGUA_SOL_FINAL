@@ -116,11 +116,12 @@ create table ventas.cliente_noregistrado(
 create table ventas.ruta(
 	id serial primary key,
 	conductor_id int,
-	empleado_id int,
-	distancia_km int,
-	tiempo_ruta int,
-	administrador_id int,
-	zona_trabajo_id int
+	administrador_id int not null,
+	empleado_id int not null,
+	multipuntos varchar(1000), --GEOMETRY(MULTIPOINT,4326),
+	distancia_km int not null,
+	tiempo_ruta int not null,
+	zona_trabajo_id int not null
 );
 
 -- Table: ventas.pedido
@@ -129,7 +130,8 @@ create table ventas.pedido(
 	ruta_id int,
 	cliente_id int,
 	cliente_nr_id int,
-	monto_total int not null,
+	descuento int,
+	monto_total float not null,
 	fecha timestamp not null,
 	tipo varchar(20),
 	estado varchar(50) -- pendiente, en proceso, entregado
@@ -193,7 +195,8 @@ create table relaciones.detalle_pedido(
 	id serial primary key,
 	pedido_id int,
 	producto_id int not null,
-	cantidad int not null
+	cantidad int not null,
+	promocion_id int
 );
 
 --Table: productos.pedido
@@ -218,6 +221,13 @@ ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_zona_trabajo FOREIGN KEY (zona_tr
 -- PEDIDO
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_ruta FOREIGN KEY (ruta_id) REFERENCES ventas.ruta (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- DETALLE PEDIDO
+ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_detallepedido_promocion FOREIGN KEY (promocion_id) REFERENCES ventas.promocion (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_detallepedido_producto FOREIGN KEY (producto_id) REFERENCES ventas.producto (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- PRODUCTO PROMOCION
+ALTER TABLE relaciones.producto_promocion ADD CONSTRAINT fk_productopromocion_promocion FOREIGN KEY (promocion_id) REFERENCES ventas.promocion (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- pedido-cliente nr
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_clientenr FOREIGN KEY (cliente_nr_id) REFERENCES ventas.cliente_noregistrado (id) ON DELETE CASCADE ON UPDATE CASCADE;

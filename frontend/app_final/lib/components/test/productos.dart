@@ -1,4 +1,4 @@
-import 'package:app_final/components/test/hola.dart';
+//import 'package:app_final/components/test/hola.dart';
 import 'package:app_final/components/test/pedido.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,24 +7,22 @@ import 'dart:convert';
 import 'package:lottie/lottie.dart';
 
 class Producto {
+  final int id;
   final String nombre;
   final double precio;
   final String descripcion;
-
   final String foto;
-
+  final int? promoID;
   int cantidad;
-  //String estado;
-
-  //bool seleccionado; // Nuevo campo para rastrear la selección
 
   Producto(
-      {required this.nombre,
+      {required this.id,
+      required this.nombre,
       required this.precio,
       required this.descripcion,
       required this.foto,
+      required this.promoID,
       this.cantidad = 0});
-  //this.seleccionado = false});
 }
 
 class Productos extends StatefulWidget {
@@ -40,7 +38,6 @@ class _ProductosState extends State<Productos> {
   int cantidadP = 0;
   bool almenosUno = false;
   List<Producto> productosContabilizados = [];
- 
 
   @override
   void initState() {
@@ -49,7 +46,6 @@ class _ProductosState extends State<Productos> {
   }
 
   Future<dynamic> getProducts() async {
-    print("-------get products---------");
     var res = await http.get(
       Uri.parse(apiProducts),
       headers: {"Content-type": "application/json"},
@@ -59,9 +55,11 @@ class _ProductosState extends State<Productos> {
         var data = json.decode(res.body);
         List<Producto> tempProducto = data.map<Producto>((mapa) {
           return Producto(
+              id: mapa['id'],
               nombre: mapa['nombre'],
               precio: mapa['precio'].toDouble(),
               descripcion: mapa['descripcion'],
+              promoID: null,
               foto:
                   'http://10.0.2.2:8004/images/${mapa['foto'].replaceAll(r'\\', '/')}');
         }).toList();
@@ -79,8 +77,8 @@ class _ProductosState extends State<Productos> {
     }
   }
 
-   // FUNCIONES DE SUMATORIA
-    void incrementar(int index) {
+  // FUNCIONES DE SUMATORIA
+  void incrementar(int index) {
     setState(() {
       almenosUno = true;
       listProducto[index].cantidad++;
@@ -104,7 +102,6 @@ class _ProductosState extends State<Productos> {
 
   double obtenerTotal() {
     double stotal = 0;
-
     productosContabilizados =
         listProducto.where((producto) => producto.cantidad > 0).toList();
 
@@ -117,6 +114,7 @@ class _ProductosState extends State<Productos> {
 
     return stotal;
   }
+
   @override
   Widget build(BuildContext context) {
     double total = obtenerTotal();
@@ -195,21 +193,17 @@ class _ProductosState extends State<Productos> {
                     const SizedBox(
                       height: 25,
                     ),
+
+                    //CONTAINER DE LISTBUILDER
                     Container(
                       margin: const EdgeInsets.only(left: 20, right: 20),
                       padding: const EdgeInsets.all(6),
-                      height: 400,
-
+                      height: 300,
                       decoration: BoxDecoration(
-                          //  color:Color.fromARGB(255, 246, 197, 255),
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
                               color: const Color.fromARGB(255, 21, 168, 14),
-                              // color:Color.fromARGB(255, 68, 102, 132),
                               width: 3.0)),
-
-                      //
-
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: listProducto.length,
@@ -221,18 +215,16 @@ class _ProductosState extends State<Productos> {
                               width: 295,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
-                                color: Color.fromARGB(255, 75, 108, 134),
-                                // color: Color.fromARGB(255, 165, 165, 165)
+                                color: const Color.fromARGB(255, 75, 108, 134),
                               ),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
                                     margin: const EdgeInsets.only(left: 20),
-                                    height: 250,
+                                    height: 150,
                                     width: 160,
                                     decoration: BoxDecoration(
-                                        //  color: Color.fromARGB(255, 217, 215, 215),
                                         image: DecorationImage(
                                             image: NetworkImage(producto.foto),
                                             fit: BoxFit.scaleDown)),
@@ -270,10 +262,11 @@ class _ProductosState extends State<Productos> {
                                             IconButton(
                                               onPressed: () {
                                                 setState(() {
-                                               // cantidadP = producto.cantidad++;
-                                               disminuir(index);
-                                               print("disminuir ${producto.cantidad}");
-                                              });
+                                                  // cantidadP = producto.cantidad++;
+                                                  disminuir(index);
+                                                  print(
+                                                      "disminuir ${producto.cantidad}");
+                                                });
                                               },
                                               iconSize: 30,
                                               color: const Color.fromARGB(
@@ -292,12 +285,12 @@ class _ProductosState extends State<Productos> {
                                             ),
                                             IconButton(
                                               onPressed: () {
-                                              setState(() {
-                                               // cantidadP = producto.cantidad++;
-                                               incrementar(index);
-                                               print("incrementar ${producto.cantidad}");
-                                              });
-                                               
+                                                setState(() {
+                                                  // cantidadP = producto.cantidad++;
+                                                  incrementar(index);
+                                                  print(
+                                                      "incrementar ${producto.cantidad}");
+                                                });
                                               },
                                               iconSize: 30,
                                               color: const Color.fromARGB(
@@ -312,7 +305,6 @@ class _ProductosState extends State<Productos> {
                                       ],
                                     ),
                                   ),
-                                  Container(),
                                 ],
                               ),
                             );
@@ -328,7 +320,7 @@ class _ProductosState extends State<Productos> {
                         "Su importe es de:",
                         style: TextStyle(
                             fontWeight: FontWeight.w300,
-                            fontSize: 25,
+                            fontSize: 18,
                             color: Color.fromARGB(255, 1, 25, 44)),
                       ),
                     ),
@@ -336,9 +328,9 @@ class _ProductosState extends State<Productos> {
                       margin: const EdgeInsets.only(left: 20),
                       child: Text(
                         "S/.${total}",
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.w300,
-                            fontSize: 30,
+                            fontSize: 20,
                             color: Color.fromARGB(255, 4, 62, 107)),
                       ),
                     ),
@@ -351,8 +343,8 @@ class _ProductosState extends State<Productos> {
                         "¿Gustas ordenar?",
                         style: TextStyle(
                             fontWeight: FontWeight.w400,
-                            fontSize: 30,
-                            color: const Color.fromARGB(255, 1, 32, 56)),
+                            fontSize: 18,
+                            color: Color.fromARGB(255, 1, 32, 56)),
                       ),
                     ),
                     //const SizedBox(height: 20,),
@@ -360,7 +352,6 @@ class _ProductosState extends State<Productos> {
                       margin: const EdgeInsets.only(left: 20),
                       width: 200,
                       height: 100,
-                      //color:Colors.grey,
                       child: Row(
                         children: [
                           ElevatedButton(
@@ -369,18 +360,27 @@ class _ProductosState extends State<Productos> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
+<<<<<<< HEAD
                                       builder: (context) =>  Pedido(
                                         
                                         seleccionados: productosContabilizados, 
                                         total: obtenerTotal(),
                                       )),
+=======
+                                      builder: (context) => Pedido(
+                                            seleccionados:
+                                                productosContabilizados,
+                                            seleccionadosPromo: const [],
+                                            total: obtenerTotal(),
+                                          )),
+>>>>>>> d9188624a14bc81f6f15a182bb2fcc8b59309fd4
                                 );
                               },
                               style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
-                                      Color.fromARGB(255, 3, 92, 165))),
+                                      const Color.fromARGB(255, 3, 92, 165))),
                               child: const Text(
-                                "Sí",
+                                "Sí!",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w300,
                                     fontSize: 25,

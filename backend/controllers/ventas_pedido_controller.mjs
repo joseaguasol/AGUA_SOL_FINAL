@@ -14,11 +14,12 @@ export const createPedidos = async (req,res) => {
 
 export const getLastPedidos = async (req,res) => {
     try{
-        const getLast = await modelPedido.getLastPedido();
+        const { clienteID } = req.params;
+        const id = parseInt(clienteID, 10);
+        const getLast = await modelPedido.getLastPedido(id);
         res.json(getLast);
-    }
-    catch(e){
-        res.status(500).json({error:e.message})
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 }
 

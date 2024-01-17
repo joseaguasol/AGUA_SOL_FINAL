@@ -351,6 +351,7 @@ class _PedidoState extends State<Pedido> {
     );
   }
 }
+/*
 import 'package:app_final/components/test/fin.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -619,3 +620,4 @@ class _PedidoState extends State<Pedido> {
                 ))));
   }
 }
+*/

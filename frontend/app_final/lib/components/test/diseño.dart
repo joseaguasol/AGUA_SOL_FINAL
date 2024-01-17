@@ -218,7 +218,7 @@ class _Login2State extends State<Login2> {
               Container(
                 //color:Colors.red,
                 margin: const EdgeInsets.only(left: 20, right: 20),
-                width: 100,
+                width: 200,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -246,8 +246,8 @@ class _Login2State extends State<Login2> {
                       },
                       child: Image.asset(
                         'lib/imagenes/google.png',
-                        width: 10,
-                        height: 10,
+                        width: 50,
+                        height: 50,
                       ),
                     ),
                     const SizedBox(
@@ -279,8 +279,8 @@ class _Login2State extends State<Login2> {
                       },
                       child: Image.asset(
                         'lib/imagenes/facebook.png',
-                        width: 10,
-                        height: 10,
+                        width: 50,
+                        height: 50,
                       ),
                     ),
                   ],
@@ -302,69 +302,7 @@ class _Login2State extends State<Login2> {
                 // padding: EdgeInsets.all(20),
                 // child: Image.asset('lib/imagenes/BIDON7.png'),
               )),
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                child: const Text(
-                  "Conoce la mejor agua del Sur.",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                width: 200, //MediaQuery.of(context).size.width*0.5,
-                height: 50, //MediaQuery.of(context).size.height * 0.5,
-                child: const TextField(
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        borderSide:
-                            BorderSide(color: Color.fromARGB(255, 0, 36, 97))),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                    ),
-                    //border:OutlineInputBorder(),
-                    labelText: 'Usuario',
-                    labelStyle: TextStyle(
-                        color: Color.fromARGB(255, 8, 62, 107),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w200),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                width: 200, //MediaQuery.of(context).size.width*0.5,
-                height: 50, //MediaQuery.of(context).size.height * 0.5,
-                child: const TextField(
-                  decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        borderSide:
-                            BorderSide(color: Color.fromARGB(255, 0, 36, 97))),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                    ),
-                    //border:OutlineInputBorder(),
-                    labelText: 'Contraseña',
-                    labelStyle: TextStyle(
-                        color: Color.fromARGB(255, 8, 62, 107),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w200),
-                  ),
-                  obscureText: true,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
+          /*  
               Container(
                   width: 200,
                   height: MediaQuery.of(context).size.height < 480 ? 40 : 50,
@@ -443,7 +381,7 @@ class _Login2State extends State<Login2> {
                   // padding: EdgeInsets.all(20),
                   // child: Image.asset('lib/imagenes/BIDON7.png'),
                 ),
-              ),
+              ),*/
             ],
           ),
         ),

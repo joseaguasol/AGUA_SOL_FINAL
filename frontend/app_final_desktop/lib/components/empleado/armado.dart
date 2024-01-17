@@ -1133,9 +1133,9 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: ()
+                                onPressed: () async
                                 {
-                                  showDialog<String>(
+                                /*  showDialog<String>(
                                   context: context,
                                   builder: (BuildContext context) =>
                                       AlertDialog(
@@ -1156,9 +1156,9 @@ class _ArmadoState extends State<Armado> {
                                         child: const Text('SI'),
                                       ),
                                     ],
-                                  ));
+                                  ));*/
 
-/*
+
  // create ruta - empleadoid,conductorid,distancia,tiempo
                                   await crearobtenerYactualizarRuta(1, conductorid,50,3,"en proceso");
                                   setState(() {
@@ -1170,7 +1170,7 @@ class _ArmadoState extends State<Armado> {
                                   for(var i=0;i<conductores.length;i++){
                                     conductores[i].seleccionado = false;
                                   }
-                                  await getPedidos();*/
+                                  await getPedidos();
 
 
                                  

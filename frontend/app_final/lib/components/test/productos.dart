@@ -360,20 +360,12 @@ class _ProductosState extends State<Productos> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-<<<<<<< HEAD
-                                      builder: (context) =>  Pedido(
-                                        
-                                        seleccionados: productosContabilizados, 
-                                        total: obtenerTotal(),
-                                      )),
-=======
                                       builder: (context) => Pedido(
                                             seleccionados:
                                                 productosContabilizados,
                                             seleccionadosPromo: const [],
                                             total: obtenerTotal(),
                                           )),
->>>>>>> d9188624a14bc81f6f15a182bb2fcc8b59309fd4
                                 );
                               },
                               style: ButtonStyle(

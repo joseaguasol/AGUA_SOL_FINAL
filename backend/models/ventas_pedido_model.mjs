@@ -6,14 +6,17 @@ import { io } from '../index.mjs';
 const modelPedido = {
     createPedido:async (pedido) => {
         try{
-
+            console.log("-----PEDIDOO recibidoooo------")
+            console.log(pedido)
            // const io = await app_sol.get('io');
+           console.log("-----PEDIDO INSERTADO-------")
 
-            const pedidos = await db_pool.one('INSERT INTO ventas.pedido (ruta_id,cliente_id,monto_total,fecha,tipo,estado) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-            [pedido.ruta_id,pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.tipo,pedido.estado]);
+            const pedidos = await db_pool.one('INSERT INTO ventas.pedido (cliente_id,monto_total,fecha,tipo,estado) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+            [pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.tipo,pedido.estado]);
             
            // const io = app_sol.get(io);
             //EMITIR UN EVENTO
+            console.log(pedidos)
             io.emit('nuevoPedido',pedidos)
 
             return pedidos
@@ -23,17 +26,18 @@ const modelPedido = {
             throw new Error(`Error query create:${e}`)
         }
     },
-    getLastPedido: async () => {
+    getLastPedido: async (id) => {
         try {
-            const lastPedido = await db_pool.one('SELECT id FROM ventas.pedido ORDER BY id DESC LIMIT 1');
+            const lastPedido = await db_pool.one('SELECT id FROM ventas.pedido WHERE cliente_id=$1 ORDER BY id DESC LIMIT 1',[id]);
             return lastPedido;
         } catch (e) {
             throw new Error(`Error getting last pedido: ${e}`);
         }
     },
+
     getPedido: async ()=> {
         try {
-            const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido');
+            const pedidos = await db_pool.any('SELECT id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido');
             return pedidos
 
         } catch (error) {

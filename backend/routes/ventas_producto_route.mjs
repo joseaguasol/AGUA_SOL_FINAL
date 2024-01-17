@@ -1,9 +1,11 @@
-import { getAllProduct } from '../controllers/ventas_producto_controller.mjs';
+import { getAllProducts,getONEProducts } from '../controllers/ventas_producto_controller.mjs';
 import express from 'express';
 
 const routerVentasProduct = express.Router();
 
-routerVentasProduct.get('/products',getAllProduct)
+routerVentasProduct.get('/products',getAllProducts),
+routerVentasProduct.get('/products/:productID',getONEProducts)
+
 
 
 

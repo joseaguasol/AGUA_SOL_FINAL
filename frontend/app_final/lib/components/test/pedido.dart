@@ -70,7 +70,7 @@ class _PedidoState extends State<Pedido> {
 
   Future<void> crearPedidoyDetallePedido(tipo, monto) async {
     await datosCreadoPedido(
-        clienteId, tiempoActual.toString(), monto, tipo, "Pendiente");
+        clienteId, tiempoActual.toString(), monto, tipo, "pendiente");
     print("creando detalles de pedidos----------");
     for (var i = 0; i < widget.seleccionados.length; i++) {
       print("longitud de seleccinados--------${widget.seleccionados.length}");

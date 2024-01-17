@@ -8,8 +8,8 @@ const modelDetallePedido = {
             const lastPedido = await db_pool.one('SELECT id FROM ventas.pedido WHERE cliente_id = $1 ORDER BY id DESC LIMIT 1',
              [detalle.cliente_id]);
 
-            const detallepedido = await db_pool.one('INSERT INTO relaciones.detalle_pedido(pedido_id, producto_id, cantidad) VALUES($1, $2, $3) RETURNING *',
-                [lastPedido.id, detalle.producto_id, detalle.cantidad]
+            const detallepedido = await db_pool.one('INSERT INTO relaciones.detalle_pedido(pedido_id, producto_id, cantidad,promocion_id) VALUES($1, $2, $3,$4) RETURNING *',
+                [lastPedido.id, detalle.producto_id, detalle.cantidad,detalle.promocion_id]
             );
             console.log("DETALLE PEDIDO INSERTADO")
             console.log(detallepedido)

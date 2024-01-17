@@ -61,3 +61,21 @@ export const updatePedidos = async (req,res)=>{
         res.status(500).json({error:error.message});
     }
 }
+
+export const updateRutaPedidos = async(req,res)=>{
+    try {
+        // EXTRAYENDO EL ID DE LA RUTA
+        const {pedidoID} = req.params
+        const idpedido =parseInt(pedidoID,10)
+        console.log("idpedido")
+        console.log(idpedido)
+
+        // EXTRAYENDO EL BODY 
+        const ruta = req.body
+        const updaterutapedido = await modelPedido.updateRutaPedido(idpedido,ruta)
+        res.json(updaterutapedido)
+
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
+}

@@ -32,8 +32,12 @@ const modelPedido = {
         }
     },
     getPedido: async ()=> {
+        console.log("dentro de get....")
+        
         try {
-            const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido');
+            const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido WHERE estado =  \'pendiente\'');
+            console.log("EMITIENDO PEDIDOS,...")
+            //io.emit('vista',"hola")
             return pedidos
 
         } catch (error) {
@@ -64,6 +68,18 @@ const modelPedido = {
             throw new Error(`Error en la actualización del pedido: ${error.message}`);
         }
     },
+    updateRutaPedido:async (id,ruta) => {
+        try {
+            const result  = await db_pool.oneOrNone('UPDATE ventas.pedido SET ruta_id = $1,estado = $2 WHERE id = $3 RETURNING *',
+            [ruta.ruta_id,ruta.estado,id]);
+            if (!result){
+                return {"Message":"No se encontró un pedido con ese ID"}
+            }
+            return{result}
+        } catch (error) {
+            throw new Error(`Error en la actualización del pedido: ${error.message}`)
+        }
+    }
 }
 
 export default modelPedido;

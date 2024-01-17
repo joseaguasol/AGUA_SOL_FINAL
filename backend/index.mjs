@@ -20,6 +20,7 @@ import routerLogin from "./routes/login_route.mjs";
 import routerVentasProduct from "./routes/ventas_producto_route.mjs";
 import routerDetallePedido from "./routes/relaciones_detallepedido_route.mjs";
 import routerVentasVenta from "./routes/ventas_venta_route.mjs";
+import routerVentasRuta from "./routes/ventas_ruta_route.mjs";
 
 /** INICIA LA APP Y EL PUERTO */
 const app_sol = express();
@@ -43,6 +44,8 @@ io.on('connection', (socket) => {
         console.log(data);
         io.emit('enviandoCoordenadas',data);
     });
+
+    
     
     
     
@@ -74,6 +77,8 @@ app_sol.use('/api',routerDetallePedido);
 app_sol.use('/api',routerVentasVenta);
 app_sol.use('/api',routerVentasPromocion);
 app_sol.use('/api',routerProductoPromocion);
+app_sol.use('/api',routerVentasRuta);
+
 
 
 server.listen(port, ()=>{

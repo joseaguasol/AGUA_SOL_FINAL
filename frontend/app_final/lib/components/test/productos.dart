@@ -370,7 +370,8 @@ class _ProductosState extends State<Productos> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>  Pedido(
-                                        seleccionados: productosContabilizados,
+                                        
+                                        seleccionados: productosContabilizados, 
                                         total: obtenerTotal(),
                                       )),
                                 );

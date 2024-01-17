@@ -12,6 +12,7 @@ class Pedido extends StatefulWidget {
   const Pedido({
     Key? key,
     required this.seleccionados,
+    //requirede this.sleccionadospromos
     required this.total,
   }) : super(key: key);
 

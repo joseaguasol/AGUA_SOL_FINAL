@@ -1078,6 +1078,8 @@ class _LoginState extends State<Login> {
                                       color: Colors.white, fontSize: 25),
                                 ),
                               )),
+                          
+                          
                           Container(
                             margin: const EdgeInsets.only(top: 70),
                             height: 320,

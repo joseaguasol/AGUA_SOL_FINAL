@@ -7,6 +7,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart' as map;
+import 'dart:async';
 
 class Pedido {
   final int id;
@@ -72,7 +73,8 @@ class _ArmadoState extends State<Armado> {
   List<Pedido> hoyexpress = [];
   List<Pedido> agendados = [];
   List<Pedido> obtenerPedidoSeleccionado = [];
-
+  late int conductorid;
+  late int rutaIdLast;
   List<Conductor> obtenerConductor = [];
   List<Conductor> conductores = [];
 
@@ -88,6 +90,9 @@ class _ArmadoState extends State<Armado> {
   var direccion = '';
   String apiPedidos = 'http://127.0.0.1:8004/api/pedido';
   String apiConductores = 'http://127.0.0.1:8004/api/user_conductor';
+  String apiRutaCrear = 'http://127.0.0.1:8004/api/ruta';
+  String apiLastRuta = 'http://127.0.0.1:8004/api/rutalast';
+  String apiUpdateRuta = 'http://127.0.0.1:8004/api/pedidoruta';
   final TextEditingController _searchController = TextEditingController();
   //final TextEditingController _distrito = TextEditingController();
   //final TextEditingController _ubicacion = TextEditingController();
@@ -96,9 +101,12 @@ class _ArmadoState extends State<Armado> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-
+    
     connectToServer();
-   getPedidos();
+    //Timer.periodic(const Duration(seconds: 0),(Timer timer) {
+       getPedidos();
+   // });
+   
    getConductores();
   }
 
@@ -108,6 +116,55 @@ class _ArmadoState extends State<Armado> {
           .where((element) => element.seleccionado)
           .toList();
     });
+  }
+
+  // POST RUTA
+  Future<dynamic> createRuta(empleado_id,conductor_id,distancia,tiempo)async{
+    await http.post(Uri.parse(apiRutaCrear),
+    headers: {"Content-type":"application/json"},
+    body: jsonEncode({
+      "conductor_id":conductor_id,
+      "empleado_id":empleado_id,
+      "distancia_km":distancia,
+      "tiempo_ruta":tiempo
+
+    }));
+    print("Ruta creada");
+
+  }
+
+  // LAST RUTA BY EMPRLEADOID
+  Future<dynamic>lastRutaEmpleado(empleadoId)async{
+    var res  = await http.get(Uri.parse(apiLastRuta+'/'+empleadoId.toString()),
+    headers: {"Content-type":"application/json"});
+    
+   setState(() {
+      rutaIdLast = json.decode(res.body)['id'];
+   });
+   print("LAST RUTA EMPLEAD");
+   print(rutaIdLast);
+  }
+
+  // UPDATE PEDIDO-RUTA
+  Future<dynamic>updatePedidoRuta(ruta_id,estado)async{
+    for (var i =0;i<obtenerPedidoSeleccionado.length;i++){
+      await http.put(Uri.parse(apiUpdateRuta+'/'+obtenerPedidoSeleccionado[i].id.toString()),
+      headers: {"Content-type":"application/json"},
+      body: jsonEncode({
+        "ruta_id":ruta_id,
+        "estado":estado
+      }));
+    }
+   print("RUTA ACTUALIZADA A ");
+   print(ruta_id);
+  }
+
+  // CREAR Y OBTENER
+  Future<void>crearobtenerYactualizarRuta(empleadoId,conductorid,distancia,tiempo,estado)async{
+    await createRuta(empleadoId, conductorid, distancia, tiempo);
+    await lastRutaEmpleado(empleadoId);
+    await updatePedidoRuta(rutaIdLast,estado);
+  
   }
 
   // GET CONDUCTORES
@@ -163,8 +220,16 @@ class _ArmadoState extends State<Armado> {
         }).toList();
 
         setState(() {
-          // SI LOS PEDIDOS CON FECHA DE AYER,
-          agendados = pedidos;
+          // SI LOS PEDIDOS CON FECHA DE AYER,+
+          for(var i = 0 ; i< pedidos.length;i++){
+            if(pedidos[i].estado == 'pendiente'){
+              agendados.add(pedidos[i]);
+            }
+          }
+          /*if(pedidos.estado == 'pendiente'){
+            agendados = pedidos;
+          }*/
+          
 
           print("--------AGENDADOS-----");
           print("agendados");
@@ -198,6 +263,7 @@ class _ArmadoState extends State<Armado> {
       print('Conexión desconectada: EMPLEADO');
     });
 
+    
     // CREATE PEDIDO
     socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
@@ -273,6 +339,37 @@ class _ArmadoState extends State<Armado> {
         currentLcocation = LatLng(data['x'], data['y']);
       });
     });
+
+    socket.on('vista', (data) async {
+      print("...recibiendo..");
+      //getPedidos();
+      print(data);
+      //socket.emit(await getPedidos());
+
+    /*  try {
+    List<Pedido> nuevosPedidos = List<Pedido>.from(data.map((pedidoData) => Pedido(
+      id: pedidoData['id'],
+      ruta_id: pedidoData['ruta_id'],
+      cliente_id: pedidoData['cliente_id'],
+      cliente_nr_id: pedidoData['cliente_nr_id'],
+      monto_total: pedidoData['monto_total'],
+      fecha: pedidoData['fecha'],
+      tipo: pedidoData['tipo'],
+      estado: pedidoData['estado'],
+      seleccionado: false,
+    )));
+
+    setState(() {
+      agendados = nuevosPedidos;
+    });
+  } catch (error) {
+    print('Error al actualizar la vista: $error');
+  }*/
+});
+
+
+
+  
   }
 
   @override
@@ -404,6 +501,7 @@ class _ArmadoState extends State<Armado> {
                                 //controller: _scrollControllerAgendados,
                                 itemCount: agendados.length,
                                 itemBuilder: (context, index) {
+                                
                                   return Container(
                                     margin: const EdgeInsets.only(top: 10),
                                     decoration: BoxDecoration(
@@ -421,7 +519,7 @@ class _ArmadoState extends State<Armado> {
                                                     .where((element) =>
                                                         element.seleccionado)
                                                     .toList();
-                                            if (value == true) {
+                                           if (value == true) {
                                               agendados[index].estado =
                                                   "en proceso";
                                               // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
@@ -994,15 +1092,15 @@ class _ArmadoState extends State<Armado> {
                                                     .seleccionado,
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    conductores[index]
-                                                            .seleccionado =
-                                                        value ?? false;
-                                                    obtenerConductor = conductores
-                                                        .where((element) =>
-                                                            element
-                                                                .seleccionado)
-                                                        .toList();
+                                                    conductores[index].seleccionado = value ?? false;
+                                                    obtenerConductor = conductores.where((element) =>  element.seleccionado).toList();
+
                                                     if (value == true) {
+                                                      setState(() {
+                                                        conductorid = conductores[index].id;
+                                                      });
+                                                      print("CONDUCTOR ID SELECCIIONADO");
+                                                      print(conductorid);
                                                       /*conductores[index]
                                                                       .estado =
                                                                   "Go >>";*/
@@ -1035,27 +1133,56 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: () {
-                                //  lastRutaEmpleado(); //LA ULTIMA RUTA CREADA POR EMPLEADO ESPECIFICO
+                                onPressed: ()
+                                {
+                                  showDialog<String>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      AlertDialog(
+                                    title:
+                                        const Text('Crear Ruta - Conductor'),
+                                    content: const Text('¿Crear?'),
+                                    actions: <Widget>[
+                                      ElevatedButton(
+                                        onPressed: (){},
+                                            //Navigator.pop(context, 'Cancelar'),
+                                        child: const Text('Cancelar'),
+                                      
+                                      
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, 'SI'),
+                                        child: const Text('SI'),
+                                      ),
+                                    ],
+                                  ));
 
-                                  for (var i=0;i<obtenerPedidoSeleccionado.length;i++){
-                                    setState(() {
-                                      obtenerPedidoSeleccionado[i].ruta_id =5;
-                                    });
-                                    
-                                    print("iterando");
-                                    print(obtenerPedidoSeleccionado[i].ruta_id);
+/*
+ // create ruta - empleadoid,conductorid,distancia,tiempo
+                                  await crearobtenerYactualizarRuta(1, conductorid,50,3,"en proceso");
+                                  setState(() {
+                                   obtenerPedidoSeleccionado=[];
+                                  }); 
+                                  for(var i = 0;i<agendados.length;i++){
+                                    agendados[i].seleccionado = false;
                                   }
+                                  for(var i=0;i<conductores.length;i++){
+                                    conductores[i].seleccionado = false;
+                                  }
+                                  await getPedidos();*/
 
+
+                                 
                                 },
                                 child: Text(
                                   "Crear \u{2795}",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 35),
                                 ),
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
-                                    Color.fromARGB(255, 16, 63, 100),
+                                   const Color.fromARGB(255, 16, 63, 100),
                                   ),
                                 ),
                               ),

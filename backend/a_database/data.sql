@@ -78,16 +78,7 @@ INSERT INTO personal.conductor (usuario_id, nombres, apellidos, licencia, dni, f
   (13, 'lucrecia', 'Apellido3', 'DEF456', '7890123456', '1980-12-04'),
   (14, 'mariana', 'Apellido3', 'DEM456', '23453234', '1990-12-04'),
   (15, 'jose', 'sanchez', 'DEM456', '23453234', '1990-12-04');
-  
-  
-  
-  
 
--- Insertar registros en la tabla venta
-INSERT INTO ventas.venta (administrador_id, conductor_id, fecha, foto) VALUES
-  (1, 1, '2023-01-15 08:30:00', 'foto1.jpg'),
-  (1, 1, '2023-02-20 10:45:00', 'foto2.jpg'),
-  (1, 1, '2023-03-25 12:15:00', 'foto3.jpg');
 
 -- Insertar registros en la tabla ruta
 INSERT INTO ventas.ruta (conductor_id, administrador_id, empleado_id, multipuntos, distancia_km, tiempo_ruta, zona_trabajo_id) VALUES

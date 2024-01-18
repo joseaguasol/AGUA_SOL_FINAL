@@ -23,7 +23,7 @@ class Pedido {
 
   Pedido(
       {required this.id,
-      required  this.ruta_id,
+      required this.ruta_id,
       required this.cliente_id,
       required this.cliente_nr_id,
       required this.monto_total,
@@ -101,13 +101,13 @@ class _ArmadoState extends State<Armado> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    
+
     connectToServer();
     //Timer.periodic(const Duration(seconds: 0),(Timer timer) {
-       getPedidos();
-   // });
-   
-   getConductores();
+    getPedidos();
+    // });
+
+    getConductores();
   }
 
   void actualizarObtenidos() {
@@ -119,52 +119,51 @@ class _ArmadoState extends State<Armado> {
   }
 
   // POST RUTA
-  Future<dynamic> createRuta(empleado_id,conductor_id,distancia,tiempo)async{
+  Future<dynamic> createRuta(
+      empleado_id, conductor_id, distancia, tiempo) async {
     await http.post(Uri.parse(apiRutaCrear),
-    headers: {"Content-type":"application/json"},
-    body: jsonEncode({
-      "conductor_id":conductor_id,
-      "empleado_id":empleado_id,
-      "distancia_km":distancia,
-      "tiempo_ruta":tiempo
-
-    }));
+        headers: {"Content-type": "application/json"},
+        body: jsonEncode({
+          "conductor_id": conductor_id,
+          "empleado_id": empleado_id,
+          "distancia_km": distancia,
+          "tiempo_ruta": tiempo
+        }));
     print("Ruta creada");
-
   }
 
   // LAST RUTA BY EMPRLEADOID
-  Future<dynamic>lastRutaEmpleado(empleadoId)async{
-    var res  = await http.get(Uri.parse(apiLastRuta+'/'+empleadoId.toString()),
-    headers: {"Content-type":"application/json"});
-    
-   setState(() {
+  Future<dynamic> lastRutaEmpleado(empleadoId) async {
+    var res = await http.get(
+        Uri.parse(apiLastRuta + '/' + empleadoId.toString()),
+        headers: {"Content-type": "application/json"});
+
+    setState(() {
       rutaIdLast = json.decode(res.body)['id'];
-   });
-   print("LAST RUTA EMPLEAD");
-   print(rutaIdLast);
+    });
+    print("LAST RUTA EMPLEAD");
+    print(rutaIdLast);
   }
 
   // UPDATE PEDIDO-RUTA
-  Future<dynamic>updatePedidoRuta(ruta_id,estado)async{
-    for (var i =0;i<obtenerPedidoSeleccionado.length;i++){
-      await http.put(Uri.parse(apiUpdateRuta+'/'+obtenerPedidoSeleccionado[i].id.toString()),
-      headers: {"Content-type":"application/json"},
-      body: jsonEncode({
-        "ruta_id":ruta_id,
-        "estado":estado
-      }));
+  Future<dynamic> updatePedidoRuta(ruta_id, estado) async {
+    for (var i = 0; i < obtenerPedidoSeleccionado.length; i++) {
+      await http.put(
+          Uri.parse(
+              apiUpdateRuta + '/' + obtenerPedidoSeleccionado[i].id.toString()),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode({"ruta_id": ruta_id, "estado": estado}));
     }
-   print("RUTA ACTUALIZADA A ");
-   print(ruta_id);
+    print("RUTA ACTUALIZADA A ");
+    print(ruta_id);
   }
 
   // CREAR Y OBTENER
-  Future<void>crearobtenerYactualizarRuta(empleadoId,conductorid,distancia,tiempo,estado)async{
+  Future<void> crearobtenerYactualizarRuta(
+      empleadoId, conductorid, distancia, tiempo, estado) async {
     await createRuta(empleadoId, conductorid, distancia, tiempo);
     await lastRutaEmpleado(empleadoId);
-    await updatePedidoRuta(rutaIdLast,estado);
-  
+    await updatePedidoRuta(rutaIdLast, estado);
   }
 
   // GET CONDUCTORES
@@ -211,7 +210,7 @@ class _ArmadoState extends State<Armado> {
             ruta_id: mapa['ruta_id'],
             cliente_id: mapa['cliente_id'],
             cliente_nr_id: mapa['cliente_nr_id'],
-            monto_total: mapa['monto_total'],
+            monto_total: mapa['monto_total'].toDouble(),
             fecha: mapa['fecha'],
             tipo: mapa['tipo'],
             estado: mapa['estado'],
@@ -221,15 +220,14 @@ class _ArmadoState extends State<Armado> {
 
         setState(() {
           // SI LOS PEDIDOS CON FECHA DE AYER,+
-          for(var i = 0 ; i< pedidos.length;i++){
-            if(pedidos[i].estado == 'pendiente'){
+          for (var i = 0; i < pedidos.length; i++) {
+            if (pedidos[i].estado == 'pendiente') {
               agendados.add(pedidos[i]);
             }
           }
           /*if(pedidos.estado == 'pendiente'){
             agendados = pedidos;
           }*/
-          
 
           print("--------AGENDADOS-----");
           print("agendados");
@@ -240,7 +238,6 @@ class _ArmadoState extends State<Armado> {
       throw Exception('Error en la solicitud: $e');
     }
   }
-  
 
   void connectToServer() {
     print("-----CONEXIÓN------");
@@ -263,7 +260,6 @@ class _ArmadoState extends State<Armado> {
       print('Conexión desconectada: EMPLEADO');
     });
 
-    
     // CREATE PEDIDO
     socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
@@ -346,7 +342,7 @@ class _ArmadoState extends State<Armado> {
       print(data);
       //socket.emit(await getPedidos());
 
-    /*  try {
+      /*  try {
     List<Pedido> nuevosPedidos = List<Pedido>.from(data.map((pedidoData) => Pedido(
       id: pedidoData['id'],
       ruta_id: pedidoData['ruta_id'],
@@ -365,11 +361,7 @@ class _ArmadoState extends State<Armado> {
   } catch (error) {
     print('Error al actualizar la vista: $error');
   }*/
-});
-
-
-
-  
+    });
   }
 
   @override
@@ -391,7 +383,6 @@ class _ArmadoState extends State<Armado> {
                 // mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   // SISTEMA DE PEDIDO
                   Container(
                     margin: const EdgeInsets.only(top: 20, left: 20),
@@ -459,7 +450,6 @@ class _ArmadoState extends State<Armado> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
                       // AGENDADOS
                       Container(
                         //color: Colors.amber,
@@ -501,7 +491,6 @@ class _ArmadoState extends State<Armado> {
                                 //controller: _scrollControllerAgendados,
                                 itemCount: agendados.length,
                                 itemBuilder: (context, index) {
-                                  
                                   return Container(
                                     margin: const EdgeInsets.only(top: 10),
                                     decoration: BoxDecoration(
@@ -519,10 +508,10 @@ class _ArmadoState extends State<Armado> {
                                                     .where((element) =>
                                                         element.seleccionado)
                                                     .toList();
-                                           if (value == true) {
+                                            if (value == true) {
                                               agendados[index].estado =
                                                   "en proceso";
-                                                   
+
                                               // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
                                               // esto con la finalidad de que se maneje el estado en la database
 
@@ -576,7 +565,7 @@ class _ArmadoState extends State<Armado> {
                           ],
                         ),
                       ),
-                      
+
                       // HOY
                       Container(
                         //color: Colors.amber,
@@ -606,7 +595,7 @@ class _ArmadoState extends State<Armado> {
                                 labelStyle:
                                     const TextStyle(color: Colors.white),
                                 enabledBorder: const UnderlineInputBorder(
-                                  borderSide:BorderSide(
+                                  borderSide: BorderSide(
                                       color: Colors
                                           .grey), // Cambia el color del cursor cuando el TextField no está enfocado
                                 ),
@@ -704,7 +693,7 @@ class _ArmadoState extends State<Armado> {
                           ],
                         ),
                       ),
-                     
+
                       // EXPRESS
                       Container(
                         //color: Colors.amber,
@@ -833,7 +822,7 @@ class _ArmadoState extends State<Armado> {
                           ],
                         ),
                       ),
-                      
+
                       const SizedBox(
                         width: 20,
                       ),
@@ -880,7 +869,6 @@ class _ArmadoState extends State<Armado> {
                       children: [
                         Row(
                           children: [
-
                             // PEDIDOS SELECCIONADOS
                             Container(
                               padding: const EdgeInsets.all(25),
@@ -889,7 +877,7 @@ class _ArmadoState extends State<Armado> {
                               width: 300,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
-                                color:const Color.fromARGB(255, 16, 63, 100),
+                                color: const Color.fromARGB(255, 16, 63, 100),
                               ),
                               child: Column(
                                 children: [
@@ -930,8 +918,11 @@ class _ArmadoState extends State<Armado> {
                                                   style: const TextStyle(
                                                       color: Colors.white),
                                                 ),
-                                                Text("Ruta ID: ${obtenerPedidoSeleccionado[index].ruta_id}",
-                                                style:const TextStyle(color: Colors.purple),),
+                                                Text(
+                                                  "Ruta ID: ${obtenerPedidoSeleccionado[index].ruta_id}",
+                                                  style: const TextStyle(
+                                                      color: Colors.purple),
+                                                ),
                                                 Text(
                                                   "Monto Total: ${obtenerPedidoSeleccionado[index].monto_total}",
                                                   style: const TextStyle(
@@ -986,24 +977,25 @@ class _ArmadoState extends State<Armado> {
                                           userAgentPackageName:
                                               'com.example.app',
                                         ),
-                                         MarkerLayer(
+                                        MarkerLayer(
                                           markers: [
                                             map.Marker(
-                                              point: LatLng(-16.4096926,-71.5682048),
+                                              point: LatLng(
+                                                  -16.4096926, -71.5682048),
                                               width: 40,
                                               height: 50,
                                               child: Container(
                                                 height: 30,
                                                 width: 30,
                                                 decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(20),
-                                                  color:Colors.green,
-                                                  image: DecorationImage(
-                                                    image: AssetImage('lib/imagenes/pocion.jpg'),
-                                                    fit: BoxFit.cover
-                                                  )
-                                                ),
-                                                
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    color: Colors.green,
+                                                    image: DecorationImage(
+                                                        image: AssetImage(
+                                                            'lib/imagenes/pocion.jpg'),
+                                                        fit: BoxFit.cover)),
                                               ),
                                             ),
                                           ],
@@ -1041,7 +1033,6 @@ class _ArmadoState extends State<Armado> {
                               child: Column(
                                 children: [
                                   const Text(
-
                                     "Conductores",
                                     style: TextStyle(
                                         fontSize: 20, color: Colors.white),
@@ -1058,7 +1049,7 @@ class _ArmadoState extends State<Armado> {
                                                 const EdgeInsets.only(top: 10),
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
-                                                color:const  Color.fromARGB(
+                                                color: const Color.fromARGB(
                                                     255, 59, 166, 63),
                                                 borderRadius:
                                                     BorderRadius.circular(20)),
@@ -1094,14 +1085,23 @@ class _ArmadoState extends State<Armado> {
                                                     .seleccionado,
                                                 onChanged: (value) {
                                                   setState(() {
-                                                    conductores[index].seleccionado = value ?? false;
-                                                    obtenerConductor = conductores.where((element) =>  element.seleccionado).toList();
+                                                    conductores[index]
+                                                            .seleccionado =
+                                                        value ?? false;
+                                                    obtenerConductor = conductores
+                                                        .where((element) =>
+                                                            element
+                                                                .seleccionado)
+                                                        .toList();
 
                                                     if (value == true) {
                                                       setState(() {
-                                                        conductorid = conductores[index].id;
+                                                        conductorid =
+                                                            conductores[index]
+                                                                .id;
                                                       });
-                                                      print("CONDUCTOR ID SELECCIIONADO");
+                                                      print(
+                                                          "CONDUCTOR ID SELECCIIONADO");
                                                       print(conductorid);
                                                       /*conductores[index]
                                                                       .estado =
@@ -1127,7 +1127,7 @@ class _ArmadoState extends State<Armado> {
                                 ],
                               ),
                             ),
-                            
+
                             // BOTON CREAR
                             Container(
                               margin: const EdgeInsets.only(left: 20),
@@ -1135,51 +1135,57 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: () async
-                                {
-                                showDialog<String>(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      AlertDialog(
-                                    title:
-                                        const Text('Crear Ruta - Conductor'),
-                                    content: const Text('¿Crear?'),
-                                    actions: <Widget>[
-                                      ElevatedButton(
-                                        onPressed: (){
-                                            Navigator.pop(context, 'Cancelar');
-                                        },
-                                            //
-                                        child: const Text('Cancelar'),
-                                      
-                                      
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: ()async {
-                                          await crearobtenerYactualizarRuta(1, conductorid,50,3,"en proceso");
-                                            setState(() {
-                                                obtenerPedidoSeleccionado=[];
-                                                }); 
-                                                for(var i = 0;i<agendados.length;i++){
-                                                  agendados[i].seleccionado = false;
-                                                }
-                                                for(var i=0;i<conductores.length;i++){
-                                                  conductores[i].seleccionado = false;
-                                                }
-                                              
-                                            await getPedidos();
-                                        },
-                                           // Navigator.pop(context, 'SI'),
-                                        child: const Text('SI'),
-                                      ),
-                                    ],
-                                  ));
+                                onPressed: () async {
+                                  showDialog<String>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                            title: const Text(
+                                                'Crear Ruta - Conductor'),
+                                            content: const Text('¿Crear?'),
+                                            actions: <Widget>[
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(
+                                                      context, 'Cancelar');
+                                                },
+                                                //
+                                                child: const Text('Cancelar'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  await crearobtenerYactualizarRuta(
+                                                      1,
+                                                      conductorid,
+                                                      50,
+                                                      3,
+                                                      "en proceso");
+                                                  setState(() {
+                                                    obtenerPedidoSeleccionado =
+                                                        [];
+                                                  });
+                                                  for (var i = 0;
+                                                      i < agendados.length;
+                                                      i++) {
+                                                    agendados[i].seleccionado =
+                                                        false;
+                                                  }
+                                                  for (var i = 0;
+                                                      i < conductores.length;
+                                                      i++) {
+                                                    conductores[i]
+                                                        .seleccionado = false;
+                                                  }
 
+                                                  await getPedidos();
+                                                },
+                                                // Navigator.pop(context, 'SI'),
+                                                child: const Text('SI'),
+                                              ),
+                                            ],
+                                          ));
 
-                               // create ruta - empleadoid,conductorid,distancia,tiempo
-                                  
-                                  
-                                 
+                                  // create ruta - empleadoid,conductorid,distancia,tiempo
                                 },
                                 child: Text(
                                   "Crear \u{2795}",
@@ -1188,7 +1194,7 @@ class _ArmadoState extends State<Armado> {
                                 ),
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
-                                   const Color.fromARGB(255, 16, 63, 100),
+                                    const Color.fromARGB(255, 16, 63, 100),
                                   ),
                                 ),
                               ),

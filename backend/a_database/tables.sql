@@ -132,7 +132,7 @@ create table ventas.pedido(
 	cliente_id int,
 	cliente_nr_id int,
 	descuento int,
-	monto_total decimal(10,2) not null,
+	monto_total float not null,
 	fecha timestamp not null,
 	tipo varchar(20),
 	foto varchar(200),

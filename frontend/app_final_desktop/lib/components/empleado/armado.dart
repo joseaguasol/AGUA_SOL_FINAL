@@ -501,7 +501,7 @@ class _ArmadoState extends State<Armado> {
                                 //controller: _scrollControllerAgendados,
                                 itemCount: agendados.length,
                                 itemBuilder: (context, index) {
-                                
+                                  
                                   return Container(
                                     margin: const EdgeInsets.only(top: 10),
                                     decoration: BoxDecoration(
@@ -522,8 +522,10 @@ class _ArmadoState extends State<Armado> {
                                            if (value == true) {
                                               agendados[index].estado =
                                                   "en proceso";
+                                                   
                                               // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
                                               // esto con la finalidad de que se maneje el estado en la database
+
                                               actualizarObtenidos();
                                             } else {
                                               agendados[index].estado =
@@ -1135,7 +1137,7 @@ class _ArmadoState extends State<Armado> {
                               child: ElevatedButton(
                                 onPressed: () async
                                 {
-                                /*  showDialog<String>(
+                                showDialog<String>(
                                   context: context,
                                   builder: (BuildContext context) =>
                                       AlertDialog(
@@ -1144,35 +1146,39 @@ class _ArmadoState extends State<Armado> {
                                     content: const Text('¿Crear?'),
                                     actions: <Widget>[
                                       ElevatedButton(
-                                        onPressed: (){},
-                                            //Navigator.pop(context, 'Cancelar'),
+                                        onPressed: (){
+                                            Navigator.pop(context, 'Cancelar');
+                                        },
+                                            //
                                         child: const Text('Cancelar'),
                                       
                                       
                                       ),
                                       ElevatedButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'SI'),
+                                        onPressed: ()async {
+                                          await crearobtenerYactualizarRuta(1, conductorid,50,3,"en proceso");
+                                            setState(() {
+                                                obtenerPedidoSeleccionado=[];
+                                                }); 
+                                                for(var i = 0;i<agendados.length;i++){
+                                                  agendados[i].seleccionado = false;
+                                                }
+                                                for(var i=0;i<conductores.length;i++){
+                                                  conductores[i].seleccionado = false;
+                                                }
+                                              
+                                            await getPedidos();
+                                        },
+                                           // Navigator.pop(context, 'SI'),
                                         child: const Text('SI'),
                                       ),
                                     ],
-                                  ));*/
+                                  ));
 
 
- // create ruta - empleadoid,conductorid,distancia,tiempo
-                                  await crearobtenerYactualizarRuta(1, conductorid,50,3,"en proceso");
-                                  setState(() {
-                                   obtenerPedidoSeleccionado=[];
-                                  }); 
-                                  for(var i = 0;i<agendados.length;i++){
-                                    agendados[i].seleccionado = false;
-                                  }
-                                  for(var i=0;i<conductores.length;i++){
-                                    conductores[i].seleccionado = false;
-                                  }
-                                  await getPedidos();
-
-
+                               // create ruta - empleadoid,conductorid,distancia,tiempo
+                                  
+                                  
                                  
                                 },
                                 child: Text(

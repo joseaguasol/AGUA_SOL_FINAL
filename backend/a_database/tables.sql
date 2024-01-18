@@ -89,6 +89,7 @@ create table ventas.cliente(
 	fecha_nacimiento date,
 	sexo varchar(100),
 	direccion varchar(150),
+	telefono varchar(50),
 	dni varchar(100) not null,
 	codigo varchar(200),
 	saldo_beneficios int,

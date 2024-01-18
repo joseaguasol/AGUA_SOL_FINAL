@@ -1,23 +1,44 @@
 import 'package:app_final/components/test/camara.dart';
+import 'package:app_final/components/test/pedido.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+//import 'package:lottie/lottie.dart';
+
+class Ruta {
+  final List<Pedido> pedidos;
+  final int kilometraje;
+  const Ruta({
+    Key? key,
+    required this.pedidos,
+    required this.kilometraje,
+  });
+}
 
 class HolaConductor extends StatefulWidget {
   const HolaConductor({super.key});
-
   @override
   State<HolaConductor> createState() => _HolaConductorState();
 }
 
 class _HolaConductorState extends State<HolaConductor> {
+  String apiRutas = 'http://10.0.2.2:8004/api/promocion';
+  int numerodePedidosNormales = 13;
+  int numerodePedidosExpress = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    //getProducts();
+  }
+
   @override
   Widget build(BuildContext context) {
+    int numeroTotalPedidos = numerodePedidosExpress + numerodePedidosNormales;
+    int pedidoActual = 1;
     //final TabController _tabController = TabController(length: 2, vsync: this);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     return Scaffold(
       key: _scaffoldKey,
-      
       body: SafeArea(
           child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -58,32 +79,32 @@ class _HolaConductorState extends State<HolaConductor> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
+                    /*Container(
                       margin: const EdgeInsets.only(left: 20),
                       child: Text(
                         "Hola Julio !",
                         style: TextStyle(fontSize: 20),
                       ),
-                    ),
-                    Container(
+                    ),*/
+                    /*Container(
                       margin: const EdgeInsets.only(left: 20),
                       child: const Row(
                         children: [
                           Text(
-                            "Bienvenid@ a",
-                            style: TextStyle(fontSize: 25),
+                            "Bienvenid@ a ",
+                            style: TextStyle(fontSize: 20),
                           ),
                           Text(
-                              "Agua Sol",
-                              style: TextStyle(
-                                  color: const Color.fromARGB(255, 3, 42, 74),
-                                  fontFamily: 'Pacifico',
-                                  fontSize: 30),
-                            )
+                            "Agua Sol",
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 3, 42, 74),
+                                fontFamily: 'Pacifico',
+                                fontSize: 25),
+                          )
                         ],
                       ),
-                    ),
-                    Container(
+                    ),*/
+                    /*Container(
                       margin: const EdgeInsets.only(left: 18),
                       child: Row(
                         children: [
@@ -103,11 +124,13 @@ class _HolaConductorState extends State<HolaConductor> {
                               child: Lottie.asset('lib/imagenes/brazo.json'))
                         ],
                       ),
-                    ),
+                    ),*/
+
+                    //este container tiene los pedidos programas y express
                     Container(
                       margin: const EdgeInsets.only(left: 20),
-                      height: 85,
-                     // color: Colors.grey,
+                      height: 75,
+                      // color: Colors.grey,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -126,10 +149,10 @@ class _HolaConductorState extends State<HolaConductor> {
                                           color:
                                               Color.fromARGB(255, 1, 116, 89))),
                                   child: Text(
-                                    " 10 ",
-                                    style: TextStyle(
+                                    " ${numerodePedidosNormales} ",
+                                    style: const TextStyle(
                                         color: Color.fromARGB(255, 0, 53, 95),
-                                        fontSize: 30),
+                                        fontSize: 20),
                                   ),
                                 ),
                                 const SizedBox(
@@ -139,7 +162,7 @@ class _HolaConductorState extends State<HolaConductor> {
                                   //color:Colors.blue,
                                   child: Text(
                                     "Pedidos \nProgramados",
-                                    style: TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: 15),
                                   ),
                                 )
                               ],
@@ -164,11 +187,10 @@ class _HolaConductorState extends State<HolaConductor> {
                                             image: AssetImage(
                                                 'lib/imagenes/express.png'))),
                                   ),
-                                  label: Text(" 3 ",
+                                  label: Text(" ${numerodePedidosExpress} ",
                                       style: TextStyle(fontSize: 20)),
                                 ),
-                                Text("¿Express?",
-                                    style: TextStyle(fontSize: 15))
+                                Text("Express", style: TextStyle(fontSize: 15))
                               ],
                             ),
                           )
@@ -178,168 +200,146 @@ class _HolaConductorState extends State<HolaConductor> {
                     Container(
                       margin: const EdgeInsets.only(left: 20),
                       //color: Colors.grey,
-                      height: 40,
-                      child: Row(
-                          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      height: 90,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Container(
-                                child: Text("Aquí está tus pedidos!",style:TextStyle(fontSize: 20),)),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            
-                            
+                                child: Text(
+                              "Pedido $pedidoActual/$numeroTotalPedidos ",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            )),
+                            Container(
+                                child: Text(
+                              "Productos: ..... de la API",
+                              style: TextStyle(fontSize: 14),
+                            )),
+                            Container(
+                                child: Text(
+                              "Cliente: ..... de la API",
+                              style: TextStyle(fontSize: 14),
+                            )),
+                            Container(
+                                child: Text(
+                              "Monto: ..... de la API",
+                              style: TextStyle(fontSize: 14),
+                            )),
                           ]),
                     ),
+                    SizedBox(height: 10),
+
                     Container(
-                      margin: const EdgeInsets.only(left: 20),
-                     // color: Colors.grey,
-                      height: 300,
-                      child:
-                       Row(children: [
-                        Container(
-                          width: 140,
-                          height: 300,
-                         // color: Colors.red,
-                          child: ListView.builder(
-                            itemCount:8, // Puedes establecer el itemCount general si es necesario
-                            itemBuilder: (context, index) {
-                              // Puedes personalizar itemCount para cada widget
-                              int itemCountElevated = 5;
-                              int itemCountText = 2;
-
-                              return Column(
-                                children: [
-                                  if (index < itemCountElevated)
-                                    Container(
-                                      height: 60,
-                                      margin: const EdgeInsets.only(top: 10),
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all(
-                                                  Color.fromARGB(255, 3, 74, 132)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Text("Pedido ",
-                                                style:
-                                                    TextStyle(color: Colors.white)),
-                                            Icon(Icons.photo_camera,color: Colors.white,)
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  // Ajusta el espacio entre los botones
-                                //  const SizedBox(height: 10,),
-                                  if (index < itemCountText)
-                                    Container(
-                                      height: 60,
-                                      margin: const EdgeInsets.only(top: 10),
-                                      child: ElevatedButton(
-                                        onPressed: () {},
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all(
-                                                 Color.fromARGB(255, 231, 25, 22)),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Text("Express ",
-                                                style:
-                                                    TextStyle(color: Colors.white)),
-                                            Icon(Icons.photo_camera,color:Colors.white)
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    //const SizedBox(height: 10,),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-
-
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Container(width: 250, height: 300, color: Color.fromARGB(255, 245, 210, 149)),
-                      ]),
+                      margin: const EdgeInsets.only(left: 20, right: 20),
+                      color: Colors.green,
+                      height: 200,
+                      width: 500,
+                      child: Text("Aqui se corre el mapa"),
                     ),
-                    const SizedBox(height: 20,),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    Container(
+                        margin: const EdgeInsets.only(left: 20),
+                        child: Text(
+                          "Tipo de pago:",
+                          style: TextStyle(fontSize: 18),
+                        )),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
                     Container(
                       margin: const EdgeInsets.only(left: 20),
                       child: Row(
-                       // mainAxisAlignment: MainAxisAlignment.start,
+                        // mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                              Container(child: Text("Completaste ",style: TextStyle(fontSize: 30),)),
-                                Container(child: Text("Todo ? ",style: TextStyle(fontSize: 30),)),
-                            ],
-                          ),
-                         
-
                           Container(
-                            width: 100,
-                            height: 60,
-                            child: ElevatedButton(onPressed: (){
-                              Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Camara()),
-                          );
-                            },
-                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Color.fromARGB(255, 2, 86, 155))
-                             ),
-                             child: Text("Si !",style:TextStyle(fontSize:20,color:Colors.white),)),
-                          )
+                            width: 150,
+                            height: 40,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Camara()),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Color.fromARGB(255, 2, 86, 155))),
+                                child: Text(
+                                  "Yape/Pin",
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
+                                )),
+                          ),
+                          SizedBox(
+                            width: 30,
+                          ),
+                          Container(
+                            width: 150,
+                            height: 40,
+                            child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Camara()),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Color.fromARGB(255, 2, 86, 155))),
+                                child: Text(
+                                  "Efectivo",
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
+                                )),
+                          ),
                         ],
                       ),
                     ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    Container(
+                        margin: const EdgeInsets.only(left: 20),
+                        child: Text(
+                          "Problemas al entregar el pedido",
+                          style: TextStyle(fontSize: 18),
+                        )),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    Container(
+                      margin: const EdgeInsets.only(left: 20),
+                      width: 250,
+                      height: 40,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Camara()),
+                            );
+                          },
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  Color.fromARGB(255, 2, 86, 155))),
+                          child: Text(
+                            "No pude entregar el pedido",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          )),
+                    ),
                   ]))),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 2, 68, 122),
-              ),
-              child: const Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text('Opción 1'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Opción 2'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            const SizedBox(
-              height: 200,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  //Navigator.pushReplacementNamed(context, '/loginsol');
-                },
-                child: Text("Salir")),
-          ],
-        ),
-      ),
     );
   }
 }

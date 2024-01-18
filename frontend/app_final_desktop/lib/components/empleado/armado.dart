@@ -14,7 +14,7 @@ class Pedido {
   int? ruta_id;
   final int cliente_id;
   final int? cliente_nr_id;
-  final int monto_total;
+  final double monto_total;
   final String fecha;
   final String tipo;
   String estado;

@@ -288,9 +288,6 @@ SELECT setval('ventas.producto_id_seq', 1, false);
 -- Vehiculo
 SELECT setval('ventas.vehiculo_id_seq', 1, false);
 
--- Venta
-SELECT setval('ventas.venta_id_seq', 1, false);
-
 -- Zona Trabajo
 SELECT setval('ventas.zona_trabajo_id_seq', 1, false);
 

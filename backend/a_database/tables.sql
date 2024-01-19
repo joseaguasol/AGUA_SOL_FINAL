@@ -117,12 +117,11 @@ create table ventas.cliente_noregistrado(
 create table ventas.ruta(
 	id serial primary key,
 	conductor_id int,
-	administrador_id int not null,
-	empleado_id int not null,
-	multipuntos varchar(1000), --GEOMETRY(MULTIPOINT,4326),
-	distancia_km int not null,
-	tiempo_ruta int not null,
-	zona_trabajo_id int not null
+	administrador_id int,
+	empleado_id int,
+	distancia_km int,
+	tiempo_ruta int,
+	zona_trabajo_id int
 );
 
 -- Table: ventas.pedido
@@ -166,6 +165,15 @@ create table ventas.vehiculo(
 	conductor_id int not null,
 	placa varchar(100) not null,
 	capacidad_carga_ton int not null
+);
+
+--Table: ventas.venta
+create table ventas.venta(
+	id serial primary key,
+	administrador_id int,
+	conductor_id int,
+	fecha timestamp,
+	foto varchar(200)
 );
 
 --Table: ventas.zona_trabajo
@@ -287,9 +295,6 @@ SELECT setval('ventas.producto_id_seq', 1, false);
 
 -- Vehiculo
 SELECT setval('ventas.vehiculo_id_seq', 1, false);
-
--- Venta
-SELECT setval('ventas.venta_id_seq', 1, false);
 
 -- Zona Trabajo
 SELECT setval('ventas.zona_trabajo_id_seq', 1, false);

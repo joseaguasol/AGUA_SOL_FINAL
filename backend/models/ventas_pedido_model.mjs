@@ -6,17 +6,17 @@ import { io } from '../index.mjs';
 const modelPedido = {
     createPedido:async (pedido) => {
         try{
-            console.log("-----PEDIDOO recibidoooo------")
-            console.log(pedido)
+          //  console.log("-----PEDIDOO recibidoooo------")
+           // console.log(pedido)
            // const io = await app_sol.get('io');
-           console.log("-----PEDIDO INSERTADO-------")
+         //  console.log("-----PEDIDO INSERTADO-------")
 
             const pedidos = await db_pool.one('INSERT INTO ventas.pedido (cliente_id,monto_total,fecha,tipo,estado) VALUES ($1,$2,$3,$4,$5) RETURNING *',
             [pedido.cliente_id,pedido.monto_total,pedido.fecha,pedido.tipo,pedido.estado]);
             
            // const io = app_sol.get(io);
             //EMITIR UN EVENTO
-            console.log(pedidos)
+           // console.log(pedidos)
             io.emit('nuevoPedido',pedidos)
 
             return pedidos
@@ -39,9 +39,14 @@ const modelPedido = {
         console.log("dentro de get....")
         
         try {
-            const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido WHERE estado =  \'pendiente\'');
-            console.log("EMITIENDO PEDIDOS,...")
+          const pedidos = await db_pool.any(`SELECT vp.id,vp.monto_total,vp.ruta_id,vp.fecha,vp.estado,vp.tipo,vc.nombre,vc.apellidos,vc.telefono,vc.ubicacion FROM ventas.pedido as vp
+            INNER JOIN ventas.cliente as vc ON vp.cliente_id = vc.id 
+            WHERE estado =  \'pendiente\'`);
+
+          //  const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido WHERE estado =  \'pendiente\'');
+            //console.log("EMITIENDO PEDIDOS...GET,...")
             //io.emit('vista',"hola")
+           // console.log(pedidos)
             return pedidos
 
         } catch (error) {

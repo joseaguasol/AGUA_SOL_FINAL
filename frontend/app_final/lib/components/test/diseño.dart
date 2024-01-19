@@ -28,6 +28,7 @@ class _Login2State extends State<Login2> {
     });
   }
 
+  String? LoggedInWith;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Future<dynamic> signInWithGoogle() async {
@@ -45,6 +46,7 @@ class _Login2State extends State<Login2> {
       final UserCredential authResult =
           await _auth.signInWithCredential(credential);
       final User? user = authResult.user;
+      LoggedInWith = "google";
       return user;
     } catch (e) {
       print('Error during Google sign-in: $e');
@@ -67,6 +69,7 @@ class _Login2State extends State<Login2> {
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         final User? user = userCredential.user;
+        LoggedInWith = "face";
         return user;
       }
     } catch (e) {
@@ -236,8 +239,9 @@ class _Login2State extends State<Login2> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      Hola(url: user.photoURL)));
+                                  builder: (context) => Hola(
+                                      url: user.photoURL,
+                                      LoggedInWith: LoggedInWith)));
                         } else {
                           print(
                               'Inicio de sesión con Google cancelado o error');
@@ -269,8 +273,9 @@ class _Login2State extends State<Login2> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      Hola(url: user.photoURL)));
+                                  builder: (context) => Hola(
+                                      url: user.photoURL,
+                                      LoggedInWith: LoggedInWith)));
                         } else {
                           print(
                               'Inicio de sesión con Facebook cancelado o error');
@@ -302,7 +307,7 @@ class _Login2State extends State<Login2> {
                 // padding: EdgeInsets.all(20),
                 // child: Image.asset('lib/imagenes/BIDON7.png'),
               )),
-          /*  
+              /*  
               Container(
                   width: 200,
                   height: MediaQuery.of(context).size.height < 480 ? 40 : 50,

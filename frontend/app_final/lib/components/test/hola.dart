@@ -4,6 +4,9 @@ import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Producto {
   final String nombre;
@@ -21,7 +24,12 @@ class Producto {
 
 class Hola extends StatefulWidget {
   final String? url;
-  const Hola({this.url, Key? key}) : super(key: key);
+  final String? LoggedInWith;
+  const Hola({
+    this.url,
+    this.LoggedInWith,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<Hola> createState() => _HolaState();
@@ -47,6 +55,16 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
       _startAutoScroll();
     });
     getProducts();
+  }
+
+  void _handleLogout() async {
+    if (widget.LoggedInWith == "google") {
+      await FirebaseAuth.instance.signOut();
+      await GoogleSignIn().signOut();
+    } else if (widget.LoggedInWith == "face") {
+      await FacebookAuth.instance.logOut();
+    }
+    print('Sesión cerrada automáticamente debido a inactividad');
   }
 
   bool _autoScrollInProgress = false;
@@ -170,7 +188,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
               ),
               ElevatedButton(
                   onPressed: () {
-                    //Navigator.pushReplacementNamed(context, '/loginsol');
+                    _handleLogout();
+                    Navigator.pushReplacementNamed(context, '/loginsol');
                   },
                   child: Text("Salir")),
             ],
@@ -231,8 +250,11 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                               builder: (BuildContext context) {
                                                 return Container(
                                                   height: 700,
-                                                  width: MediaQuery.of(context).size.width,
-                                                  padding: const EdgeInsets.all(16.0),
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding: const EdgeInsets.all(
+                                                      16.0),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -243,16 +265,17 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                                       const Text(
                                                         'Agregar Ubicación',
                                                         style: TextStyle(
-                                                          color:Color.fromARGB(255, 3, 64, 113),
+                                                          color: Color.fromARGB(
+                                                              255, 3, 64, 113),
                                                           fontSize: 20,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 10),
-                                                      
-                                                      
-                                                      const SizedBox(height: 10),
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      const SizedBox(
+                                                          height: 10),
                                                       ElevatedButton(
                                                         onPressed: () {
                                                           print("ubi añadidda");
@@ -260,16 +283,32 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                                           //String nuevaUbicacion = ubicacionController.text;
                                                           // ... lógica para agregar la ubicación ...
                                                           // Cerrar el modal después de agregar la ubicación
-                                                         /* Navigator.pop(
+                                                          /* Navigator.pop(
                                                               context);*/
                                                         },
                                                         child: const Row(
                                                           children: [
-                                                            Icon(Icons.add_location_alt_outlined,color: Colors.blue,size: 25,),
-                                                            Text(' Agregar ubicación actual ?',
-                                                            style: TextStyle(fontSize:20,
-                                                            fontWeight: FontWeight.w400,
-                                                            color: Color.fromARGB(255, 77, 231, 82)),),
+                                                            Icon(
+                                                              Icons
+                                                                  .add_location_alt_outlined,
+                                                              color:
+                                                                  Colors.blue,
+                                                              size: 25,
+                                                            ),
+                                                            Text(
+                                                              ' Agregar ubicación actual ?',
+                                                              style: TextStyle(
+                                                                  fontSize: 20,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  color: Color
+                                                                      .fromARGB(
+                                                                          255,
+                                                                          77,
+                                                                          231,
+                                                                          82)),
+                                                            ),
                                                           ],
                                                         ),
                                                       ),
@@ -402,8 +441,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                             unselectedLabelStyle: const TextStyle(fontSize: 16),
                             labelColor: const Color.fromARGB(255, 0, 52, 95),
                             unselectedLabelColor: Colors.grey,
-                            indicatorColor: const Color.fromARGB(255, 21, 168, 14),
-                            tabs:const  [
+                            indicatorColor:
+                                const Color.fromARGB(255, 21, 168, 14),
+                            tabs: const [
                               Tab(
                                 text: "Promociones",
                               ),

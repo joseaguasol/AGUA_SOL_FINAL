@@ -12,10 +12,14 @@ import 'dart:async';
 class Pedido {
   final int id;
   int? ruta_id;
-  final int cliente_id;
-  final int? cliente_nr_id;
-  final double monto_total;
   final String fecha;
+  final String nombre;
+  final String apellidos;
+  final String telefono;
+  final String ubicacion;
+ // final int cliente_id;
+ //final int? cliente_nr_id;
+  final double monto_total;
   final String tipo;
   String estado;
 
@@ -24,8 +28,12 @@ class Pedido {
   Pedido(
       {required this.id,
       required this.ruta_id,
-      required this.cliente_id,
-      required this.cliente_nr_id,
+      required this.nombre,
+      required this.apellidos,
+    required this.ubicacion,
+     required this.telefono,
+     // required this.cliente_id,
+     // required this.cliente_nr_id,
       required this.monto_total,
       required this.fecha,
       required this.tipo,
@@ -159,11 +167,11 @@ class _ArmadoState extends State<Armado> {
   }
 
   // CREAR Y OBTENER
-  Future<void> crearobtenerYactualizarRuta(
-      empleadoId, conductorid, distancia, tiempo, estado) async {
+  Future<void> crearobtenerYactualizarRuta(empleadoId, conductorid, distancia, tiempo, estado) async {
     await createRuta(empleadoId, conductorid, distancia, tiempo);
     await lastRutaEmpleado(empleadoId);
     await updatePedidoRuta(rutaIdLast, estado);
+    
   }
 
   // GET CONDUCTORES
@@ -208,8 +216,12 @@ class _ArmadoState extends State<Armado> {
           return Pedido(
             id: mapa['id'],
             ruta_id: mapa['ruta_id'],
-            cliente_id: mapa['cliente_id'],
-            cliente_nr_id: mapa['cliente_nr_id'],
+            nombre :mapa['nombre'],
+            apellidos: mapa['apellidos'],
+           telefono: mapa['telefono'],//?.toString() ?? "",//.toString(),
+            ubicacion: mapa['ubicacion'],//.toString(),
+            //cliente_id: mapa['cliente_id'],
+            //cliente_nr_id: mapa['cliente_nr_id'],
             monto_total: mapa['monto_total'].toDouble(),
             fecha: mapa['fecha'],
             tipo: mapa['tipo'],
@@ -274,8 +286,12 @@ class _ArmadoState extends State<Armado> {
           Pedido nuevoHoy = Pedido(
               id: data['id'],
               ruta_id: data['ruta_id'],
-              cliente_id: data['cliente_id'],
-              cliente_nr_id: data['cliente_nr_id'],
+              nombre: data['nombre'],
+              apellidos: data['apellidos'],
+            telefono: data['telefono'],
+            ubicacion: data['ubicacion'],
+             // cliente_id: data['cliente_id'],
+              //cliente_nr_id: data['cliente_nr_id'],
               monto_total: data['monto_total'],
               fecha: data['fecha'],
               tipo: data['tipo'],
@@ -291,8 +307,12 @@ class _ArmadoState extends State<Armado> {
           Pedido nuevoExpress = Pedido(
               id: data['id'],
               ruta_id: data['ruta_id'],
-              cliente_id: data['cliente_id'],
-              cliente_nr_id: data['cliente_nr_id'],
+              nombre: data['nombre'],
+              apellidos: data['apellidos'],
+              telefono: data['telefono'],
+             ubicacion: data['ubicacion'],
+             // cliente_id: data['cliente_id'],
+             //cliente_nr_id: data['cliente_nr_id'],
               monto_total: data['monto_total'],
               fecha: data['fecha'],
               tipo: data['tipo'],
@@ -491,6 +511,22 @@ class _ArmadoState extends State<Armado> {
                                 //controller: _scrollControllerAgendados,
                                 itemCount: agendados.length,
                                 itemBuilder: (context, index) {
+                                  if (agendados[index].estado == "en proceso" &&
+                                  agendados[index].seleccionado ==  true){
+                                    return Container(
+                                      width: 90,
+                                      height: 80,
+                                      margin: const EdgeInsets.only(top: 20),
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color:Colors.blue,
+                                        borderRadius: BorderRadius.circular(20)
+                                      ),
+                                      child: Text("Pedido Procesado",
+                                      style: TextStyle(color: Colors.white),),
+                                    );
+                                  }
+                                  else{
                                   return Container(
                                     margin: const EdgeInsets.only(top: 10),
                                     decoration: BoxDecoration(
@@ -499,18 +535,12 @@ class _ArmadoState extends State<Armado> {
                                     child: ListTile(
                                       trailing: Checkbox(
                                         value: agendados[index].seleccionado,
-                                        onChanged: (value) {
+                                        onChanged: (agendados[index].estado != 'en proceso') ? (value) {
                                           setState(() {
-                                            agendados[index].seleccionado =
-                                                value ?? false;
-                                            obtenerPedidoSeleccionado =
-                                                agendados
-                                                    .where((element) =>
-                                                        element.seleccionado)
-                                                    .toList();
+                                            agendados[index].seleccionado =value ?? false;
+                                            obtenerPedidoSeleccionado =agendados.where((element) =>element.seleccionado).toList();
                                             if (value == true) {
-                                              agendados[index].estado =
-                                                  "en proceso";
+                                              agendados[index].estado ="en proceso";
 
                                               // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
                                               // esto con la finalidad de que se maneje el estado en la database
@@ -523,42 +553,42 @@ class _ArmadoState extends State<Armado> {
                                               // esto con la finalidad de que se maneje el estado en la database
                                               actualizarObtenidos();
                                             }
+                                            
                                           });
-                                        },
+                                        }:null,
                                       ),
                                       title: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                              'Pedido ID: ${agendados[index].id}'),
+                                              'Pedido ID: ${agendados[index].id}',
+                                              style:const TextStyle(color:Colors.purple,
+                                              fontWeight: FontWeight.w500,fontSize: 15),),
                                           Text(
-                                              'Cliente ID: ${agendados[index].cliente_id}'),
+                                              'Cliente: ${agendados[index].nombre},${agendados[index].apellidos}'),
+                                       //   Text('Telefono ${agendados[index].telefono}'),
                                           Text(
-                                              'Monto Total: ${agendados[index].monto_total}'),
+                                              'Monto Total: ${agendados[index].monto_total}',
+                                              style: const TextStyle(color: Color.fromARGB(255, 2, 91, 5),
+                                              fontWeight: FontWeight.w500),),
                                           Text(
                                             'Estado: ${agendados[index].estado}',
-                                            style: TextStyle(
-                                                color: agendados[index]
-                                                            .estado ==
-                                                        'pendiente'
-                                                    ? Colors.red
-                                                    : agendados[index].estado ==
-                                                            'en proceso'
-                                                        ? Colors.blue
-                                                        : agendados[index]
-                                                                    .estado ==
-                                                                'entregado'
-                                                            ? Colors.green
-                                                            : Colors.black),
+                                            style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,color: agendados[index].estado =='pendiente'
+                                                    ? Colors.red: agendados[index].estado =='en proceso'
+                                                        ? const Color.fromARGB(255, 2, 72, 129): agendados[index].estado =='entregado'
+                                                            ? const Color.fromARGB(255, 9, 135, 13): Colors.black),
                                           ),
-                                          Text(
-                                              'Fecha: ${agendados[index].fecha}'),
+                                          Text('Fecha: ${agendados[index].fecha}',
+                                          style: TextStyle(fontWeight:FontWeight.w200,
+                                          fontSize: 15,
+                                          color:Color.fromARGB(255, 0, 0, 0)),),
                                         ],
                                       ),
                                       /*trailing: Row(*/
                                     ),
                                   );
+                                  }
                                 },
                               ),
                             ),
@@ -658,7 +688,8 @@ class _ArmadoState extends State<Armado> {
                                           Text(
                                               'Pedido ID: ${hoypedidos[index].id}'),
                                           Text(
-                                              'Cliente ID: ${hoypedidos[index].cliente_id}'),
+                                              'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}'),
+                                         // Text('Telefono: ${hoypedidos[index].telefono}'),
                                           Text(
                                               'Monto Total: ${hoypedidos[index].monto_total}'),
                                           Text(
@@ -787,7 +818,8 @@ class _ArmadoState extends State<Armado> {
                                           Text(
                                               'Pedido ID: ${hoyexpress[index].id}'),
                                           Text(
-                                              'Cliente ID: ${hoyexpress[index].cliente_id}'),
+                                              'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}'),
+                                         // Text('Telefono: ${hoyexpress[index].telefono}'),
                                           Text(
                                               'Monto Total: ${hoyexpress[index].monto_total}'),
                                           Text(
@@ -914,7 +946,7 @@ class _ArmadoState extends State<Armado> {
                                                       color: Colors.white),
                                                 ),
                                                 Text(
-                                                  "Cliente ID: ${obtenerPedidoSeleccionado[index].cliente_id}",
+                                                  "Cliente: ${obtenerPedidoSeleccionado[index].nombre}, ${obtenerPedidoSeleccionado[index].apellidos}",
                                                   style: const TextStyle(
                                                       color: Colors.white),
                                                 ),
@@ -1144,42 +1176,75 @@ class _ArmadoState extends State<Armado> {
                                                 'Crear Ruta - Conductor'),
                                             content: const Text('¿Crear?'),
                                             actions: <Widget>[
+                                              // CANCELAR
                                               ElevatedButton(
-                                                onPressed: () {
+                                                onPressed: () async{
+                                                for (var i = 0;i < agendados.length;i++) {
+                                                    // aca digo que todos los pedidos se reviertan a false
+                                                    // y esten pendinte
+                                                    // ---ASI QUE FILTRO ESE PEDIDO
+                                                    if(agendados[i].estado == 'en proceso' && agendados[i].seleccionado==true){
+                                                      agendados[i].seleccionado = false;
+                                                     agendados[i].estado = 'pendiente';
+                                                    }
+                                                 //   agendados[i].seleccionado =false;
+                                                   // agendados[i].estado = 'pendiente';
+                                                   
+                                                    
+                                                  }
+                                            
+                                                  for (var i = 0;i < conductores.length;i++) {
+                                                    conductores[i].seleccionado = false;
+                                                  }
+                                                  setState(() {
+                                                    obtenerPedidoSeleccionado =
+                                                        [];
+                                                  });
+                                                   await getPedidos();
+                                                         
+                                                  setState(() {
+                                                    
+                                                  });
+
                                                   Navigator.pop(
                                                       context, 'Cancelar');
                                                 },
                                                 //
                                                 child: const Text('Cancelar'),
                                               ),
+                                              
+                                              // CONFIRMAR
                                               ElevatedButton(
                                                 onPressed: () async {
-                                                  await crearobtenerYactualizarRuta(
-                                                      1,
-                                                      conductorid,
-                                                      50,
-                                                      3,
-                                                      "en proceso");
+                                                  // PROCESO EL PEDIDO
+                                                  await crearobtenerYactualizarRuta(1,conductorid,50,3,"en proceso");
+
+                                                  // LIMPIO LOS SELECCIONADOS 
                                                   setState(() {
-                                                    obtenerPedidoSeleccionado =
-                                                        [];
+                                                    obtenerPedidoSeleccionado =[];
                                                   });
-                                                  for (var i = 0;
-                                                      i < agendados.length;
-                                                      i++) {
-                                                    agendados[i].seleccionado =
-                                                        false;
-                                                  }
-                                                  for (var i = 0;
-                                                      i < conductores.length;
-                                                      i++) {
-                                                    conductores[i]
-                                                        .seleccionado = false;
+
+                                                // Y DEVUELVO A DESELECCIONAR PARA QUE NO SE ACUMULE O
+                                                // ARRASTREE EL CHECKBOX ANTIGUO
+                                                  for (var i = 0;i < agendados.length;i++) {
+                                                    agendados[i].seleccionado = false;
+                                                    agendados[i].estado == 'en proceso';
+
                                                   }
 
-                                                  await getPedidos();
+                                                  // IGUAL . DESELECCIONO EL CHOFER, PARA QUE NO ARRASTRE
+                                                  for (var i = 0;i < conductores.length;i++) {
+                                                    conductores[i].seleccionado = false;
+                                                  }
+                                                  // ACTUALIZO LA VISTA AL USUARIO
+                                                    await getPedidos();
+                                                    setState(() {
+                                                    
+                                                  });
+                                           
+                                                  Navigator.pop(context, 'SI');
                                                 },
-                                                // Navigator.pop(context, 'SI'),
+                                                 
                                                 child: const Text('SI'),
                                               ),
                                             ],

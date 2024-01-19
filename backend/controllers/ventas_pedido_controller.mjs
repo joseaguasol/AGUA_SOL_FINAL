@@ -27,6 +27,8 @@ export const getPedidos =  async (req,res) => {
     console.log("id llego")
     try {
         const getPedidos = await modelPedido.getPedido();
+        //console.log("----controller pedido")
+       // console.log(getPedidos)
         res.json(getPedidos)
     } catch (error) {
         res.status(500).json({erro:error.message})
@@ -68,8 +70,8 @@ export const updateRutaPedidos = async(req,res)=>{
         // EXTRAYENDO EL ID DE LA RUTA
         const {pedidoID} = req.params
         const idpedido =parseInt(pedidoID,10)
-        console.log("idpedido")
-        console.log(idpedido)
+       // console.log("idpedido")
+        //console.log(idpedido)
 
         // EXTRAYENDO EL BODY 
         const ruta = req.body

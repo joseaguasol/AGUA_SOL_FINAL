@@ -42,16 +42,16 @@ INSERT INTO ventas.zona_trabajo (departamento, superadmin_id) VALUES
 	
 	
   -- Insertar registros en la tabla cliente
-INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sexo, direccion, dni, codigo, saldo_beneficios, direccion_empresa, suscripcion, ubicacion, RUC, nombre_empresa, zona_trabajo_id) VALUES
-  (4, 'pablo daniel', 'Apellido1', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 100, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (5, 'juana mariana', 'perez', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 130, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (6, 'eliana', 'rojas', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 120, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (7, 'luis', 'sanchez', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 50, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (8, 'sara', 'lima', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 90, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (9, 'pedro', 'suarez', '1992-05-20', 'Masculino', 'Dirección1', '1234567890', 'COD123', 38, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A',1),
-  (10, 'javier', 'masias', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 200, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (11, 'mayra', 'goñi', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 45, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
-  (12, 'jenifer', 'lopez', '1992-05-20', 'Femenino', 'Dirección1', '1234567890', 'COD123', 70, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1);
+INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sexo, direccion,telefono, dni, codigo, saldo_beneficios, direccion_empresa, suscripcion, ubicacion, RUC, nombre_empresa, zona_trabajo_id) VALUES
+  (4, 'pablo daniel', 'Apellido1', '1992-05-20', 'Femenino', 'Dirección1','67890', '1234567890', 'COD123', 100, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (5, 'juana mariana', 'perez', '1992-05-20', 'Femenino', 'Dirección1', '67890', '1234567890', 'COD123', 130, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (6, 'eliana', 'rojas', '1992-05-20', 'Femenino', 'Dirección1', '67890', '1234567890', 'COD123', 120, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (7, 'luis', 'sanchez', '1992-05-20', 'Femenino', 'Dirección1','67890',  '1234567890', 'COD123', 50, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (8, 'sara', 'lima', '1992-05-20', 'Femenino', 'Dirección1','67890',  '1234567890', 'COD123', 90, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (9, 'pedro', 'suarez', '1992-05-20', 'Masculino', 'Dirección1', '67890', '1234567890', 'COD123', 38, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A',1),
+  (10, 'javier', 'masias', '1992-05-20', 'Femenino', 'Dirección1', '67890', '1234567890', 'COD123', 200, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (11, 'mayra', 'goñi', '1992-05-20', 'Femenino', 'Dirección1', '67890', '1234567890', 'COD123', 45, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1),
+  (12, 'jenifer', 'lopez', '1992-05-20', 'Femenino', 'Dirección1', '67890', '1234567890', 'COD123', 70, 'Empresa1', 'Suscripcion1', 'Ubicacion1', '12345678901', 'Empresa A', 1);
 
  
 

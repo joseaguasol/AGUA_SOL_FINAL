@@ -2,8 +2,8 @@ import pgPromise from 'pg-promise';
 
 const pgp = pgPromise();
 
-const connectionStr = "postgres://postgres:1234@localhost:5432/newsol2024";
-
+//const connectionStr = "postgres://postgres:1234@localhost:5432/newsol2024";
+const connectionStr = "postgres://aguasol:lEowRxzb9EneOUf1gjuHvpiTU0c2yGzJ@dpg-clu7cvq1hbls73eb2t20-a.oregon-postgres.render.com/aguasol_qvou";
 //const connectionStr = "postgresql://postgres:5fDE6cgfda33eB4FFAabABgAggA4Ca-c@viaduct.proxy.rlwy.net:35474/railway";
 export const db_pool =  pgp(connectionStr);
 

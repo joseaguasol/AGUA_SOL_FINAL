@@ -167,6 +167,14 @@ create table ventas.vehiculo(
 	capacidad_carga_ton int not null
 );
 
+--Table: ventas.venta
+create table ventas.venta(
+	id serial primary key,
+	administrador_id int,
+	conductor_id int,
+	fecha timestamp,
+	foto varchar(200)
+);
 
 --Table: ventas.zona_trabajo
 create table ventas.zona_trabajo(

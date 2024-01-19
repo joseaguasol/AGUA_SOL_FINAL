@@ -19,4 +19,14 @@ export const getDetalles =  async (req,res) => {
         res.status(500).json({error:error.message})
     }
 }
+export const getDetallePedidoXPedidos =  async (req,res) => {
+    try {
+        const{pedidoID}=req.params;
+        const id=parseInt(pedidoID,10)
+        const allDetalles = await modelDetallePedido.getDetallePedidoXPedido(id);
+        res.json(allDetalles)
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
+}
 

@@ -30,7 +30,7 @@ class ProductoPromocion {
   final int promocionId;
   final int productoId;
   final int cantidadProd;
-  final int cantidadPromo;
+  final int? cantidadPromo;
 
   ProductoPromocion({
     required this.promocionId,
@@ -51,7 +51,6 @@ class _PromosState extends State<Promos> {
   String apiProductoPromocion = 'http://10.0.2.2:8004/api/prod_prom';
   String apiProducto = 'http://10.0.2.2:8004/api/products';
   List<Producto> productosContabilizados = [];
-  //List<Producto> listProductos = [];
   List<Promo> promocionesContabilizadas = [];
   List<Promo> listPromociones = [];
   List<ProductoPromocion> prodPromContabilizadas = [];

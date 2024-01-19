@@ -58,11 +58,11 @@ const modelPedido = {
         }
     },
     
-    updatePedido: async (id, pedido) => {
+    updateEstadoPedido: async (pedidoID,pedidoActualizado) => {
 
         try {
-            const result = await db_pool.oneOrNone('UPDATE ventas.pedido SET ruta_id = $1, monto_total = $2, fecha = $3, estado = $4, tipo = $5 WHERE id = $6 RETURNING *',
-                [pedido.ruta_id,pedido.monto_total,pedido.fecha,pedido.estado,pedido.tipo,id]);
+            const result = await db_pool.oneOrNone('UPDATE ventas.pedido SET estado = $1,foto=$2 WHERE id = $3 RETURNING *',
+                [pedidoActualizado.estado,pedidoActualizado.foto,pedidoID]);
 
             if (!result) {
                 throw new Error(`No se encontró un pedido con ID ${id}.`);

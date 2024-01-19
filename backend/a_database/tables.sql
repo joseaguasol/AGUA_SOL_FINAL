@@ -168,15 +168,6 @@ create table ventas.vehiculo(
 	capacidad_carga_ton int not null
 );
 
---Table: ventas.venta
-create table ventas.venta(
-	id serial primary key,
-	administrador_id int,
-	conductor_id int,
-	fecha timestamp,
-	foto varchar(200)
-);
-
 --Table: ventas.zona_trabajo
 create table ventas.zona_trabajo(
 	id serial primary key,
@@ -240,9 +231,6 @@ ALTER TABLE ventas.zona_trabajo ADD CONSTRAINT fk_zona_trabajo_superadmin FOREIG
 -- VEHICULO
 ALTER TABLE ventas.vehiculo ADD CONSTRAINT fk_vehiculo_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- VENTA
-ALTER TABLE ventas.venta ADD CONSTRAINT fk_venta_admin FOREIGN KEY (administrador_id) REFERENCES personal.administrador (id) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE ventas.venta ADD CONSTRAINT fk_venta_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- COMPRA
 ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_producto FOREIGN KEY (producto_id) REFERENCES ventas.producto (id);

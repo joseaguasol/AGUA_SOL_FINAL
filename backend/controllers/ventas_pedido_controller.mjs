@@ -51,12 +51,12 @@ export const deletePedidos = async (req,res) => {
     }
 }
 
-export const updatePedidos = async (req,res)=>{
+export const updateEstadoPedidos = async (req,res)=>{
     try {
         const {pedidoID} = req.params;
         const id = parseInt(pedidoID,10);
-        const data = req.body;
-        const updatePedidos = await modelPedido.updatePedido(id,data);
+        const pedidoActualizado = req.body;
+        const updatePedidos = await modelPedido.updateEstadoPedido(id,pedidoActualizado);
         res.json(updatePedidos);
     } catch (error) {
         res.status(500).json({error:error.message});

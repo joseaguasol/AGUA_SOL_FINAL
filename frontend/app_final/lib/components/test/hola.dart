@@ -46,15 +46,16 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
   ];
   late String dropdownValue = list.first;
 
-  final ScrollController _scrollController = ScrollController();
-
+  ScrollController _scrollController1 = ScrollController();
+  ScrollController _scrollController2 = ScrollController();
   @override
   void initState() {
     super.initState();
+     getProducts();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoScroll();
     });
-    getProducts();
+   
   }
 
   void _handleLogout() async {
@@ -78,44 +79,85 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
   }
 
   void _autoScroll() async {
-    // Marcar que el desplazamiento automático está en progreso
-    _autoScrollInProgress = true;
+    try {
+      // Marcar que el desplazamiento automático está en progreso
+      _autoScrollInProgress = true;
 
-    print("Auto-scroll initiated");
+      print("Auto-scroll initiated");
 
-    // Espera 5 segundos antes de iniciar el desplazamiento automático
-    await Future.delayed(const Duration(seconds: 2));
+      // Espera 5 segundos antes de iniciar el desplazamiento automático
+      await Future.delayed(const Duration(seconds: 2));
 
-    if (_scrollController.hasClients) {
-      print("ScrollController has clients");
+      // CONTROLLER 1
+      if (_scrollController1.hasClients) {
+        print("ScrollController1 has clients");
 
-      // Desplázate hacia abajo
-      await _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(seconds: 5),
-        curve: Curves.easeInOut,
-      );
+        // Verificar que el controlador tenga posiciones antes de realizar operaciones
+        if (_scrollController1.position.maxScrollExtent > 0.0) {
+          // Desplázate hacia abajo
+          await _scrollController1.animateTo(
+            _scrollController1.position.maxScrollExtent,
+            duration: const Duration(seconds: 5),
+            curve: Curves.easeInOut,
+          );
 
-      // Espera 4 segundos antes de volver a la posición inicial
-      await Future.delayed(const Duration(seconds: 4));
+          // Espera 4 segundos antes de volver a la posición inicial
+          await Future.delayed(const Duration(seconds: 4));
 
-      // Desplázate de nuevo hacia arriba
-      await _scrollController.animateTo(
-        0.0,
-        duration: const Duration(seconds: 5),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      print("ScrollController has no clients");
+          // Desplázate de nuevo hacia arriba
+          await _scrollController1.animateTo(
+            0.0,
+            duration: const Duration(seconds: 5),
+            curve: Curves.easeInOut,
+          );
+        } else {
+          print("ScrollController1 has no positions");
+        }
+      } else {
+        print("ScrollController1 has no clients");
+      }
+
+      // CONTROLLER 2
+      if (_scrollController2.hasClients) {
+        print("ScrollController1 has clients");
+
+        // Verificar que el controlador tenga posiciones antes de realizar operaciones
+        if (_scrollController2.position.maxScrollExtent > 0.0) {
+          // Desplázate hacia abajo
+          await _scrollController2.animateTo(
+            _scrollController2.position.maxScrollExtent,
+            duration: const Duration(seconds: 5),
+            curve: Curves.easeInOut,
+          );
+
+          // Espera 4 segundos antes de volver a la posición inicial
+          await Future.delayed(const Duration(seconds: 4));
+
+          // Desplázate de nuevo hacia arriba
+          await _scrollController2.animateTo(
+            0.0,
+            duration: const Duration(seconds: 5),
+            curve: Curves.easeInOut,
+          );
+        } else {
+          print("ScrollController1 has no positions");
+        }
+      } else {
+        print("ScrollController1 has no clients");
+      }
+
+      // Marcar que el desplazamiento automático ha terminado
+      _autoScrollInProgress = false;
+    } catch (e) {
+      print("---Error");
+      print(e);
     }
-
-    // Marcar que el desplazamiento automático ha terminado
-    _autoScrollInProgress = false;
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollController1.dispose();
+    _scrollController2.dispose();
     super.dispose();
   }
 
@@ -159,11 +201,11 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
         drawer: Drawer(
           child: ListView(
             children: [
-              DrawerHeader(
+              const DrawerHeader(
                 decoration: BoxDecoration(
                   color: Color.fromARGB(255, 2, 68, 122),
                 ),
-                child: const Text(
+                child: Text(
                   'Menu',
                   style: TextStyle(
                     color: Colors.white,
@@ -462,7 +504,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                           controller: _tabController,
                           children: [
                             ListView.builder(
-                                controller: _scrollController,
+                                controller: _scrollController1,
                                 scrollDirection: Axis.horizontal,
                                 itemCount: 5,
                                 itemBuilder: (context, index) {
@@ -489,7 +531,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                 }),
                             ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                controller: _scrollController,
+                                controller: _scrollController2,
                                 itemCount: listProducto.length,
                                 itemBuilder: (context, index) {
                                   Producto producto = listProducto[index];
@@ -569,6 +611,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                       Container(
                         margin: const EdgeInsets.only(left: 20, right: 20),
                         child: Row(children: [
+                          
                           Container(
                             width: 150,
                             height: 50,

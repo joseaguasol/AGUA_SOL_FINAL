@@ -34,28 +34,28 @@ class _FinState extends State<Fin> {
                       Container(
                         //color:Colors.grey,
                         margin: const EdgeInsets.only(top: 0,left: 20),
-                        child: Text("Gracias por",
+                        child:const Text("Gracias por",
                         style: TextStyle(
                           color:Colors.black,fontWeight: FontWeight.w300,fontSize: 30),),
                       ),
                       Container(
                         margin: const EdgeInsets.only(left: 20),
-                        child: Text("Llevar vida a tu HOGAR!",
+                        child: const Text("Llevar vida a tu HOGAR!",
                         style: TextStyle(fontSize: 30),),
                       ),
                        Container(
                         margin: const EdgeInsets.only(left: 20),
-                        child: Text("con",
+                        child: const Text("con",
                         style: TextStyle(fontSize: 35),),
                       ),
                        Container(
                         margin: const EdgeInsets.only(left: 20),
                         child: Row(
                           children: [
-                            Text("Agua Sol",
+                            const Text("Agua Sol",
                             style: TextStyle(
                               fontSize: 50,
-                              fontFamily: 'Pacifico'),),
+                              ),),
                               Container(
                                 height: 100,
                                 width: 100,
@@ -85,11 +85,11 @@ class _FinState extends State<Fin> {
                         MaterialPageRoute(builder: (context) => const Hola()),
                       );
                         },
-                         child: Text("<< Menú",
-                         style: TextStyle(fontSize: 20,color:Colors.white),),
+                        
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 1, 34, 60))
                         ),
+                         child:const Text("<< Menú",style: TextStyle(fontSize: 20,color:Colors.white),),
                          ),
           
                       ),

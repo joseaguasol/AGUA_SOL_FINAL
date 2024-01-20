@@ -355,7 +355,8 @@ class _ProductosState extends State<Productos> {
                       child: Row(
                         children: [
                           ElevatedButton(
-                              onPressed: () {
+                            
+                              onPressed:almenosUno ?() {
                                 print("si");
                                 Navigator.push(
                                   context,
@@ -367,10 +368,13 @@ class _ProductosState extends State<Productos> {
                                             total: obtenerTotal(),
                                           )),
                                 );
-                              },
+                              }:null,
                               style: ButtonStyle(
+                                  
                                   backgroundColor: MaterialStateProperty.all(
+                                      
                                       const Color.fromARGB(255, 3, 92, 165))),
+                                      
                               child: const Text(
                                 "Sí!",
                                 style: TextStyle(

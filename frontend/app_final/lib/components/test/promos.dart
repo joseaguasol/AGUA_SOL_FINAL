@@ -421,7 +421,7 @@ class _PromosState extends State<Promos> {
                         child: Row(
                           children: [
                             ElevatedButton(
-                              onPressed: () async {
+                              onPressed: almenosUno ? () async {
                                 await obtenerProducto();
                                 Navigator.push(
                                   context,
@@ -434,7 +434,7 @@ class _PromosState extends State<Promos> {
                                             total: obtenerTotal(),
                                           )),
                                 );
-                              },
+                              }:null,
                               style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
                                 const Color.fromARGB(255, 48, 107, 100),

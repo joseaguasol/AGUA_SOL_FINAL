@@ -9,18 +9,17 @@ import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart' as map;
 import 'dart:async';
 
-
 // AGENDADOS
 class Pedido {
   final int id;
   int? ruta_id; // Puede ser nulo
-  final int clienteId;
-  final int? clienteNrId; // Puede ser nulo
-  final double? descuento; // Puede ser nulo
-  final double monto_total;
+  final int cliente_id;
+  int? cliente_nr_id; // Puede ser nulo
+  double? descuento; // Puede ser nulo
+  double monto_total;
   final String fecha;
   final String tipo;
-  final String? foto; // Puede ser nulo
+  String? foto; // Puede ser nulo
   String estado;
 
   // Atributos adicionales para el caso del GET
@@ -31,23 +30,22 @@ class Pedido {
 
   bool seleccionado; // Nuevo campo para rastrear la selección
 
-  Pedido({
-      required this.id,
-    this.ruta_id,
-    required this.clienteId,
-    this.clienteNrId,
-    this.descuento,
-    required this.monto_total,
-    required this.fecha,
-    required this.tipo,
-    this.foto,
-    required this.estado,
-    // Atributos adicionales para el caso del GET
-    this.nombre,
-    this.apellidos,
-    this.telefono,
-    this.ubicacion, 
-
+  Pedido(
+      {required this.id,
+      this.ruta_id,
+      required this.cliente_id,
+      this.cliente_nr_id,
+      this.descuento,
+      required this.monto_total,
+      required this.fecha,
+      required this.tipo,
+      this.foto,
+      required this.estado,
+      // Atributos adicionales para el caso del GET
+      this.nombre,
+      this.apellidos,
+      this.telefono,
+      this.ubicacion,
       this.seleccionado = false});
 }
 
@@ -224,19 +222,19 @@ class _ArmadoState extends State<Armado> {
 
         List<Pedido> pedidos = data.map<Pedido>((mapa) {
           return Pedido(
-          id: mapa['id'],
-          ruta_id: mapa['ruta_id']    ,
-          clienteId: mapa['cliente_id'],
-          clienteNrId: mapa['cliente_nr_id'],
-          nombre: mapa['nombre'],
-          apellidos: mapa['apellidos'],
-          telefono: mapa['telefono'],
-          ubicacion: mapa['ubicacion'],
-          monto_total: mapa['monto_total']?.toDouble() ?? 0.0,
-          fecha: mapa['fecha'],
-          tipo: mapa['tipo'],
-          estado: mapa['estado'],
-        );
+            id: mapa['id'],
+            ruta_id: mapa['ruta_id'] ?? 0,
+            cliente_id: mapa['cliente_id'] ?? 0,
+            cliente_nr_id: mapa['cliente_nr_id'] ?? 0,
+            nombre: mapa['nombre'],
+            apellidos: mapa['apellidos'],
+            telefono: mapa['telefono'],
+            ubicacion: mapa['ubicacion'],
+            monto_total: mapa['monto_total']?.toDouble() ?? 0.0,
+            fecha: mapa['fecha'],
+            tipo: mapa['tipo'],
+            estado: mapa['estado'],
+          );
         }).toList();
 
         setState(() {
@@ -286,46 +284,64 @@ class _ArmadoState extends State<Armado> {
       print('Nuevo Pedido: $data');
       setState(() {
         DateTime fechaparseada = DateTime.parse(data['fecha'].toString());
+// Muestra las fechas en el print
+        print('Fecha del pedido: $fechaparseada');
+        print('Fecha actual: $now');
+        print("Nombre: ${data['nombre'] ?? 'Nulo'}");
+        print("Apellidos: ${data['apellidos'] ?? 'Nulo'}");
+        print("Telefono: ${data['telefono'] ?? 'Nulo'}");
+        print("Ubicacion: ${data['ubicacion'] ?? 'Nulo'}");
 
+        print("Tipo de pedido: ${data['tipo']}");
+
+        // SI EL PEDIDO TIENE FECHA DE HOY Y ES NORMAL
         // SI EL PEDIDO TIENE FECHA DE HOY Y ES NORMAL
         if (data['tipo'].toString() == 'normal' &&
             fechaparseada.year == now.year &&
             fechaparseada.month == now.month &&
             fechaparseada.day == now.day) {
+          print("---NORMALL----");
+
           Pedido nuevoHoy = Pedido(
-              id: data['id'],
-        ruta_id: data['ruta_id'],
-        nombre: data['nombre'],
-        apellidos: data['apellidos'],
-        telefono: data['telefono'],
-        ubicacion: data['ubicacion'],
-        clienteId: data['cliente_id'],
-        clienteNrId: data['cliente_nr_id'],
-        monto_total: data['monto_total'],
-        fecha: data['fecha'],
-        tipo: data['tipo'],
-        estado: data['estado'],);
-          // añadimos el objeto
+            id: data['id'],
+            ruta_id: data['ruta_id'],
+            cliente_id: data['cliente_id'],
+            cliente_nr_id: data['cliente_nr_id'],
+            monto_total: data['monto_total']?.toDouble() ?? 0.0,
+            fecha: data['fecha'],
+            tipo: data['tipo'],
+            estado: data['estado'],
+            nombre: data['nombre'] ?? "",
+            apellidos: data['apellidos'] ?? "",
+            telefono: data['telefono'] ?? "",
+            ubicacion: data['ubicacion'] ?? "",
+          );
+
+          // Añadimos el objeto
           hoypedidos.add(nuevoHoy);
+          print("hoy pedidos");
+          print(hoypedidos);
         }
+
         // SI EL PEDIDO TIENE FECHA DE HOY Y ES EXPRESS
         if (data['tipo'].toString() == 'express' &&
             fechaparseada.year == now.year &&
             fechaparseada.month == now.month &&
             fechaparseada.day == now.day) {
+          print("---EXPRESS---");
           Pedido nuevoExpress = Pedido(
               id: data['id'],
-        ruta_id: data['ruta_id'],
-        nombre: data['nombre'],
-        apellidos: data['apellidos'],
-        telefono: data['telefono'],
-        ubicacion: data['ubicacion'],
-        clienteId: data['cliente_id'],
-        clienteNrId: data['cliente_nr_id'],
-        monto_total: data['monto_total'],
-        fecha: data['fecha'],
-        tipo: data['tipo'],
-        estado: data['estado']);
+            ruta_id: data['ruta_id'],
+            cliente_id: data['cliente_id'],
+            cliente_nr_id: data['cliente_nr_id'],
+            monto_total: data['monto_total']?.toDouble() ?? 0.0,
+            fecha: data['fecha'],
+            tipo: data['tipo'],
+            estado: data['estado'],
+            nombre: data['nombre'] ?? "",
+            apellidos: data['apellidos'] ?? "",
+            telefono: data['telefono'] ?? "",
+            ubicacion: data['ubicacion'] ?? "");
           //añadimos el objeto
           hoyexpress.add(nuevoExpress);
         }
@@ -736,7 +752,7 @@ class _ArmadoState extends State<Armado> {
                                           Text(
                                               'Pedido ID: ${hoypedidos[index].id}'),
                                           Text(
-                                              'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}'),
+                                              'Cliente ID: ${hoypedidos[index].cliente_id}'),
                                           // Text('Telefono: ${hoypedidos[index].telefono}'),
                                           Text(
                                               'Monto Total: ${hoypedidos[index].monto_total}'),
@@ -1215,107 +1231,126 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  showDialog<String>(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          AlertDialog(
-                                            title: const Text(
-                                                'Crear Ruta - Conductor'),
-                                            content: const Text('¿Crear?'),
-                                            actions: <Widget>[
-                                              // CANCELAR
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  for (var i = 0;
-                                                      i < agendados.length;
-                                                      i++) {
-                                                    // aca digo que todos los pedidos se reviertan a false
-                                                    // y esten pendinte
-                                                    // ---ASI QUE FILTRO ESE PEDIDO
-                                                    if (agendados[i].estado ==
-                                                            'en proceso' &&
-                                                        agendados[i]
-                                                                .seleccionado ==
-                                                            true) {
-                                                      agendados[i]
-                                                          .seleccionado = false;
-                                                      agendados[i].estado =
-                                                          'pendiente';
-                                                    }
-                                                    //   agendados[i].seleccionado =false;
-                                                    // agendados[i].estado = 'pendiente';
-                                                  }
+                                onPressed: obtenerConductor.isNotEmpty
+                                    ? () async {
+                                        showDialog<String>(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AlertDialog(
+                                                  title: const Text(
+                                                      'Crear Ruta - Conductor'),
+                                                  content:
+                                                      const Text('¿Crear?'),
+                                                  actions: <Widget>[
+                                                    // CANCELAR
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        for (var i = 0;
+                                                            i <
+                                                                agendados
+                                                                    .length;
+                                                            i++) {
+                                                          // aca digo que todos los pedidos se reviertan a false
+                                                          // y esten pendinte
+                                                          // ---ASI QUE FILTRO ESE PEDIDO
+                                                          if (agendados[i]
+                                                                      .estado ==
+                                                                  'en proceso' &&
+                                                              agendados[i]
+                                                                      .seleccionado ==
+                                                                  true) {
+                                                            agendados[i]
+                                                                    .seleccionado =
+                                                                false;
+                                                            agendados[i]
+                                                                    .estado =
+                                                                'pendiente';
+                                                          }
+                                                          //   agendados[i].seleccionado =false;
+                                                          // agendados[i].estado = 'pendiente';
+                                                        }
 
-                                                  for (var i = 0;
-                                                      i < conductores.length;
-                                                      i++) {
-                                                    conductores[i]
-                                                        .seleccionado = false;
-                                                  }
-                                                  setState(() {
-                                                    obtenerPedidoSeleccionado =
-                                                        [];
-                                                  });
-                                                  //await getPedidos();
+                                                        for (var i = 0;
+                                                            i <
+                                                                conductores
+                                                                    .length;
+                                                            i++) {
+                                                          conductores[i]
+                                                                  .seleccionado =
+                                                              false;
+                                                        }
+                                                        setState(() {
+                                                          obtenerPedidoSeleccionado =
+                                                              [];
+                                                        });
+                                                        //await getPedidos();
 
-                                                  setState(() {});
+                                                        setState(() {});
 
-                                                  Navigator.pop(
-                                                      context, 'Cancelar');
-                                                },
-                                                //
-                                                child: const Text('Cancelar'),
-                                              ),
+                                                        Navigator.pop(context,
+                                                            'Cancelar');
+                                                      },
+                                                      //
+                                                      child: const Text(
+                                                          'Cancelar'),
+                                                    ),
 
-                                              // CONFIRMAR
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  // PROCESO EL PEDIDO
-                                                  await crearobtenerYactualizarRuta(
-                                                      1,
-                                                      conductorid,
-                                                      50,
-                                                      3,
-                                                      "en proceso");
+                                                    // CONFIRMAR
+                                                    ElevatedButton(
+                                                      onPressed: () async {
+                                                        // PROCESO EL PEDIDO
+                                                        await crearobtenerYactualizarRuta(
+                                                            1,
+                                                            conductorid,
+                                                            50,
+                                                            3,
+                                                            "en proceso");
 
-                                                  // LIMPIO LOS SELECCIONADOS
-                                                  setState(() {
-                                                    obtenerPedidoSeleccionado =
-                                                        [];
-                                                  });
+                                                        // LIMPIO LOS SELECCIONADOS
+                                                        setState(() {
+                                                          obtenerPedidoSeleccionado =
+                                                              [];
+                                                        });
 
-                                                  // Y DEVUELVO A DESELECCIONAR PARA QUE NO SE ACUMULE O
-                                                  // ARRASTREE EL CHECKBOX ANTIGUO
-                                                  for (var i = 0;
-                                                      i < agendados.length;
-                                                      i++) {
-                                                    agendados[i].seleccionado =
-                                                        false;
-                                                    agendados[i].estado ==
-                                                        'en proceso';
-                                                  }
+                                                        // Y DEVUELVO A DESELECCIONAR PARA QUE NO SE ACUMULE O
+                                                        // ARRASTREE EL CHECKBOX ANTIGUO
+                                                        for (var i = 0;
+                                                            i <
+                                                                agendados
+                                                                    .length;
+                                                            i++) {
+                                                          agendados[i]
+                                                                  .seleccionado =
+                                                              false;
+                                                          agendados[i].estado ==
+                                                              'en proceso';
+                                                        }
 
-                                                  // IGUAL . DESELECCIONO EL CHOFER, PARA QUE NO ARRASTRE
-                                                  for (var i = 0;
-                                                      i < conductores.length;
-                                                      i++) {
-                                                    conductores[i]
-                                                        .seleccionado = false;
-                                                  }
-                                                  // ACTUALIZO LA VISTA AL USUARIO
-                                                  // await getPedidos();
-                                                  setState(() {});
+                                                        // IGUAL . DESELECCIONO EL CHOFER, PARA QUE NO ARRASTRE
+                                                        for (var i = 0;
+                                                            i <
+                                                                conductores
+                                                                    .length;
+                                                            i++) {
+                                                          conductores[i]
+                                                                  .seleccionado =
+                                                              false;
+                                                        }
+                                                        // ACTUALIZO LA VISTA AL USUARIO
+                                                        // await getPedidos();
+                                                        setState(() {});
 
-                                                  Navigator.pop(context, 'SI');
-                                                },
-                                                child: const Text('SI'),
-                                              ),
-                                            ],
-                                          ));
+                                                        Navigator.pop(
+                                                            context, 'SI');
+                                                      },
+                                                      child: const Text('SI'),
+                                                    ),
+                                                  ],
+                                                ));
 
-                                  // create ruta - empleadoid,conductorid,distancia,tiempo
-                                },
+                                        // create ruta - empleadoid,conductorid,distancia,tiempo
+                                      }
+                                    : null,
                                 child: Text(
                                   "Crear \u{2795}",
                                   style: const TextStyle(

@@ -1,4 +1,4 @@
 node_modules/
-backend\config.mjs
+config.mjs
 frontend\app_final\lib\main.dart
 frontend\app_final_desktop\lib\main.dart

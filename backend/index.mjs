@@ -45,6 +45,11 @@ io.on('connection', (socket) => {
        // io.emit('enviandoCoordenadas',data);
     });
 
+    socket.on('Termine de Updatear',(data) => {
+        console.log(data);
+        io.emit('Llama tus Pedidos :)',data);
+    });
+
     //socket.emit('testy');
     io.emit('testy')
 

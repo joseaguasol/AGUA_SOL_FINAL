@@ -104,11 +104,12 @@ class _ArmadoState extends State<Armado> {
   ];
 
   var direccion = '';
-  String apiPedidos = 'http://127.0.0.1:8004/api/pedido';
-  String apiConductores = 'http://127.0.0.1:8004/api/user_conductor';
-  String apiRutaCrear = 'http://127.0.0.1:8004/api/ruta';
-  String apiLastRuta = 'http://127.0.0.1:8004/api/rutalast';
-  String apiUpdateRuta = 'http://127.0.0.1:8004/api/pedidoruta';
+  String apiPedidos = 'https://aguasol-30pw.onrender.com/api/pedido';
+  String apiConductores =
+      'https://aguasol-30pw.onrender.com/api/user_conductor';
+  String apiRutaCrear = 'https://aguasol-30pw.onrender.com/api/ruta';
+  String apiLastRuta = 'https://aguasol-30pw.onrender.com/api/rutalast';
+  String apiUpdateRuta = 'https://aguasol-30pw.onrender.com/api/pedidoruta';
   final TextEditingController _searchController = TextEditingController();
   //final TextEditingController _distrito = TextEditingController();
   //final TextEditingController _ubicacion = TextEditingController();
@@ -180,6 +181,7 @@ class _ArmadoState extends State<Armado> {
     await createRuta(empleadoId, conductorid, distancia, tiempo);
     await lastRutaEmpleado(empleadoId);
     await updatePedidoRuta(rutaIdLast, estado);
+    socket.emit('Termine de Updatear', 'si');
   }
 
   // GET CONDUCTORES
@@ -330,7 +332,7 @@ class _ArmadoState extends State<Armado> {
             fechaparseada.day == now.day) {
           print("---EXPRESS---");
           Pedido nuevoExpress = Pedido(
-              id: data['id'],
+            id: data['id'],
             ruta_id: data['ruta_id'],
             cliente_id: data['cliente_id'],
             cliente_nr_id: data['cliente_nr_id'],
@@ -341,7 +343,8 @@ class _ArmadoState extends State<Armado> {
             nombre: data['nombre'] ?? "",
             apellidos: data['apellidos'] ?? "",
             telefono: data['telefono'] ?? "",
-            ubicacion: data['ubicacion'] ?? "",);
+            ubicacion: data['ubicacion'] ?? "",
+          );
           //añadimos el objeto
           hoyexpress.add(nuevoExpress);
         }
@@ -1231,7 +1234,8 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: obtenerConductor.isNotEmpty && obtenerPedidoSeleccionado.isNotEmpty
+                                onPressed: obtenerConductor.isNotEmpty &&
+                                        obtenerPedidoSeleccionado.isNotEmpty
                                     ? () async {
                                         showDialog<String>(
                                             context: context,

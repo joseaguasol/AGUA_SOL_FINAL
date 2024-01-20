@@ -5,12 +5,10 @@ import 'package:camera/camera.dart';
 
 class Camara extends StatefulWidget {
   final Pedido pedido;
-  final List<Pedido> listaPedidosbyRuta;
   final String problemasOpago;
   const Camara({
     Key? key,
     required this.pedido,
-    required this.listaPedidosbyRuta,
     required this.problemasOpago,
   }) : super(key: key);
 
@@ -209,9 +207,7 @@ class _CamaraState extends State<Camara> {
                                           //REGRESA A LA MISMA VISTA Y NO CAMBIA NADA
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  HolaConductor(
-                                                    pedidoActual: widget.pedido,
-                                                  )),
+                                                  HolaConductor()),
                                         );
                                       },
                                       style: ButtonStyle(
@@ -254,9 +250,7 @@ class _CamaraState extends State<Camara> {
                                           //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  HolaConductor(
-                                                    pedidoActual: widget.pedido,
-                                                  )),
+                                                  HolaConductor()),
                                         );
                                       },
                                       style: ButtonStyle(

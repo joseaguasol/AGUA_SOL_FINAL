@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      initialRoute: '/diseño',
+      initialRoute: '/conductor',
       routes: {
 //<<<<<<< HEAD
         '/diseño': (context) => Hola(),
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         '/c_bienvenido': (context) => BienvenidaConductor(),
         '/presentacion': (context) => Presentacion(),
         '/programacion': (context) => Programacion(),
-        //'/conductor': (context) => HolaConductor(),
+        '/conductor': (context) => HolaConductor(),
         '/armadoruta': (context) => ArmadoRuta(),
         '/promos': (context) => Promos(),
         '/loginsol': (context) => const Login2(),

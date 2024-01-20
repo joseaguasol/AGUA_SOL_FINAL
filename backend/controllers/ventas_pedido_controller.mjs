@@ -35,6 +35,24 @@ export const getPedidos =  async (req,res) => {
     }
 }
 
+export const getPedidosConductor = async (req,res) => {
+    console.log("id pedido conductor llego")
+
+    try{
+        const {rutaID} = req.params;
+        const id = parseInt(rutaID,10);
+        console.log(id)
+        const {conductorID} = req.params;
+        const id2 = parseInt(conductorID,10);
+        console.log(id2)
+        const getPedidoCond = await modelPedido.getPedidoConductor(id,id2);
+        res.json(getPedidoCond);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
 export const deletePedidos = async (req,res) => {
     console.log("id llego")
     try {

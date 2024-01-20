@@ -7,20 +7,6 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert';
 //import 'package:lottie/lottie.dart';
 
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-  }
-}
-
-class Ruta {
-  final Int rutaID;
-  const Ruta({
-    Key? key,
-    required this.rutaID,
-  });
-}
-
 class Pedido {
   final int id;
   final double montoTotal;
@@ -68,11 +54,7 @@ class DetallePedido {
 }
 
 class HolaConductor extends StatefulWidget {
-  final Pedido pedidoActual;
-  HolaConductor({
-    Key? key,
-    required this.pedidoActual,
-  }) : super(key: key);
+  const HolaConductor({super.key});
 
   @override
   State<HolaConductor> createState() => _HolaConductorState();
@@ -80,16 +62,158 @@ class HolaConductor extends StatefulWidget {
 
 class _HolaConductorState extends State<HolaConductor> {
   late io.Socket socket;
-  String apiPedidos = 'http://10.0.2.2:8004/api/pedidoConductor/';
-  String apiRutas = 'http://10.0.2.2:8004/api/promocion';
-  String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido/';
+  String apiPedidosConductor =
+      'https://aguasol-30pw.onrender.com/api/pedido_conductor/';
+  String apiDetallePedido =
+      'https://aguasol-30pw.onrender.com/api/detallepedido/';
+  int conductorID = 1;
+  bool puedoLlamar = false;
   List<Pedido> listPedidosbyRuta = [];
   List<DetallePedido> listDetallePedido = [];
   String productosYCantidades = "";
-  int pedidoActual = 1;
   int numerodePedidosExpress = 0;
+  int pedidoIDActual = 0;
+  int pedidoActual = 0;
+  int ruta_ID = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    connectToServer();
+  }
+
+  Future<void> _initialize() async {
+    await getPedidosConductor(ruta_ID, conductorID);
+    // Resto del código
+  }
+
+  Future<dynamic> getPedidosConductor(rutaID, conductorID) async {
+    print("--------entro al get PEDIDOS");
+    print("$apiPedidosConductor${rutaID.toString()}/${conductorID.toString()}");
+    var res = await http.get(
+      Uri.parse(
+          "$apiPedidosConductor${rutaID.toString()}/${conductorID.toString()}"),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      print("entro alTRY de get PEDIDOS");
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Pedido> listTemporal = data.map<Pedido>((mapa) {
+          return Pedido(
+            id: mapa['id'],
+            montoTotal: mapa['monto_total'].toDouble(),
+            tipo: mapa['tipo'],
+            fecha: mapa['fecha'],
+            estado: mapa['estado'],
+            nombre: mapa['nombre'],
+            apellidos: mapa['apellidos'],
+            telefono: mapa['telefono'],
+            ubicacion: mapa['ubicacion'],
+            direccion: mapa['direccion'],
+          );
+        }).toList();
+        setState(() {
+          //listPedidosbyRuta.addAll(listTemporal);
+          print('------lista temporal lokius');
+          print(listTemporal.length);
+          listPedidosbyRuta = listTemporal;
+          print('longitud e pedidossssss recibidoss-----------');
+          print(listPedidosbyRuta.length);
+        });
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+  }
+
+  void connectToServer() {
+    // Resto del código para la conexión al servidor
+    // void connectToServer() {
+    print("--------Dentro de connectToServer");
+    // Reemplaza la URL con la URL de tu servidor Socket.io
+    socket = io.io('http://10.0.2.2:8004', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+      'reconnect': true,
+      'reconnectionAttempts': 5,
+      'reconnectionDelay': 1000,
+    });
+    socket.connect();
+
+    socket.onConnect((_) {
+      print('Conexión establecida: CONDUCTOR');
+      // Inicia la transmisión de ubicación cuando se conecta
+      //iniciarTransmisionUbicacion();
+    });
+    socket.onDisconnect((_) {
+      print('Conexión desconectada: CONDUCTOR');
+    });
+    socket.onConnectError((error) {
+      print("Error de conexión $error");
+    });
+    socket.onError((error) {
+      print("Error de socket, $error");
+    });
+    socket.on(
+      'creadoRuta',
+      (data) {
+        print("------esta es lA RUTA");
+        print(data['id']);
+        setState(() {
+          ruta_ID = data['id'];
+        });
+
+        // getPedidosConductor(data['id'], conductorID);
+      },
+    );
+
+    socket.on('Llama tus Pedidos :)', (data) {
+      print('Puedo llamar a mis pedidos $data');
+      setState(() {
+        puedoLlamar = true;
+      });
+      if (puedoLlamar == true) {
+        _initialize();
+      }
+    });
+    //  }
+  }
 
   Future<dynamic> getDetalleXUnPedido(pedidoID) async {
+    if (pedidoID != 0) {
+      var res = await http.get(
+        Uri.parse(apiDetallePedido + pedidoID.toString()),
+        headers: {"Content-type": "application/json"},
+      );
+      try {
+        if (res.statusCode == 200) {
+          var data = json.decode(res.body);
+          List<DetallePedido> listTemporal = data.map<DetallePedido>((mapa) {
+            return DetallePedido(
+              pedidoID: mapa['pedido_id'],
+              productoID: mapa['producto_id'],
+              productoNombre: mapa['nombre'],
+              cantidadProd: mapa['cantidad'],
+              promocionID: mapa['promocion_id'],
+            );
+          }).toList();
+
+          setState(() {
+            listDetallePedido = listTemporal;
+          });
+        }
+      } catch (e) {
+        print('Error en la solicitud: $e');
+        throw Exception('Error en la solicitud: $e');
+      }
+    } else {
+      print('papas');
+    }
+  }
+
+  Future<dynamic> getDetallesEnProceso(pedidoID) async {
     var res = await http.get(
       Uri.parse(apiDetallePedido + pedidoID.toString()),
       headers: {"Content-type": "application/json"},
@@ -129,51 +253,7 @@ class _HolaConductorState extends State<HolaConductor> {
     );
   }*/
 
-  void actualizarPedidoFrontend() {
-    if (widget.pedidoActual.estado == 'entregado') {
-      for (var i = 0; i < listPedidosbyRuta.length; i++) {
-        if (listPedidosbyRuta[i].estado == 'en proceso') {
-          setState(() {
-            pedidoActual = listPedidosbyRuta[i].id;
-          });
-        }
-      }
-    }
-  }
-
-  //DE ESTA FUNCION ESCUCHARE LOS PEDIDOS QUE ME MANDA EL EMPLEADO
-  //es decir aqui se actualiza listPedidosbyRuta
-  void connectToServer() {
-    print("Dentro de connectToServer");
-    // Reemplaza la URL con la URL de tu servidor Socket.io
-    socket = io.io('http://10.0.2.2:8004', <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'reconnect': true,
-      'reconnectionAttempts': 5,
-      'reconnectionDelay': 1000,
-    });
-    socket.connect();
-    socket.onConnect((_) {
-      print('Conexión establecida: CONDUCTOR');
-      // Inicia la transmisión de ubicación cuando se conecta
-      //iniciarTransmisionUbicacion();
-    });
-    socket.onDisconnect((_) {
-      print('Conexión desconectada: CONDUCTOR');
-    });
-    socket.onConnectError((error) {
-      print("Error de conexión $error");
-    });
-    socket.onError((error) {
-      print("Error de socket, $error");
-    });
-
-    ///getpedidos
-    ///
-  }
-
-  void calcularCantidadPedidosNormales() async {
+  void calcularCantidadPedidosNormales() {
     for (var i = 0; i < listPedidosbyRuta.length; i++) {
       if (listPedidosbyRuta[i].tipo == 'express') {
         setState(() {
@@ -183,7 +263,7 @@ class _HolaConductorState extends State<HolaConductor> {
     }
   }
 
-  void obtenerProductosparaVistadelConductor() async {
+  void obtenerProductosparaVistadelConductor() {
     for (var i = 0; i < listDetallePedido.length; i++) {
       var salto = '';
       if (i == 0) {
@@ -198,29 +278,40 @@ class _HolaConductorState extends State<HolaConductor> {
     }
   }
 
-  //DE ESTA ACTUALIZO el PEDIDO ACTUAL CON EL QUE ESTOY TRABAJANDO
-  //es decir si cambio el estado de el pedido anterior a "truncado" o "entregado"
-  //puedo pasar al siguiente actualizando pedidoActual
+  void pedidoSiguiente() {
+    print('este es el lenght--------------');
+    print(listPedidosbyRuta.length);
+    for (var i = 0; i < listPedidosbyRuta.length; i++) {
+      if (listPedidosbyRuta[i].estado == 'en proceso') {
+        print('este es I------');
+        print(i);
+        setState(() {
+          pedidoIDActual = listPedidosbyRuta[i].id;
+          pedidoActual = i;
+        });
+      }
+    }
+  }
 
   @override
-  void initState() {
-    super.initState();
-    connectToServer();
-    getDetalleXUnPedido(pedidoActual);
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //se calcula el numero total de pedidos de la lista lisPedidosbyRuta
-    int numeroTotalPedidos = listPedidosbyRuta.length;
     double anchoPantalla = MediaQuery.of(context).size.width;
-    //double altoPantalla = MediaQuery.of(context).size.height;
+    int numeroTotalPedidos = listPedidosbyRuta.length;
 
-    obtenerProductosparaVistadelConductor();
+    //print('detallitos');
+    // print(listPedidosbyRuta);
+
+    //print(numeroTotalPedidos);
 
     //final TabController _tabController = TabController(length: 2, vsync: this);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
     return Scaffold(
       key: _scaffoldKey,
       body: SafeArea(
@@ -424,8 +515,6 @@ class _HolaConductorState extends State<HolaConductor> {
                                         builder: (context) => Camara(
                                               pedido: listPedidosbyRuta[
                                                   pedidoActual],
-                                              listaPedidosbyRuta:
-                                                  listPedidosbyRuta,
                                               problemasOpago: 'pago',
                                             )),
                                   );
@@ -569,7 +658,6 @@ class _HolaConductorState extends State<HolaConductor> {
                             MaterialPageRoute(
                                 builder: (context) => Camara(
                                       pedido: listPedidosbyRuta[pedidoActual],
-                                      listaPedidosbyRuta: listPedidosbyRuta,
                                       problemasOpago: 'problemas',
                                     )),
                           );

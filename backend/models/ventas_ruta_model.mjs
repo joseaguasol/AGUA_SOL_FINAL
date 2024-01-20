@@ -43,6 +43,7 @@ const modelRuta = {
             
             //return lastruta;/*
            /* const pedidos = await db_pool.manyOrNone('SELECT vp.id, vp.monto_total, vp.tipo, vp.fecha, vc.nombre, vc.apellidos,vc.telefono, vc.ubicacion, vc.direccion FROM ventas.pedido as vp' +
+            const lastruta = await db_pool.one('SELECT id FROM ventas.ruta WHERE empleado_id = $1 ORDER BY id DESC LIMIT 1',
             ' INNER JOIN ventas.ruta as vr ON vp.ruta_id = vr.id' +
             ' INNER JOIN ventas.cliente as vc ON vp.cliente_id = vc.id WHERE ruta_id = $1',
             [lastruta.id]);
@@ -55,11 +56,11 @@ const modelRuta = {
 
             
         const pedidos = await modelRuta.getPedidosByruta(lastruta.id)
-        console.log("----pedidos")
-        console.log(pedidos)
+        console.log("----rutassssssssss")
+        console.log(ruta)
            
             //EMITIR UN EVENTO
-         //   io.emit('nuevoPedido',pedidos)
+         io.emit('creadoRuta',rutas)
           //  console.log("rutas")
            // console.log(rutas)
             return rutas

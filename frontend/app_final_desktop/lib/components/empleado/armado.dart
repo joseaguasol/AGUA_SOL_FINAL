@@ -341,7 +341,7 @@ class _ArmadoState extends State<Armado> {
             nombre: data['nombre'] ?? "",
             apellidos: data['apellidos'] ?? "",
             telefono: data['telefono'] ?? "",
-            ubicacion: data['ubicacion'] ?? "");
+            ubicacion: data['ubicacion'] ?? "",);
           //añadimos el objeto
           hoyexpress.add(nuevoExpress);
         }
@@ -1231,7 +1231,7 @@ class _ArmadoState extends State<Armado> {
                               width: 250,
                               // color: Colors.black,
                               child: ElevatedButton(
-                                onPressed: obtenerConductor.isNotEmpty
+                                onPressed: obtenerConductor.isNotEmpty && obtenerPedidoSeleccionado.isNotEmpty
                                     ? () async {
                                         showDialog<String>(
                                             context: context,

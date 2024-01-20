@@ -19,10 +19,17 @@ class _MapsState extends State<Maps>{
   late io.Socket socket;
   LatLng currentLcocation = LatLng(0, 0);
   final urlubi = "https://lottie.host/9fb0f0a1-28e8-495b-ab6f-298264567685/fIaQSM6s3n.json";
-  /*double latitud = 0.0;
+  double latitud = 0.0;
   double longitud = 0.0;
   String direccion = "";
+  String mensaje = "";
 
+ @override
+  void initState() {
+    super.initState();
+    // Llama a la función de conexión al iniciar el widget
+    connectToServer();
+  }
   // PROMESA
   Future<Position>determinarPosicion()async{
    try{
@@ -54,14 +61,14 @@ class _MapsState extends State<Maps>{
       });
     }
     
-  }*/
+  }
 
   void connectToServer() {
   print("Dentro de connectToServer");
   // Reemplaza la URL con la URL de tu servidor Socket.io
   socket = io.io('http://10.0.2.2:8004',<String, dynamic>{
     'transports': ['websocket'],
-    'autoConnect': false,
+    'autoConnect': true,
     'reconnect': true,
     'reconnectionAttempts': 5,
     'reconnectionDelay': 1000,
@@ -72,7 +79,7 @@ class _MapsState extends State<Maps>{
   socket.onConnect((_) {
     print('Conexión establecida: CONDUCTOR');
     // Inicia la transmisión de ubicación cuando se conecta
-    iniciarTransmisionUbicacion();
+   // iniciarTransmisionUbicacion();
   });
 
   socket.onDisconnect((_) {
@@ -88,17 +95,26 @@ class _MapsState extends State<Maps>{
   socket.onError((error) {
     print("Error de socket, $error");
   });
+
+  print("---mensajeee---");
+  socket.emit('recibiendoMensaje', { 
+    "s"
+    });
+
+    socket.on('testy', (data) {
+      print("CARRRR");
+    });
 }
  
-void iniciarTransmisionUbicacion() {
+/*void iniciarTransmisionUbicacion() {
  // var geolocator = Geolocator();
   final LocationSettings locationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
     distanceFilter: 10,
-  );
+  );*/
 
   // Utiliza el stream de ubicación para enviar continuamente la ubicación
- Geolocator.getPositionStream(
+/* Geolocator.getPositionStream(
     locationSettings: locationSettings
   )
   .listen((Position position) {
@@ -108,21 +124,16 @@ void iniciarTransmisionUbicacion() {
       'y': position.longitude,
     });
   });
-}
+}*/
 
- @override
-  void initState() {
-    super.initState();
-    // Llama a la función de conexión al iniciar el widget
-    connectToServer();
-  }
+
   
   
   @override
   Widget build (BuildContext context){
 
    // final double screenHeight =MediaQuery.of(context).size.height;
-  /* void getCurrentLocation()async{
+ /* void getCurrentLocation()async{
     
     try {
     Position position = await determinarPosicion();
@@ -166,8 +177,8 @@ void iniciarTransmisionUbicacion() {
               child:Column(
                 children:  [
                   Container(
-                    child: Text("ubi"),)
-                 /* const SizedBox(height: 20,),
+                    child: Text("ubi"),),
+                 const SizedBox(height: 20,),
                  Text("$latitud"),
                   const SizedBox(height: 2,),
                  Text("$longitud"),
@@ -180,9 +191,12 @@ void iniciarTransmisionUbicacion() {
                   Lottie.network(urlubi),
                   ElevatedButton(onPressed: ()
                   {
-                    getCurrentLocation();
+                    //getCurrentLocation();
                     
-                  
+                  setState(() {
+                    mensaje = "hola desde mi app";
+                    print(mensaje);
+                  });
 
                   },
                    style: ButtonStyle(
@@ -190,7 +204,7 @@ void iniciarTransmisionUbicacion() {
                     backgroundColor: MaterialStateProperty.all(Colors.blue)
                    ),
                    child: Text("Ubicación",style:TextStyle(fontWeight:FontWeight.bold,fontSize:25,color:Colors.white)),
-                )*/
+                )
             ])),
           ),
         ),

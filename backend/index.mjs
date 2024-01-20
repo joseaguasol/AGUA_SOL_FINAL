@@ -40,14 +40,14 @@ io.on('connection', (socket) => {
     });
 
     // RECIBIENDO 
-    socket.on('recibiendoUbicacion',(data) => {
+    socket.on('recibiendoMensaje',(data) => {
         console.log(data);
-        io.emit('enviandoCoordenadas',data);
+       // io.emit('enviandoCoordenadas',data);
     });
 
-    
-    
-    
+    //socket.emit('testy');
+    io.emit('testy')
+
     
 });
 

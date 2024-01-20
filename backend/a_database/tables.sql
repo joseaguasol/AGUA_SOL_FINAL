@@ -18,8 +18,6 @@ create table relaciones.roles(
 	nombre varchar(300)
 );
 
-
-
 ------------------------------------
 -- PERSONAL
 ------------------------------------
@@ -165,15 +163,6 @@ create table ventas.vehiculo(
 	conductor_id int not null,
 	placa varchar(100) not null,
 	capacidad_carga_ton int not null
-);
-
---Table: ventas.venta
-create table ventas.venta(
-	id serial primary key,
-	administrador_id int,
-	conductor_id int,
-	fecha timestamp,
-	foto varchar(200)
 );
 
 --Table: ventas.zona_trabajo

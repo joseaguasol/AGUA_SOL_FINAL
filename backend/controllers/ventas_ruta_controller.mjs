@@ -21,3 +21,12 @@ export const getLastRutas =  async (req,res) => {
         res.status(500).json({"message":"NO DATA"})
     }
 }
+
+export const getPedidosByrutas = async (req,res) => {
+    try {
+        const {rutaId} = req.params;
+        const idRuta  = parseInt
+    } catch (error) {
+        
+    }
+}

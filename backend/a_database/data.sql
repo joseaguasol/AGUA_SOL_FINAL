@@ -81,11 +81,11 @@ INSERT INTO personal.conductor (usuario_id, nombres, apellidos, licencia, dni, f
 
 
 -- Insertar registros en la tabla ruta
-INSERT INTO ventas.ruta (conductor_id, administrador_id, empleado_id, multipuntos, distancia_km, tiempo_ruta, zona_trabajo_id) VALUES
-  (1, 1, 1, '16.78,71.22;-16.88,16.12', 50, 120, 1),
-  (2, 1, 1, '16.78,71.22;-16.88,16.12', 80, 480, 1),
-  (3, 1, 1, '16.78,71.22;-16.88,16.12', 83, 480, 1),
-  (3, 1, 1, '16.78,71.22;-16.88,16.12', 94, 560, 1);
+INSERT INTO ventas.ruta (conductor_id, administrador_id, empleado_id, distancia_km, tiempo_ruta, zona_trabajo_id) VALUES
+  (1, 1, 1, 50, 120, 1),
+  (2, 1, 1,  80, 480, 1),
+  (3, 1, 1, 83, 480, 1),
+  (3, 1, 1,  94, 560, 1);
   
 
   

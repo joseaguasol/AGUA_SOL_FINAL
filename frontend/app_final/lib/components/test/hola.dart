@@ -1,13 +1,12 @@
-import 'package:app_final/components/empleado/programacion.dart';
 import 'package:app_final/components/test/asistencia.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:location/location.dart' as location_package;
-import 'package:geocoding_platform_interface/src/models/location.dart' hide Location;
+import 'package:geocoding/geocoding.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:geocoding/geocoding.dart';
+
 import 'dart:async';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -57,13 +56,18 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     getProducts();
-    obtenerDireccion(widget.latitud,widget.longitud);
+    if (widget.latitud != null && widget.longitud != null) {
+      obtenerDireccion(widget.latitud!, widget.longitud!);
+    } else {
+      print("Las coordenadas son nulas");
+      // Puedes manejar esta situación de otra manera si es necesario
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoScroll();
     });
   }
 
-Future<dynamic> getProducts() async {
+  Future<dynamic> getProducts() async {
     print("-------get products---------");
     var res = await http.get(
       Uri.parse(apiProducts),
@@ -197,72 +201,50 @@ Future<dynamic> getProducts() async {
     super.dispose();
   }
 
-  Future<void> obtenerDireccion(x,y) async {
+  Future<void> obtenerDireccion(x, y) async {
     //double latitud = widget.latitud ?? 0.0; // Accede a widget.latitud
     //double longitud = widget.longitud ?? 0.0;
-    List<Placemark> placemark =
-        await placemarkFromCoordinates(x, y);
-    print(placemark);
+    List<Placemark> placemark = await placemarkFromCoordinates(x, y);
 
     if (placemark.isNotEmpty) {
       Placemark lugar = placemark.first;
       setState(() {
-        listUbicaciones.add("${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}");
-      
+        listUbicaciones.add(
+            "${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}");
       });
     }
+    print("x-----y");
+    print("${x},${y}");
   }
-/* Future<void> currentLocation() async {
+
+  Future<void> currentLocation() async {
     var location = location_package.Location();
 
-    // bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-
-   
-    // Verificar si el servicio de ubicación está habilitado
-    var _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      // Solicitar habilitación del servicio de ubicación
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        // Mostrar mensaje al usuario indicando que el servicio de ubicación es necesario
-       
-        return;
-      }
-    }
-
-    // Verificar si se otorgaron los permisos de ubicación
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      // Solicitar permisos de ubicación
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        // Mostrar mensaje al usuario indicando que los permisos de ubicación son necesarios
-        return;
-      }
-    }
+//Obtener la ubicación
+    location_package.LocationData _locationData;
 
     // Obtener la ubicación
     try {
       _locationData = await location.getLocation();
       //updateLocation(_locationData);
-      setState(() {
-       // latitudUser = _locationData.latitude;
-        //longitudUser = _locationData.longitude; 
-      });
-      
+
+      obtenerDireccion(_locationData.latitude, _locationData.longitude);
+      //setState(() {
+      // latitudUser = _locationData.latitude;
+      //longitudUser = _locationData.longitude;
+      // });
+
       print("----ubicación--");
       print(_locationData);
-    //print(latitudUser);
+      //print(latitudUser);
       //print(longitudUser);
       // Aquí puedes utilizar la ubicación obtenida (_locationData)
     } catch (e) {
       // Manejo de errores, puedes mostrar un mensaje al usuario indicando que hubo un problema al obtener la ubicación.
       print("Error al obtener la ubicación: $e");
     }
- }*/
-  
+  }
+
   @override
   Widget build(BuildContext context) {
     final TabController _tabController = TabController(length: 2, vsync: this);
@@ -346,7 +328,8 @@ Future<dynamic> getProducts() async {
                                         color: Color.fromARGB(255, 7, 135, 50)),
                                   ),
                                   Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
@@ -361,7 +344,7 @@ Future<dynamic> getProducts() async {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return Container(
-                                                  height: 350,
+                                                  height: 150,
                                                   width: MediaQuery.of(context)
                                                       .size
                                                       .width,
@@ -389,9 +372,9 @@ Future<dynamic> getProducts() async {
                                                       const SizedBox(
                                                           height: 10),
                                                       ElevatedButton(
-                                                        onPressed: () {
+                                                        onPressed: () async{
                                                           print("ubi añadidda");
-                                                          
+                                                          await currentLocation();
                                                         },
                                                         child: const Row(
                                                           children: [
@@ -409,16 +392,12 @@ Future<dynamic> getProducts() async {
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w400,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          77,
-                                                                          231,
-                                                                          82)),
+                                                                  color: Color.fromARGB(255, 47, 90, 48)),
                                                             ),
                                                           ],
                                                         ),
                                                       ),
+                                                    
                                                     ],
                                                   ),
                                                 );
@@ -452,11 +431,13 @@ Future<dynamic> getProducts() async {
                                             }
                                           });
                                         },
-                                        dropdownMenuEntries: List.generate(listUbicaciones.length, (index) {
+                                        dropdownMenuEntries: List.generate(
+                                            listUbicaciones.length, (index) {
                                           final value = listUbicaciones[index];
                                           return DropdownMenuEntry<String>(
                                               value: value,
-                                              label: value.length > 22 ? '${value.substring(0,18)}'
+                                              label: value.length > 22
+                                                  ? '${value.substring(0, 18)}'
                                                   : value);
                                         }).toList(),
                                       ),
@@ -479,9 +460,7 @@ Future<dynamic> getProducts() async {
                                 child: widget.url != null
                                     ? Image.network(widget.url!)
                                     : Image.asset('lib/imagenes/chica.jpg'),
-                                
                               ),
-                              
                             ),
                           ],
                         ),

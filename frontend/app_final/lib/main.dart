@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      initialRoute: '/conductor',
+      initialRoute: '/ubicacion',
       routes: {
 //<<<<<<< HEAD
         '/diseño': (context) => Hola(),

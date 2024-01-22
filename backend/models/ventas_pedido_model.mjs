@@ -1,3 +1,4 @@
+import { Socket } from "socket.io";
 import { db_pool } from "../config.mjs";
 import { io } from '../index.mjs';
 
@@ -47,6 +48,22 @@ const modelPedido = {
             //console.log("EMITIENDO PEDIDOS...GET,...")
             //io.emit('vista',"hola")
            // console.log(pedidos)
+            return pedidos
+
+        } catch (error) {
+            throw new Error(`Error getting pedido: ${error}`)
+        }
+    },
+
+    getPedidoConductor: async (rutaID,conductorID)=> {
+        console.log("dentro de get Pedidos para Conductores....")
+        
+        try {
+          const pedidos = await db_pool.any(`SELECT vp.id,vp.monto_total,vp.fecha,vp.estado,vp.tipo,vc.nombre,vc.apellidos,vc.telefono,vc.ubicacion,vc.direccion
+          FROM ventas.ruta as vr INNER JOIN ventas.pedido as vp ON vr.id=vp.ruta_id
+          INNER JOIN ventas.cliente as vc ON vp.cliente_id = vc.id 
+          WHERE ruta_id=$1 and conductor_id=$2`,[rutaID,conductorID]);
+          console.log(pedidos)
             return pedidos
 
         } catch (error) {

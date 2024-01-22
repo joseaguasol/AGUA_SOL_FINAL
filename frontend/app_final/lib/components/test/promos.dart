@@ -48,7 +48,8 @@ class Promos extends StatefulWidget {
 
 class _PromosState extends State<Promos> {
   String apiPromociones = 'https://aguasol-30pw.onrender.com/api/promocion';
-  String apiProductoPromocion = 'https://aguasol-30pw.onrender.com/api/prod_prom';
+  String apiProductoPromocion =
+      'https://aguasol-30pw.onrender.com/api/prod_prom';
   String apiProducto = 'https://aguasol-30pw.onrender.com/api/products';
   List<Producto> productosContabilizados = [];
   List<Promo> promocionesContabilizadas = [];
@@ -194,10 +195,20 @@ class _PromosState extends State<Promos> {
   }
 
   Future<void> obtenerProducto() async {
+    setState(() {
+      prodPromContabilizadas = [];
+    });
+
     for (var promo in promocionesContabilizadas) {
       await getProductoPromocion(promo.id, promo.cantidad);
       prodPromContabilizadas.addAll(listProdProm);
     }
+
+    print(prodPromContabilizadas);
+    setState(() {
+      productosContabilizados = [];
+    });
+
     for (var i = 0; i < prodPromContabilizadas.length; i++) {
       await getProducto(
           prodPromContabilizadas[i].productoId,
@@ -316,12 +327,12 @@ class _PromosState extends State<Promos> {
                                             MainAxisAlignment.center,
 
                                         children: [
-                                          Text("${promocion.nombre}",
+                                          Text(promocion.nombre,
                                               style: const TextStyle(
                                                   fontSize: 15,
                                                   color: Color.fromARGB(
                                                       255, 255, 255, 255))),
-                                          Text("${promocion.descripcion}",
+                                          Text(promocion.descripcion,
                                               style: const TextStyle(
                                                   fontSize: 13,
                                                   color: Color.fromARGB(
@@ -347,7 +358,7 @@ class _PromosState extends State<Promos> {
                                                     icon: const Icon(Icons
                                                         .remove_circle_outline)),
                                                 Text(
-                                                  "${promocion.cantidad}",
+                                                  promocion.cantidad.toString(),
                                                   style: const TextStyle(
                                                       color: Color.fromARGB(
                                                           255, 255, 255, 255),
@@ -421,20 +432,22 @@ class _PromosState extends State<Promos> {
                         child: Row(
                           children: [
                             ElevatedButton(
-                              onPressed: almenosUno ? () async {
-                                await obtenerProducto();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Pedido(
-                                            seleccionados:
-                                                productosContabilizados,
-                                            seleccionadosPromo:
-                                                promocionesContabilizadas,
-                                            total: obtenerTotal(),
-                                          )),
-                                );
-                              }:null,
+                              onPressed: almenosUno
+                                  ? () async {
+                                      await obtenerProducto();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Pedido(
+                                                  seleccionados:
+                                                      productosContabilizados,
+                                                  seleccionadosPromo:
+                                                      promocionesContabilizadas,
+                                                  total: obtenerTotal(),
+                                                )),
+                                      );
+                                    }
+                                  : null,
                               style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
                                 const Color.fromARGB(255, 48, 107, 100),

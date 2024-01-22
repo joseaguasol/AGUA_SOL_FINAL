@@ -133,7 +133,7 @@ class _MapsState extends State<Maps>{
   Widget build (BuildContext context){
 
    // final double screenHeight =MediaQuery.of(context).size.height;
- /* void getCurrentLocation()async{
+ void getCurrentLocation()async{
     
     try {
     Position position = await determinarPosicion();
@@ -159,7 +159,7 @@ class _MapsState extends State<Maps>{
   } catch (e) {
     print('Error al obtener la ubicación actual: $e');
   }
-  }*/
+  }
 
     return Scaffold(
       body: SafeArea(
@@ -191,7 +191,7 @@ class _MapsState extends State<Maps>{
                   Lottie.network(urlubi),
                   ElevatedButton(onPressed: ()
                   {
-                    //getCurrentLocation();
+                    getCurrentLocation();
                     
                   setState(() {
                     mensaje = "hola desde mi app";

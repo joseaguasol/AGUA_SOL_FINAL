@@ -39,9 +39,9 @@ class _PedidoState extends State<Pedido> {
 
   int clienteId = 2;
   DateTime tiempoActual = DateTime.now();
-  String apiPedidos = 'http://10.0.2.2:8004/api/pedido';
-  String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido';
-  String apiLastPedido = 'http://10.0.2.2:8004/api/pedido_last';
+  String apiPedidos = 'https://aguasol-30pw.onrender.com/api/pedido';
+  String apiDetallePedido = 'https://aguasol-30pw.onrender.com/api/detallepedido';
+  String apiLastPedido = 'https://aguasol-30pw.onrender.com/api/pedido_last';
 
   Future<dynamic> datosCreadoPedido(
       clienteId, fecha, montoTotal, tipo, estado) async {

@@ -54,10 +54,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      initialRoute: '/diseño',
+      initialRoute: '/ubicacion',
       routes: {
 //<<<<<<< HEAD
         '/diseño': (context) => Hola(),
+        '/cliubi':(context)=>Maps(),
+        '/ubicacion':(context)=>Ubicacion(),
         '/historial': (context) => Historial(),
         '/c_felicitaciones': (context) => FelicitacionesConductor(),
         '/c_bienvenido': (context) => BienvenidaConductor(),

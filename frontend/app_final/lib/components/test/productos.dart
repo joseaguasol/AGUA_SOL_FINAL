@@ -33,7 +33,7 @@ class Productos extends StatefulWidget {
 }
 
 class _ProductosState extends State<Productos> {
-  String apiProducts = 'http://10.0.2.2:8004/api/products';
+  String apiProducts = 'https://aguasol-30pw.onrender.com/api/products';
   List<Producto> listProducto = [];
   int cantidadP = 0;
   bool almenosUno = false;
@@ -60,8 +60,8 @@ class _ProductosState extends State<Productos> {
               precio: mapa['precio'].toDouble(),
               descripcion: mapa['descripcion'],
               promoID: null,
-              foto:
-                  'http://10.0.2.2:8004/images/${mapa['foto'].replaceAll(r'\\', '/')}');
+              foto: 'https://aguasol-30pw.onrender.com/images/${mapa['foto']}',
+);
         }).toList();
 
         setState(() {

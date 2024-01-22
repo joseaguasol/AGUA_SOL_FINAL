@@ -1,8 +1,13 @@
+import 'package:app_final/components/empleado/programacion.dart';
 import 'package:app_final/components/test/asistencia.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:location/location.dart' as location_package;
+import 'package:geocoding_platform_interface/src/models/location.dart' hide Location;
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:geocoding/geocoding.dart';
 import 'dart:async';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -25,9 +30,14 @@ class Producto {
 class Hola extends StatefulWidget {
   final String? url;
   final String? LoggedInWith;
+  final double? latitud;
+  final double? longitud;
+
   const Hola({
     this.url,
     this.LoggedInWith,
+    this.latitud, // Nuevo campo
+    this.longitud, // Nuevo campo
     Key? key,
   }) : super(key: key);
 
@@ -36,26 +46,52 @@ class Hola extends StatefulWidget {
 }
 
 class _HolaState extends State<Hola> with TickerProviderStateMixin {
-  String apiProducts = 'http://10.0.2.2:8004/api/products';
+  String apiProducts = 'https://aguasol-30pw.onrender.com/api/products';
   List<Producto> listProducto = [];
-  List<String> list = <String>[
-    'Ca. Rosas N 200,P.Camarones',
-    'Ca. Rosas N 200,P.Camarones',
-    'Ca. Rosas N 200,P.Camarones',
-    'Ca. Rosas N 200,P.Camarones'
-  ];
-  late String dropdownValue = list.first;
+  List<String> listUbicaciones = ["..."];
+  late String dropdownValue = listUbicaciones.first;
 
   ScrollController _scrollController1 = ScrollController();
   ScrollController _scrollController2 = ScrollController();
   @override
   void initState() {
     super.initState();
-     getProducts();
+    getProducts();
+    obtenerDireccion(widget.latitud,widget.longitud);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startAutoScroll();
     });
-   
+  }
+
+Future<dynamic> getProducts() async {
+    print("-------get products---------");
+    var res = await http.get(
+      Uri.parse(apiProducts),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Producto> tempProducto = data.map<Producto>((mapa) {
+          return Producto(
+            nombre: mapa['nombre'],
+            precio: mapa['precio'].toDouble(),
+            descripcion: mapa['descripcion'],
+            foto: 'https://aguasol-30pw.onrender.com/images/${mapa['foto']}',
+          );
+        }).toList();
+
+        setState(() {
+          listProducto = tempProducto;
+          //conductores = tempConductor;
+        });
+        print("....lista productos");
+        print(listProducto[0].foto);
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
   }
 
   void _handleLogout() async {
@@ -161,37 +197,72 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<dynamic> getProducts() async {
-    print("-------get products---------");
-    var res = await http.get(
-      Uri.parse(apiProducts),
-      headers: {"Content-type": "application/json"},
-    );
-    try {
-      if (res.statusCode == 200) {
-        var data = json.decode(res.body);
-        List<Producto> tempProducto = data.map<Producto>((mapa) {
-          return Producto(
-              nombre: mapa['nombre'],
-              precio: mapa['precio'].toDouble(),
-              descripcion: mapa['descripcion'],
-              foto:
-                  'http://10.0.2.2:8004/images/${mapa['foto'].replaceAll(r'\\', '/')}');
-        }).toList();
+  Future<void> obtenerDireccion(x,y) async {
+    //double latitud = widget.latitud ?? 0.0; // Accede a widget.latitud
+    //double longitud = widget.longitud ?? 0.0;
+    List<Placemark> placemark =
+        await placemarkFromCoordinates(x, y);
+    print(placemark);
 
-        setState(() {
-          listProducto = tempProducto;
-          //conductores = tempConductor;
-        });
-        print("....lista productos");
-        print(listProducto[0].foto);
-      }
-    } catch (e) {
-      print('Error en la solicitud: $e');
-      throw Exception('Error en la solicitud: $e');
+    if (placemark.isNotEmpty) {
+      Placemark lugar = placemark.first;
+      setState(() {
+        listUbicaciones.add("${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}");
+      
+      });
     }
   }
+/* Future<void> currentLocation() async {
+    var location = location_package.Location();
 
+    // bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+   
+    // Verificar si el servicio de ubicación está habilitado
+    var _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      // Solicitar habilitación del servicio de ubicación
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        // Mostrar mensaje al usuario indicando que el servicio de ubicación es necesario
+       
+        return;
+      }
+    }
+
+    // Verificar si se otorgaron los permisos de ubicación
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      // Solicitar permisos de ubicación
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        // Mostrar mensaje al usuario indicando que los permisos de ubicación son necesarios
+        return;
+      }
+    }
+
+    // Obtener la ubicación
+    try {
+      _locationData = await location.getLocation();
+      //updateLocation(_locationData);
+      setState(() {
+       // latitudUser = _locationData.latitude;
+        //longitudUser = _locationData.longitude; 
+      });
+      
+      print("----ubicación--");
+      print(_locationData);
+    //print(latitudUser);
+      //print(longitudUser);
+      // Aquí puedes utilizar la ubicación obtenida (_locationData)
+    } catch (e) {
+      // Manejo de errores, puedes mostrar un mensaje al usuario indicando que hubo un problema al obtener la ubicación.
+      print("Error al obtener la ubicación: $e");
+    }
+ }*/
+  
   @override
   Widget build(BuildContext context) {
     final TabController _tabController = TabController(length: 2, vsync: this);
@@ -245,7 +316,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                     children: [
                       Container(
                         margin:
-                            const EdgeInsets.only(top: 10, left: 20, right: 20),
+                            const EdgeInsets.only(top: 10, left: 10, right: 20),
                         //color:Colors.red,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -275,8 +346,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                         color: Color.fromARGB(255, 7, 135, 50)),
                                   ),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
@@ -291,7 +361,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return Container(
-                                                  height: 700,
+                                                  height: 350,
                                                   width: MediaQuery.of(context)
                                                       .size
                                                       .width,
@@ -321,12 +391,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                                       ElevatedButton(
                                                         onPressed: () {
                                                           print("ubi añadidda");
-                                                          // Aquí puedes manejar la lógica para agregar la ubicación
-                                                          //String nuevaUbicacion = ubicacionController.text;
-                                                          // ... lógica para agregar la ubicación ...
-                                                          // Cerrar el modal después de agregar la ubicación
-                                                          /* Navigator.pop(
-                                                              context);*/
+                                                          
                                                         },
                                                         child: const Row(
                                                           children: [
@@ -373,20 +438,25 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                                   Color.fromARGB(
                                                       255, 197, 251, 0)),
                                         ),
-                                        initialSelection: list.first,
+                                        initialSelection: listUbicaciones.first,
                                         onSelected: (String? value) {
                                           // This is called when the user selects an item.
+                                          print("valor");
+                                          print(value);
                                           setState(() {
-                                            dropdownValue = value!;
+                                            if (listUbicaciones
+                                                .contains(value)) {
+                                              listUbicaciones.remove(value);
+                                              listUbicaciones.insert(0, value!);
+                                              dropdownValue = value;
+                                            }
                                           });
                                         },
-                                        dropdownMenuEntries: list
-                                            .map<DropdownMenuEntry<String>>(
-                                                (String value) {
+                                        dropdownMenuEntries: List.generate(listUbicaciones.length, (index) {
+                                          final value = listUbicaciones[index];
                                           return DropdownMenuEntry<String>(
                                               value: value,
-                                              label: value.length > 20
-                                                  ? '${value.substring(0, 17)}...'
+                                              label: value.length > 22 ? '${value.substring(0,18)}'
                                                   : value);
                                         }).toList(),
                                       ),
@@ -398,17 +468,20 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
 
                             // USER PHOTO
                             Container(
-                              child: ClipRRect(
-                                child: widget.url != null
-                                    ? Image.network(widget.url!)
-                                    : Image.asset('lib/imagenes/chica.jpg'),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
+                              margin: const EdgeInsets.only(left: 0),
                               decoration: BoxDecoration(
                                   color: const Color.fromARGB(255, 84, 81, 81),
                                   borderRadius: BorderRadius.circular(20)),
                               height: 50,
                               width: 50,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: widget.url != null
+                                    ? Image.network(widget.url!)
+                                    : Image.asset('lib/imagenes/chica.jpg'),
+                                
+                              ),
+                              
                             ),
                           ],
                         ),
@@ -611,7 +684,6 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                       Container(
                         margin: const EdgeInsets.only(left: 20, right: 20),
                         child: Row(children: [
-                          
                           Container(
                             width: 150,
                             height: 50,

@@ -13,15 +13,10 @@ class Ubicacion extends StatefulWidget {
 
 class _UbicacionState extends State<Ubicacion> {
   bool _isloading = false;
+  double? latitudUser = 0.0;
+  double? longitudUser = 0.0;
   String apiCliente = '';
 
-  // UPDATE UBICACIÓN
-  Future<dynamic>updateLocation(ubicacion)async{
-    await http.put(Uri.parse(apiCliente),
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "ubicacion":ubicacion.toString()
-    }));}
 
   // GET UBICACIÓN
   Future<void> currentLocation() async {
@@ -63,9 +58,15 @@ class _UbicacionState extends State<Ubicacion> {
     try {
       _locationData = await location.getLocation();
       //updateLocation(_locationData);
+      setState(() {
+        latitudUser = _locationData.latitude;
+        longitudUser = _locationData.longitude; 
+      });
       
       print("----ubicación--");
       print(_locationData);
+      print(latitudUser);
+      print(longitudUser);
       // Aquí puedes utilizar la ubicación obtenida (_locationData)
     } catch (e) {
       // Manejo de errores, puedes mostrar un mensaje al usuario indicando que hubo un problema al obtener la ubicación.
@@ -88,7 +89,7 @@ class _UbicacionState extends State<Ubicacion> {
                     Navigator.of(context).pop(); // Cierra el AlertDialog
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Hola()),
+                      MaterialPageRoute(builder: (context) => Hola(latitud:latitudUser,longitud: longitudUser,)),
                     );
                   },
                   child: const Text('OK',

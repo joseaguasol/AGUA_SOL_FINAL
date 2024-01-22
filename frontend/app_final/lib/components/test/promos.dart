@@ -47,9 +47,9 @@ class Promos extends StatefulWidget {
 }
 
 class _PromosState extends State<Promos> {
-  String apiPromociones = 'http://10.0.2.2:8004/api/promocion';
-  String apiProductoPromocion = 'http://10.0.2.2:8004/api/prod_prom';
-  String apiProducto = 'http://10.0.2.2:8004/api/products';
+  String apiPromociones = 'https://aguasol-30pw.onrender.com/api/promocion';
+  String apiProductoPromocion = 'https://aguasol-30pw.onrender.com/api/prod_prom';
+  String apiProducto = 'https://aguasol-30pw.onrender.com/api/products';
   List<Producto> productosContabilizados = [];
   List<Promo> promocionesContabilizadas = [];
   List<Promo> listPromociones = [];
@@ -80,7 +80,7 @@ class _PromosState extends State<Promos> {
               descripcion: mapa['descripcion'],
               fechaLimite: mapa['fecha_limite'],
               foto:
-                  'http://10.0.2.2:8004/images/${mapa['foto'].replaceAll(r'\\', '/')}');
+                  'https://aguasol-30pw.onrender.com/images/${mapa['foto'].replaceAll(r'\\', '/')}');
         }).toList();
 
         setState(() {

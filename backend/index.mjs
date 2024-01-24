@@ -21,6 +21,7 @@ import routerVentasProduct from "./routes/ventas_producto_route.mjs";
 import routerDetallePedido from "./routes/relaciones_detallepedido_route.mjs";
 import routerVentasVenta from "./routes/ventas_venta_route.mjs";
 import routerVentasRuta from "./routes/ventas_ruta_route.mjs";
+import routerClienteNR from "./routes/ventas_clientenr_route.mjs";
 
 /** INICIA LA APP Y EL PUERTO */
 const app_sol = express();
@@ -83,6 +84,7 @@ app_sol.use('/api',routerVentasVenta);
 app_sol.use('/api',routerVentasPromocion);
 app_sol.use('/api',routerProductoPromocion);
 app_sol.use('/api',routerVentasRuta);
+app_sol.use('/api',routerClienteNR)
 
 
 

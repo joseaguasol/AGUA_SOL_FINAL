@@ -6,6 +6,58 @@ import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+class Usuario {
+  final int id;
+	final int rol_id;
+	final String nickname;
+	final String contrasena;
+	String? email;
+	final String nombres;// varchar(100) not null,
+	final String apellidos;// varchar(200) not null,
+	final String dni;// varchar(200) no,
+	String fecha_nacimiento;// date not null,
+	String? licencia;// varchar (100),
+	String? frecuencia;// int,
+	String? sexo;// varchar(100),
+	String? direccion;// varchar(150),
+	String? telefono;// varchar(50),
+	String? codigo;// varchar(200),
+	double? saldo_beneficios;// int,
+	String? direccion_empresa;// varchar(200),
+	String? suscripcion;// varchar(200),
+	String? ubicacion; //varchar(200), --GEOMETRY
+	String? ruc;// varchar(200),
+	String? nombre_empresa;// varchar(200),
+	String? zona_trabajo_id;//int
+
+
+   Usuario(
+      {required this.id,
+      required this.nombres,
+      required this.apellidos,
+      required this.dni,
+      this.codigo,
+      required this.nickname,
+      required this.contrasena,
+      this.direccion,
+      this.direccion_empresa,
+      required this.fecha_nacimiento,
+      this.email,
+      this.frecuencia,
+      this.licencia,
+      this.nombre_empresa,
+      required this.rol_id,
+      this.ruc,
+      this.saldo_beneficios,
+      this.sexo,
+      this.suscripcion,
+      this.telefono,
+      this.ubicacion,
+      this.zona_trabajo_id
+});
+}
 
 class Login2 extends StatefulWidget {
   const Login2({super.key});
@@ -16,12 +68,15 @@ class Login2 extends StatefulWidget {
 
 class _Login2State extends State<Login2> {
   double opacity = 0.0;
+  String apiUsers = '';
+  List<Usuario>usuarios= [];
 
   @override
   void initState() {
     super.initState();
+    //getUsers();
     // Iniciar la animación de la opacidad después de 500 milisegundos
-    Timer(Duration(milliseconds: 500), () {
+    Timer(Duration(milliseconds: 900), () {
       setState(() {
         opacity = 1;
       });
@@ -31,6 +86,54 @@ class _Login2State extends State<Login2> {
   String? LoggedInWith;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+ /* Future<dynamic>getUsers()async{
+    var res = await http.get(
+      Uri.parse(apiUsers),
+      headers: {"Content-type": "application/json"},
+    );
+    try {
+      if (res.statusCode == 200) {
+        var data = json.decode(res.body);
+        List<Usuario> tempUsuario = data.map<Usuario>((mapa) {
+          return Usuario(
+              id: mapa['id'],
+              nombres: mapa['nombres'],
+              apellidos: mapa['apellidos'],
+              licencia: mapa['licencia'],
+              dni: mapa['dni'],
+              fecha_nacimiento: mapa['fecha_nacimiento'],
+              nickname: mapa['nickname'],
+              contrasena: mapa['contrasena'],
+              email: mapa['email'],
+              rol_id: mapa['rol_id'],
+              codigo: mapa['codigo'],
+              direccion: mapa['direccion'],
+              direccion_empresa: mapa['direccion_empresa'],
+              nombre_empresa: mapa['nombre_empresa'],
+              ruc: mapa['ruc'],
+              sexo: mapa['sexo'],
+              saldo_beneficios:mapa['saldo_beneficios'],
+              suscripcion: mapa['mapa'],
+              telefono: mapa['telefono'],
+              ubicacion: mapa['ubicacion'],
+              frecuencia: mapa['frecuencia'],
+              zona_trabajo_id: mapa['zona_trabajo_id']
+              
+              
+          );
+        }).toList();
+
+        setState(() {
+          usuarios = tempUsuario;
+        });
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+  }*/
+
   Future<dynamic> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -84,8 +187,9 @@ class _Login2State extends State<Login2> {
   Widget build(BuildContext context) {
     final anchoActual = MediaQuery.of(context).size.width;
     final largoActual = MediaQuery.of(context).size.height;
-
+    
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 234, 234, 255),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(4.0),
@@ -96,13 +200,13 @@ class _Login2State extends State<Login2> {
               Container(
                 //color: Colors.amber,
                 margin: const EdgeInsets.only(top: 30, left: 20),
-                height: 100,
-                width: 150,
+                height: MediaQuery.of(context).size.height/7,
+                width: MediaQuery.of(context).size.width/2.25,
                 child: Opacity(
                     opacity: 1,
                     child: Image.asset('lib/imagenes/logo_sol_tiny.png')),
               ),
-              Container(
+             /* Container(
                 margin: const EdgeInsets.only(top: 0, left: 20),
                 child: const Text(
                   "Agua Sol",
@@ -111,9 +215,9 @@ class _Login2State extends State<Login2> {
                       fontFamily: 'Pacifico',
                       color: Color.fromARGB(255, 1, 43, 78)),
                 ),
-              ),
+              ),*/
               const SizedBox(
-                height: 0,
+                height: 50,
               ),
               Container(
                 margin: const EdgeInsets.only(left: 20),
@@ -188,6 +292,7 @@ class _Login2State extends State<Login2> {
                   onPressed: () {
                     print(largoActual);
                     print(anchoActual);
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -292,18 +397,20 @@ class _Login2State extends State<Login2> {
                 ),
               ),
               const SizedBox(
-                height: 20,
+                height: 30,
               ),
               Center(
                   child: Container(
+                    
                 //color: Colors.red,
-                height: 100,
-                width: 200,
-                margin: const EdgeInsets.only(left: 20, right: 20),
+                height: MediaQuery.of(context).size.height/2.75,
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.only(left: 20, right: 20,bottom: 10),
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage('lib/imagenes/bodegoncito.jpg'),
-                        fit: BoxFit.fitHeight)),
+                  borderRadius: BorderRadius.circular(20),
+                    image:const DecorationImage(
+                        image: AssetImage('lib/imagenes/parejitajoven.jpg'),
+                        fit: BoxFit.fill)),
                 // padding: EdgeInsets.all(20),
                 // child: Image.asset('lib/imagenes/BIDON7.png'),
               )),

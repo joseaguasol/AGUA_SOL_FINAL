@@ -13,11 +13,50 @@ class Producto {
   final double precio;
   final String foto;
 
-  Producto({
-    required this.nombre,
-    required this.descripcion,
-    required this.precio,
-    required this.foto,
+  int cantidad;
+  double descuento;
+
+  Producto(
+      {required this.nombre,
+      required this.descripcion,
+      required this.precio,
+      required this.foto,
+      this.cantidad = 0,
+      this.descuento = 0.0});
+}
+
+class Promo {
+  
+  final String nombre;
+  final double precio;
+  final String descripcion;
+  final String fecha_limite;
+  final String foto;
+  int cantidad;
+  double descuento;
+
+  Promo(
+      {
+      required this.nombre,
+      required this.precio,
+      required this.descripcion,
+      required this.fecha_limite,
+      required this.foto,
+      this.cantidad = 0,
+      this.descuento = 0.0});
+}
+
+class ProductoPromocion {
+  final int promocionId;
+  final int productoId;
+  final int cantidadProd;
+  final int? cantidadPromo;
+
+  ProductoPromocion({
+    required this.promocionId,
+    required this.productoId,
+    required this.cantidadProd,
+    required this.cantidadPromo,
   });
 }
 
@@ -29,10 +68,17 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var direccion = '';
+  final TextEditingController _nombres = TextEditingController();
+  final TextEditingController _apellidos = TextEditingController();
   final TextEditingController _direccion = TextEditingController();
+  final TextEditingController _telefono = TextEditingController();
+  final TextEditingController _email = TextEditingController();
   final TextEditingController _distrito = TextEditingController();
   final TextEditingController _ubicacion = TextEditingController();
+  final TextEditingController _ruc = TextEditingController();
+
   late double temperatura = 0.0;
   final now = DateTime.now();
   // Formato para obtener el nombre del mes
@@ -40,11 +86,35 @@ class _LoginState extends State<Login> {
 
   // Lista de productos
   List<Producto> listProducts = [];
+  List<dynamic> listElementos = [];
 
   String apiClima =
       "https://api.openweathermap.org/data/2.5/weather?q=Arequipa&appid=08607bf479e5f47f5b768154953d10f6";
 
-  String apiProducts = 'http://127.0.0.1:8004/api/products';
+  String apiProducts ='http://127.0.0.1:8004/api/products';// 'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/products';
+  String apiClienteNR = 'http://127.0.0.1:8004/api/clientenr';
+
+  String apiPromos = 'http://127.0.0.1:8004/api/promocion';
+
+  Future<dynamic> createNR(nombre, apellidos, direccion, telefono, email,
+      distrito, ubicacion, ruc) async {
+    try {
+      await http.post(Uri.parse(apiClienteNR),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode({
+            "nombre": nombre,
+            "apellidos": apellidos,
+            "direccion": direccion,
+            "telefono": telefono,
+            "email": email ?? "",
+            "distrito": distrito,
+            "ubicacion": ubicacion,
+            "ruc": ruc ?? ""
+          }));
+    } catch (e) {
+      throw Exception('Error en la solicitud: $e');
+    }
+  }
 
   Future<dynamic> getTemperature() async {
     try {
@@ -68,21 +138,56 @@ class _LoginState extends State<Login> {
   Future<dynamic> getProducts() async {
     var res = await http.get(Uri.parse(apiProducts),
         headers: {"Content-type": "application/json"});
-    if (res.statusCode == 200) {
-      //
-      var data = json.decode(res.body);
-      List<Producto> tempProductos = data.map<Producto>((mapa) {
-        return Producto(
-            nombre: mapa['nombre'],
-            descripcion: mapa['descripcion'],
-            precio: mapa['precio'].toDouble(),
-            foto: 'http://127.0.0.1:8004/images/${mapa['foto']}');
-      }).toList();
-      setState(() {
-        listProducts = tempProductos;
-        print("-------LISTAAAPRO");
-        print(listProducts);
-      });
+
+    try {
+      if (res.statusCode == 200) {
+        //
+        var data = json.decode(res.body);
+        List<Producto> tempProductos = data.map<Producto>((mapa) {
+          return Producto(
+              nombre: mapa['nombre'],
+              descripcion: mapa['descripcion'],
+              precio: mapa['precio'].toDouble(),
+              foto:
+                  'http://127.0.0.1:8004/images/${mapa['foto']}');
+        }).toList();
+        for (var i = 0; i < tempProductos.length; i++) {
+          listElementos.add(tempProductos[i]);
+          print("-------LISTAAAPRO");
+          print(listProducts);
+        }
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
+    }
+  }
+
+  Future<dynamic> getPromos() async {
+    var res = await http.get(Uri.parse(apiPromos),
+        headers: {"Content-type": "application/json"});
+
+    try {
+      if (res.statusCode == 200) {
+        //
+        var data = json.decode(res.body);
+        List<Promo> tempPromos = data.map<Promo>((mapa) {
+          return Promo(
+              nombre: mapa['nombre'],
+              descripcion: mapa['descripcion'],
+              precio: mapa['precio'].toDouble(),
+              fecha_limite: mapa['fecha_limite'].toString(),
+              foto:
+                  'http://127.0.0.1:8004/images/${mapa['foto']}');
+        }).toList();
+        for (var i = 0; i < tempPromos.length; i++) {
+          listElementos.add(tempPromos[i]);
+   
+        }
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+      throw Exception('Error en la solicitud: $e');
     }
   }
 
@@ -91,6 +196,7 @@ class _LoginState extends State<Login> {
     super.initState();
     getTemperature();
     getProducts();
+    getPromos();
   }
 
   @override
@@ -204,7 +310,7 @@ class _LoginState extends State<Login> {
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
-                                      Armado(),
+                                      const Armado(),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 const begin = Offset(1.0, 0.0);
@@ -245,7 +351,7 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // CLIENTE
+                    // FORMULARIO
 
                     Container(
                       //color:Colors.green,
@@ -263,360 +369,233 @@ class _LoginState extends State<Login> {
                               style: TextStyle(fontSize: 20),
                             ),
                           ),
-                          const TextField(
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Nombres",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const TextField(
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Apellidos",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextField(
-                            controller: _direccion,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: const InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Dirección",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ], // Añade esta línea
-                            maxLength: 9,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Teléfono",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const TextField(
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Email",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextField(
-                            controller: _distrito,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: const InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Distrito",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextField(
-                            controller: _ubicacion,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: const InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "Ubicación",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ], // Añade esta línea
-                            maxLength: 11,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 1, 41, 75),
-                            ),
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelText: "RUC",
-                              labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 0, 48, 87),
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-
-                          /* Container(
-                            
-                            child: const TextField(
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "Nombres",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            
-                            child: TextField(
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "Apellidos",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            
-                            child: TextField(
-                              controller: _direccion,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "Dirección",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
+                          SingleChildScrollView(
+                            child: Container(
+                              //  height: MediaQuery.of(context).size.height/1.45,//1.5,
+                              margin: const EdgeInsets.only(bottom: 0),
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        controller: _nombres,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Nombres',
+                                          hintText: 'Ingrese sus nombres',
+                                          isDense: true,
+                                          labelStyle: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromARGB(255, 1, 55, 99),
+                                          ),
+                                          hintStyle: TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'El campo es obligatorio';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _apellidos,
+                                        decoration: InputDecoration(
+                                          labelText: 'Apellidos',
+                                          hintText: 'Ingrese sus apellidos',
+                                          isDense: true,
+                                          labelStyle: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromARGB(255, 1, 55, 99),
+                                          ),
+                                          hintStyle: TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'El campo es obligatorio';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _direccion,
+                                        decoration: InputDecoration(
+                                          labelText: 'Direccion',
+                                          hintText: 'Ingrese su direccion',
+                                          isDense: true,
+                                          labelStyle: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromARGB(255, 1, 55, 99),
+                                          ),
+                                          hintStyle: TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'El campo es obligatorio';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _telefono,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly
+                                        ], // Añade esta línea
+                                        //maxLength: 9,
+                                        decoration: InputDecoration(
+                                            labelText: 'Teléfono',
+                                            hintText: 'Ingrese su teléfono',
+                                            isDense: true,
+                                            labelStyle: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(
+                                                  255, 1, 55, 99),
+                                            ),
+                                            hintStyle: TextStyle(
+                                              fontSize: 13.0,
+                                              color: Colors.grey,
+                                            )),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'El campo es obligatorio';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _email,
+                                        decoration: InputDecoration(
+                                          labelText: 'Email',
+                                          hintText: 'Ingrese su email',
+                                          isDense: true,
+                                          labelStyle: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromARGB(255, 1, 55, 99),
+                                          ),
+                                          hintStyle: TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _distrito,
+                                        decoration: InputDecoration(
+                                          labelText: 'Distrito',
+                                          hintText: 'Ingrese su dirección',
+                                          isDense: true,
+                                          labelStyle: TextStyle(
+                                            fontSize: 15.0,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Color.fromARGB(255, 1, 55, 99),
+                                          ),
+                                          hintStyle: TextStyle(
+                                            fontSize: 13.0,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'El campo es obligatorio';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _ubicacion,
+                                        decoration: InputDecoration(
+                                            labelText: 'Ubicación(Lat:Long)',
+                                            hintText: 'Ingrese su ubicación',
+                                            isDense: true,
+                                            labelStyle: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(
+                                                  255, 1, 55, 99),
+                                            ),
+                                            hintStyle: TextStyle(
+                                              fontSize: 13.0,
+                                              color: Colors.grey,
+                                            )),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'El nombre es obligatorio';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      TextFormField(
+                                        controller: _ruc,
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly
+                                        ], // Añade esta línea
+                                        maxLength: 11,
+                                        decoration: InputDecoration(
+                                            labelText: 'RUC',
+                                            hintText: 'Ingrese su RUC',
+                                            isDense: true,
+                                            labelStyle: TextStyle(
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(
+                                                  255, 1, 55, 99),
+                                            ),
+                                            hintStyle: TextStyle(
+                                              fontSize: 13.0,
+                                              color: Colors.grey,
+                                            )),
+                                      ),
+                                      const SizedBox(
+                                        height: 50,
+                                      ),
+                                    ],
+                                  )),
                             ),
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            
-                            child: TextField(
-                              controller: _distrito,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "Distrito",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            
-                            child: TextField(
-                              controller: _ubicacion,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "Ubicación",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ], // Añade esta línea
-                              maxLength: 9,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "+51 Celular",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            
-                            child: TextField(
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly
-                              ], // Añade esta línea
-                              maxLength: 11,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "RUC",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                         
-                          Container(
-                            
-                            child: const TextField(
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 1, 41, 75),
-                              ),
-                              decoration: const InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white,
-                                labelText: "E-mail",
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 0, 48, 87),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          */
                         ],
                       ),
                     ),
@@ -629,6 +608,7 @@ class _LoginState extends State<Login> {
 
                     Container(
                       //color:Colors.red,
+
                       height: 600,
                       width: MediaQuery.of(context).size.width <= 1580
                           ? 420
@@ -646,49 +626,38 @@ class _LoginState extends State<Login> {
                           //listview
                           Container(
                             padding: const EdgeInsets.all(10),
-                            height: 550,
+                            height: 535,
                             width: MediaQuery.of(context).size.width <= 1580
                                 ? 420
                                 : 500,
                             decoration: BoxDecoration(
-                                // color: Colors.grey,
-                                borderRadius: BorderRadius.circular(20)),
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.grey),
                             child: ListView.builder(
                                 scrollDirection: Axis.vertical,
-                                itemCount: listProducts.length,
+                                itemCount: listElementos.length,
                                 itemBuilder: ((context, index) {
-                                  Producto producto = listProducts[index];
-                                  return Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    padding: const EdgeInsets.all(10),
-                                    height: 300,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: const Color.fromARGB(
-                                          255, 58, 75, 108),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          height: 150,
-                                          width: MediaQuery.of(context)
-                                                      .size
-                                                      .width <=
-                                                  1580
-                                              ? 90
-                                              : 150,
-                                          decoration: BoxDecoration(
-                                              // color: Colors.grey,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              image: DecorationImage(
-                                                  image: NetworkImage(
-                                                      producto.foto))),
-                                        ),
-                                        Container(
-                                            margin:
-                                                const EdgeInsets.only(left: 20),
-                                            height: 180,
+                                  dynamic elementoActual = listElementos[index];
+                                  if (elementoActual is Producto) {
+                                    // Producto
+                                    Producto producto = elementoActual;
+
+                                    // CONTENEDOR PRINCIPAL
+
+                                    return Container(
+                                      margin: const EdgeInsets.only(top: 10),
+                                      padding: const EdgeInsets.all(10),
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: const Color.fromARGB(
+                                            255, 58, 75, 108),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // IMAGENES DE PRODUCTO
+                                          Container(
+                                            height: 150,
                                             width: MediaQuery.of(context)
                                                         .size
                                                         .width <=
@@ -696,277 +665,679 @@ class _LoginState extends State<Login> {
                                                 ? 90
                                                 : 150,
                                             decoration: BoxDecoration(
-                                              // color: Colors.grey,
+                                                // color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(
+                                                        producto.foto))),
+                                          ),
+
+                                          // DESCRIPCIÓN DE PRODUCTO
+
+                                          Container(
+                                              margin: const EdgeInsets.only(
+                                                  left: 20),
+                                              height: 180,
+                                              width: MediaQuery.of(context)
+                                                          .size
+                                                          .width <=
+                                                      1580
+                                                  ? 90
+                                                  : 150,
+                                              decoration: BoxDecoration(
+                                                // color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "Presentación:${producto.nombre}",
+                                                    style: const TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "${producto.descripcion}",
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "Precio: S/.${producto.precio}",
+                                                    style: const TextStyle(
+                                                        fontSize: 24,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            100,
+                                                            237,
+                                                            105)),
+                                                  ),
+                                                ],
+                                              )),
+
+                                          // ENTRADAS NUMÉRICAS
+
+                                          Container(
+                                            padding: const EdgeInsets.all(15),
+                                            margin:
+                                                const EdgeInsets.only(left: 20),
+                                            height: 180,
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width <=
+                                                    1580
+                                                ? 150
+                                                : 250,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey,
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),
                                             child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               children: [
-                                                Text(
-                                                  "Presentación:${producto.nombre}",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  "${producto.descripcion}",
+                                                // CANTIDAD
+                                                TextFormField(
+                                                  keyboardType:
+                                                      const TextInputType
+                                                          .numberWithOptions(
+                                                          decimal: true),
+                                                  decoration: InputDecoration(
+                                                    filled: true,
+                                                    fillColor: const Color
+                                                        .fromARGB(255, 223, 225,
+                                                        226), // Cambia este color según tus preferencias
+
+                                                    hintText: 'Cantidad',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    hintStyle: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
                                                   style: const TextStyle(
-                                                      fontSize: 20,
-                                                      color: Colors.white),
+                                                      fontSize: 12),
                                                 ),
-                                                Text(
-                                                  "Precio: S/.${producto.precio}",
-                                                  style: TextStyle(
-                                                      fontSize: 24,
-                                                      color: Color.fromARGB(
-                                                          255, 100, 237, 105)),
-                                                ),
-                                              ],
-                                            )),
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          margin:
-                                              const EdgeInsets.only(left: 20),
-                                          height: 230,
-                                          width: MediaQuery.of(context)
-                                                      .size
-                                                      .width <=
-                                                  1580
-                                              ? 150
-                                              : 250,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                               TextField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                inputFormatters: [
-                                                  FilteringTextInputFormatter
-                                                      .digitsOnly
-                                                ], // Añade esta línea
-                                                maxLength: 9,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color.fromARGB(
-                                                      255, 1, 41, 75),
-                                                ),
-                                                decoration: const InputDecoration(
-                                                  filled: true,
-                                                  fillColor: Colors.white,
-                                                  labelText: "Cantidad",
-                                                  labelStyle: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 0, 48, 87),
-                                                    fontSize: 13,
+
+                                                // PRECIO
+
+                                                TextFormField(
+                                                  keyboardType:
+                                                      const TextInputType
+                                                          .numberWithOptions(
+                                                          decimal: true),
+                                                  inputFormatters: [
+                                                    FilteringTextInputFormatter
+                                                        .allow(RegExp(
+                                                            r'^\d+\.?\d{0,2}')),
+                                                  ],
+                                                  decoration: InputDecoration(
+                                                    filled: true,
+                                                    fillColor: const Color
+                                                        .fromARGB(255, 223, 225,
+                                                        226), // Cambia este color según tus preferencias
+
+                                                    hintText: 'S/. Descuento',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    hintStyle: const TextStyle(
+                                                        fontSize: 12),
                                                   ),
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
                                                 ),
-                                              ),
-                                              TextField(
-                                                keyboardType:
-                                                    TextInputType.number,
-                                                inputFormatters: [
-                                                  FilteringTextInputFormatter
-                                                      .digitsOnly
-                                                ], // Añade esta línea
-                                                maxLength: 9,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color.fromARGB(
-                                                      255, 1, 41, 75),
+
+                                                const SizedBox(
+                                                  height: 10,
                                                 ),
-                                                decoration:
-                                                    const InputDecoration(
-                                                  filled: true,
-                                                  fillColor: Colors.white,
-                                                  labelText: "S/. Descuento",
-                                                  labelStyle: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 0, 48, 87),
-                                                    fontSize: 13,
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                    showModalBottomSheet(
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return Container(
-                                                          height: 300,
-                                                          width: MediaQuery.of(
-                                                                  context)
-                                                              .size
-                                                              .width,
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(16.0),
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              const Text(
-                                                                'Autorizado por:',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          3,
-                                                                          64,
-                                                                          113),
-                                                                  fontSize: 20,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 10),
-                                                              TextField(
-                                                                
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 15,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          1,
-                                                                          41,
-                                                                          75),
-                                                                ),
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  filled: true,
-                                                                  fillColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  labelText:
-                                                                      "Nombre:",
-                                                                  labelStyle:
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return Container(
+                                                            height: 280,
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(16.0),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                const Text(
+                                                                  'Autorizado por:',
+                                                                  style:
                                                                       TextStyle(
                                                                     color: Color
                                                                         .fromARGB(
                                                                             255,
-                                                                            0,
-                                                                            48,
-                                                                            87),
+                                                                            3,
+                                                                            64,
+                                                                            113),
                                                                     fontSize:
-                                                                        13,
+                                                                        20,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
                                                                   ),
                                                                 ),
-                                                              ),
-                                                              TextField(
-                                                                
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 15,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          1,
-                                                                          41,
-                                                                          75),
-                                                                ),
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  filled: true,
-                                                                  fillColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  labelText:
-                                                                      "Cargo:",
-                                                                  labelStyle:
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                                const TextField(
+                                                                  style:
                                                                       TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
                                                                     color: Color
                                                                         .fromARGB(
                                                                             255,
-                                                                            0,
-                                                                            48,
-                                                                            87),
-                                                                    fontSize:
-                                                                        13,
+                                                                            1,
+                                                                            41,
+                                                                            75),
                                                                   ),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                  height: 10),
-                                                              ElevatedButton(
-                                                                style: ButtonStyle(
-                                                                  backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 1, 62, 111))
-                                                                ),
-                                                                onPressed: () {
-                                                                  print(
-                                                                      "ubi añadidda");
-                                                                  // Aquí puedes manejar la lógica para agregar la ubicación
-                                                                  //String nuevaUbicacion = ubicacionController.text;
-                                                                  // ... lógica para agregar la ubicación ...
-                                                                  // Cerrar el modal después de agregar la ubicación
-                                                                  /* Navigator.pop(
-                                                              context);*/
-                                                                },
-                                                                child:
-                                                                    const Row(
-                                                                  children: [
-                                                                    Icon(
-                                                                      Icons
-                                                                          .account_box_outlined,
-                                                                      color: Colors
-                                                                          .blue,
-                                                                      size: 25,
-                                                                    ),
-                                                                    Text(
-                                                                      ' Confirmar',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              20,
-                                                                          fontWeight: FontWeight
-                                                                              .w400,
-                                                                          color: Color.fromARGB(
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    filled:
+                                                                        true,
+                                                                    fillColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    labelText:
+                                                                        "Nombre:",
+                                                                    labelStyle:
+                                                                        TextStyle(
+                                                                      color: Color
+                                                                          .fromARGB(
                                                                               255,
-                                                                              77,
-                                                                              231,
-                                                                              82)),
+                                                                              0,
+                                                                              48,
+                                                                              87),
+                                                                      fontSize:
+                                                                          13,
                                                                     ),
-                                                                  ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      },
-                                                    );
-                                                  },
-                                                  child: Text("Confirmar?"))
-                                            ],
+                                                                TextField(
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            1,
+                                                                            41,
+                                                                            75),
+                                                                  ),
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    filled:
+                                                                        true,
+                                                                    fillColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    labelText:
+                                                                        "Cargo:",
+                                                                    labelStyle:
+                                                                        TextStyle(
+                                                                      color: Color
+                                                                          .fromARGB(
+                                                                              255,
+                                                                              0,
+                                                                              48,
+                                                                              87),
+                                                                      fontSize:
+                                                                          13,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                                ElevatedButton(
+                                                                  style: ButtonStyle(
+                                                                      backgroundColor: MaterialStateProperty.all(const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          1,
+                                                                          62,
+                                                                          111))),
+                                                                  onPressed:
+                                                                      () {
+                                                                    print(
+                                                                        "ubi añadidda");
+                                                                    // Aquí puedes manejar la lógica para agregar la ubicación
+                                                                    //String nuevaUbicacion = ubicacionController.text;
+                                                                    // ... lógica para agregar la ubicación ...
+                                                                    // Cerrar el modal después de agregar la ubicación
+                                                                    /* Navigator.pop(
+                                                              context);*/
+                                                                  },
+                                                                  child:
+                                                                      const Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .account_box_outlined,
+                                                                        color: Colors
+                                                                            .blue,
+                                                                        size:
+                                                                            25,
+                                                                      ),
+                                                                      Text(
+                                                                        ' Confirmar',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            fontWeight: FontWeight
+                                                                                .w400,
+                                                                            color: Color.fromARGB(
+                                                                                255,
+                                                                                77,
+                                                                                231,
+                                                                                82)),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Text("Confirmar?"))
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        // Text("Producto"),
-                                      ],
-                                    ),
-                                  );
+                                        ],
+                                      ),
+                                    );
+                                  
+                                  } else if (elementoActual is Promo) {
+                                    // Promos
+                                    Promo promo = elementoActual;
+
+                                    // CONTENEDOR PRINCIPAL
+                                    return Container(
+                                      margin: const EdgeInsets.only(top: 10),
+                                      padding: const EdgeInsets.all(10),
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: const Color.fromARGB(
+                                            255, 58, 75, 108),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // IMAGENES DE PRODUCTO
+                                          Container(
+                                            height: 150,
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width <=
+                                                    1580
+                                                ? 90
+                                                : 150,
+                                            decoration: BoxDecoration(
+                                                // color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(
+                                                        promo.foto))),
+                                          ),
+
+                                          // DESCRIPCIÓN DE PRODUCTO
+
+                                          Container(
+                                              margin: const EdgeInsets.only(
+                                                  left: 20),
+                                              height: 180,
+                                              width: MediaQuery.of(context)
+                                                          .size
+                                                          .width <=
+                                                      1580
+                                                  ? 90
+                                                  : 150,
+                                              decoration: BoxDecoration(
+                                                // color: Colors.grey,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                    "Presentación:${promo.nombre}",
+                                                    style: const TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "${promo.descripcion}",
+                                                    style: const TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.white),
+                                                  ),
+                                                  Text(
+                                                    "Precio: S/.${promo.precio}",
+                                                    style: const TextStyle(
+                                                        fontSize: 24,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            100,
+                                                            237,
+                                                            105)),
+                                                  ),
+                                                ],
+                                              )),
+
+                                          // ENTRADAS NUMÉRICAS
+
+                                          Container(
+                                            padding: const EdgeInsets.all(15),
+                                            margin:
+                                                const EdgeInsets.only(left: 20),
+                                            height: 180,
+                                            width: MediaQuery.of(context)
+                                                        .size
+                                                        .width <=
+                                                    1580
+                                                ? 150
+                                                : 250,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                // CANTIDAD
+                                                TextFormField(
+                                                  keyboardType:
+                                                      const TextInputType
+                                                          .numberWithOptions(
+                                                          decimal: true),
+                                                  decoration: InputDecoration(
+                                                    filled: true,
+                                                    fillColor: const Color
+                                                        .fromARGB(255, 223, 225,
+                                                        226), // Cambia este color según tus preferencias
+
+                                                    hintText: 'Cantidad',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    hintStyle: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                  onChanged: (value) {
+                                                    print("valor detectado: $value");
+                                                    // SETEAR DE LA LISTA MIXTA(PROD Y PROMO)
+                                                    listElementos[index].cantidad =value;
+                                                  },
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                ),
+
+                                                // PRECIO
+
+                                                TextFormField(
+                                                  keyboardType:
+                                                      const TextInputType
+                                                          .numberWithOptions(
+                                                          decimal: true),
+                                                  inputFormatters: [
+                                                    FilteringTextInputFormatter
+                                                        .allow(RegExp(
+                                                            r'^\d+\.?\d{0,2}')),
+                                                  ],
+                                                  decoration: InputDecoration(
+                                                    filled: true,
+                                                    fillColor: const Color
+                                                        .fromARGB(255, 223, 225,
+                                                        226), // Cambia este color según tus preferencias
+
+                                                    hintText: 'S/. Descuento',
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    hintStyle: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                  onChanged: (value) {
+                                                    print("valor detectado: $value");
+                                                    // SETEAR DE LA LISTA MIXTA(PROD Y PROMO)
+                                                    listElementos[index].descuento =value;
+                                                  },
+                                                  style: const TextStyle(
+                                                      fontSize: 12),
+                                                ),
+
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                ElevatedButton(
+                                                    onPressed: () {
+                                                      showModalBottomSheet(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return Container(
+                                                            height: 280,
+                                                            width:
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(16.0),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                const Text(
+                                                                  'Autorizado por:',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            3,
+                                                                            64,
+                                                                            113),
+                                                                    fontSize:
+                                                                        20,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                  ),
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                                const TextField(
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            1,
+                                                                            41,
+                                                                            75),
+                                                                  ),
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    filled:
+                                                                        true,
+                                                                    fillColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    labelText:
+                                                                        "Nombre:",
+                                                                    labelStyle:
+                                                                        TextStyle(
+                                                                      color: Color
+                                                                          .fromARGB(
+                                                                              255,
+                                                                              0,
+                                                                              48,
+                                                                              87),
+                                                                      fontSize:
+                                                                          13,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                TextField(
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Color
+                                                                        .fromARGB(
+                                                                            255,
+                                                                            1,
+                                                                            41,
+                                                                            75),
+                                                                  ),
+                                                                  decoration:
+                                                                      const InputDecoration(
+                                                                    filled:
+                                                                        true,
+                                                                    fillColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    labelText:
+                                                                        "Cargo:",
+                                                                    labelStyle:
+                                                                        TextStyle(
+                                                                      color: Color
+                                                                          .fromARGB(
+                                                                              255,
+                                                                              0,
+                                                                              48,
+                                                                              87),
+                                                                      fontSize:
+                                                                          13,
+                                                                    ),
+                                                                  ),
+                                                                  onChanged: (value) {
+                                                                    
+                                                                  },
+                                                                ),
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                                ElevatedButton(
+                                                                  style: ButtonStyle(
+                                                                      backgroundColor: MaterialStateProperty.all(const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          1,
+                                                                          62,
+                                                                          111))),
+                                                                  onPressed:
+                                                                      () {
+                                                                    print(
+                                                                        "ubi añadidda");
+                                                                    // Aquí puedes manejar la lógica para agregar la ubicación
+                                                                    //String nuevaUbicacion = ubicacionController.text;
+                                                                    // ... lógica para agregar la ubicación ...
+                                                                    // Cerrar el modal después de agregar la ubicación
+                                                                    /* Navigator.pop(
+                                                              context);*/
+                                                                  },
+                                                                  child:
+                                                                      const Row(
+                                                                    children: [
+                                                                      Icon(
+                                                                        Icons
+                                                                            .account_box_outlined,
+                                                                        color: Colors
+                                                                            .blue,
+                                                                        size:
+                                                                            25,
+                                                                      ),
+                                                                      Text(
+                                                                        ' Confirmar',
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                20,
+                                                                            fontWeight: FontWeight
+                                                                                .w400,
+                                                                            color: Color.fromARGB(
+                                                                                255,
+                                                                                77,
+                                                                                231,
+                                                                                82)),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    child: Text("Confirmar?"))
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                  }
+                                  else{
+                                    return Container(
+                                      child: Text("NO PRODUCTS"),
+                                    );
+                                  }
+
+                                  // Producto producto = listProducts[index];
                                 })),
                           ),
                         ],
@@ -993,8 +1364,12 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                           Container(
+                              padding: const EdgeInsets.all(10),
                               width: 500,
                               height: 530,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.grey),
                               // padding: const EdgeInsets.all(9),
 
                               //padding: const EdgeInsets.all(20),
@@ -1061,8 +1436,23 @@ class _LoginState extends State<Login> {
                                         child: const Text('Cancelar'),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'SI'),
+                                        onPressed: () async {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            print("datos personales");
+                                            print("$_nombres , $_apellidos");
+                                            await createNR(
+                                                _nombres.text,
+                                                _apellidos.text,
+                                                _direccion.text,
+                                                _telefono.text,
+                                                _email.text,
+                                                _distrito.text,
+                                                _ubicacion.text,
+                                                _ruc.text);
+                                            Navigator.pop(context, 'SI');
+                                          }
+                                        },
                                         child: const Text('SI'),
                                       ),
                                     ],
@@ -1078,8 +1468,6 @@ class _LoginState extends State<Login> {
                                       color: Colors.white, fontSize: 25),
                                 ),
                               )),
-                          
-                          
                           Container(
                             margin: const EdgeInsets.only(top: 70),
                             height: 320,

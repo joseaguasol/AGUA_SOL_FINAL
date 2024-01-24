@@ -45,7 +45,7 @@ class Hola extends StatefulWidget {
 }
 
 class _HolaState extends State<Hola> with TickerProviderStateMixin {
-  String apiProducts = 'https://aguasol-30pw.onrender.com/api/products';
+  String apiProducts = 'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/products';
   List<Producto> listProducto = [];
   List<String> listUbicaciones = ["..."];
   late String dropdownValue = listUbicaciones.first;
@@ -215,6 +215,11 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
     }
     print("x-----y");
     print("${x},${y}");
+
+    // AÑADIR LA UBICACION Y LA DIRECCIÓN A LA API
+    /*await addUbicacionDireccion(x,y,lugar.locality,lugar.subAadministrative,lugar.street) */
+    // get
+
   }
 
   Future<void> currentLocation() async {
@@ -375,6 +380,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                                         onPressed: () async{
                                                           print("ubi añadidda");
                                                           await currentLocation();
+                                                          Navigator.of(context).pop();
                                                         },
                                                         child: const Row(
                                                           children: [

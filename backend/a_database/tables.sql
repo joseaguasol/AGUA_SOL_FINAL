@@ -128,12 +128,13 @@ create table ventas.pedido(
 	ruta_id int,
 	cliente_id int,
 	cliente_nr_id int,
-	descuento int,
+	descuento float,
 	monto_total float not null,
 	fecha timestamp not null,
 	tipo varchar(20),
 	foto varchar(200),
-	estado varchar(50) -- pendiente, en proceso, entregado
+	estado varchar(50),
+	observacion varchar(500) -- pendiente, en proceso, entregado
 );
 
 --Table: ventas.producto

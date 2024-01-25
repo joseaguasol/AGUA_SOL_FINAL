@@ -18,6 +18,16 @@ create table relaciones.roles(
 	nombre varchar(300)
 );
 
+create table relaciones.ubicacion(
+	id serial primary key,
+	latitud float,
+	longitud float,
+	direccion varchar(300),
+	cliente_id int,
+	cliente_nr_id int,
+	distrito varchar(300)    
+);
+
 ------------------------------------
 -- PERSONAL
 ------------------------------------
@@ -28,11 +38,11 @@ create table personal.usuario(
 	rol_id int not null,
 	nickname varchar(100) not null,
 	contrasena varchar(100) not null,
-	email varchar(200) not null
+	email varchar(200)
 );
 
 -- Table: personal.superadmin
-create table personal.superadmin(
+create table personal.gerente(
 	id serial primary key,
 	usuario_id int unique,
 	nombres varchar(100) not null,
@@ -70,32 +80,33 @@ create table personal.empleado(
 	apellidos varchar(200) not null,
 	dni varchar(200) not null,
 	fecha_nacimiento date not null,
-	codigo_empleado varchar(200) not null
+	codigo_empleado varchar(200)
 );
 
 ------------------------------------
--- VENTAS
+-- VENTAS USUARIOS
 ------------------------------------
 
 -- Table: ventas.cliente
 create table ventas.cliente(
 	id serial primary key,
 	usuario_id int unique,
-	frecuencia int,
 	nombre varchar(100) not null,
 	apellidos varchar(100) not null,
-	fecha_nacimiento date,
-	sexo varchar(100),
 	direccion varchar(150),
 	telefono varchar(50),
-	dni varchar(100) not null,
+	email varchar(50),
+	distrito varchar(100),
+	RUC varchar(200),
+	fecha_nacimiento date,
+	sexo varchar(100),
+	dni varchar(100),
 	codigo varchar(200),
 	saldo_beneficios int,
 	direccion_empresa varchar(200),
 	suscripcion varchar(200),
-	ubicacion varchar(200), --GEOMETRY
-	RUC varchar(200),
 	nombre_empresa varchar(200),
+	frecuencia varchar(200),
 	zona_trabajo_id int
 );
 
@@ -106,16 +117,18 @@ create table ventas.cliente_noregistrado(
 	direccion varchar(200),
 	telefono varchar(50),
 	email varchar(50),
-	distrito varchar(50),
-	ubicacion varchar(300), --geometry
+	distrito varchar(100),
 	RUC varchar(20)
 );
+
+------------------------------------
+-- VENTAS 
+------------------------------------
 
 -- Table: ventas.ruta
 create table ventas.ruta(
 	id serial primary key,
 	conductor_id int,
-	administrador_id int,
 	empleado_id int,
 	distancia_km int,
 	tiempo_ruta int,
@@ -128,13 +141,14 @@ create table ventas.pedido(
 	ruta_id int,
 	cliente_id int,
 	cliente_nr_id int,
-	descuento float,
-	monto_total float not null,
+	subtotal float not null,
+	descuento  float,
+	total float not null,
 	fecha timestamp not null,
 	tipo varchar(20),
 	foto varchar(200),
-	estado varchar(50),
-	observacion varchar(500) -- pendiente, en proceso, entregado
+	estado varchar(50), -- pendiente, en proceso, entregado
+	observacion varchar(1000)
 );
 
 --Table: ventas.producto
@@ -162,19 +176,20 @@ create table ventas.promocion(
 create table ventas.vehiculo(
 	id serial primary key,
 	conductor_id int not null,
-	placa varchar(100) not null,
-	capacidad_carga_ton int not null
+	nombre_modelo varchar(200),
+	placa varchar(100) not null
+	
 );
 
 --Table: ventas.zona_trabajo
 create table ventas.zona_trabajo(
 	id serial primary key,
+	nombre varchar(50), -- distrito
 	ubicacion varchar(100), --GEOMETRY(POINT,4326), --municipalidad
 	poligono varchar(1000),--GEOMETRY(POLYGON,4326),
 	departamento varchar(50),
 	provincia varchar(50),
-	distrito varchar(50),
-	superadmin_id int
+	administrador_id int
 );
 
 ---------------------------------
@@ -206,12 +221,13 @@ create table relaciones.producto_promocion(
 --- RUTA
 ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_empleado FOREIGN KEY (empleado_id) REFERENCES personal.empleado (id);
 ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id);
-ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_administrador FOREIGN KEY (administrador_id) REFERENCES personal.administrador (id);
 ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_zona_trabajo FOREIGN KEY (zona_trabajo_id) REFERENCES ventas.zona_trabajo (id);
 
 -- PEDIDO
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_ruta FOREIGN KEY (ruta_id) REFERENCES ventas.ruta (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
+-- pedido-cliente nr
+ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_clientenr FOREIGN KEY (cliente_nr_id) REFERENCES ventas.cliente_noregistrado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- DETALLE PEDIDO
 ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_detallepedido_promocion FOREIGN KEY (promocion_id) REFERENCES ventas.promocion (id) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -220,11 +236,9 @@ ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_detallepedido_producto F
 -- PRODUCTO PROMOCION
 ALTER TABLE relaciones.producto_promocion ADD CONSTRAINT fk_productopromocion_promocion FOREIGN KEY (promocion_id) REFERENCES ventas.promocion (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- pedido-cliente nr
-ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_clientenr FOREIGN KEY (cliente_nr_id) REFERENCES ventas.cliente_noregistrado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ZONA TRABAJO
-ALTER TABLE ventas.zona_trabajo ADD CONSTRAINT fk_zona_trabajo_superadmin FOREIGN KEY (superadmin_id) REFERENCES personal.superadmin (id);
+ALTER TABLE ventas.zona_trabajo ADD CONSTRAINT fk_zona_trabajo_admin FOREIGN KEY (administrador_id) REFERENCES personal.administrador (id);
 
 -- VEHICULO
 ALTER TABLE ventas.vehiculo ADD CONSTRAINT fk_vehiculo_conductor FOREIGN KEY (conductor_id) REFERENCES personal.conductor (id) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -243,11 +257,14 @@ ALTER TABLE ventas.cliente ADD CONSTRAINT fk_cliente_zona FOREIGN KEY (zona_trab
 
 -- USUARIOS
 ALTER TABLE ventas.cliente ADD CONSTRAINT fk_cliente_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE personal.superadmin ADD CONSTRAINT fk_superadmin_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE personal.gerente ADD CONSTRAINT fk_gerente_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE personal.administrador ADD CONSTRAINT fk_administrador_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE personal.conductor ADD CONSTRAINT fk_conductor_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE personal.empleado ADD CONSTRAINT fk_empleado_usuario FOREIGN KEY (usuario_id) REFERENCES personal.usuario(id) ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- UBICACION
+ALTER TABLE relaciones.ubicacion ADD CONSTRAINT fk_cliente_ubicacion FOREIGN KEY (cliente_id) REFERENCES ventas.cliente ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE relaciones.ubicacion ADD CONSTRAINT fk_cliente_nr_ubicacion FOREIGN KEY (cliente_nr_id) REFERENCES ventas.cliente_noregistrado ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- reseteo secuencias
 -- Roles
@@ -256,8 +273,8 @@ SELECT setval('relaciones.roles_id_seq', 1, false);
 -- Usuario
 SELECT setval('personal.usuario_id_seq', 1, false);
 
--- Superadmin
-SELECT setval('personal.superadmin_id_seq', 1, false);
+-- Gerente
+SELECT setval('personal.gerente_id_seq', 1, false);
 
 -- Administrador
 SELECT setval('personal.administrador_id_seq', 1, false);
@@ -291,3 +308,6 @@ SELECT setval('ventas.zona_trabajo_id_seq', 1, false);
 
 -- Detalle Pedido
 SELECT setval('relaciones.detalle_pedido_id_seq', 1, false);
+
+-- Ubicación
+SELECT setval('relaciones.ubicacion_id_seq', 1, false);

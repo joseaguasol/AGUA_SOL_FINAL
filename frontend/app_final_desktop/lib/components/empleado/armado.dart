@@ -12,40 +12,47 @@ import 'dart:async';
 // AGENDADOS
 class Pedido {
   final int id;
-  int? ruta_id; // Puede ser nulo
-  final int cliente_id;
-  int? cliente_nr_id; // Puede ser nulo
-  double? descuento; // Puede ser nulo
-  double monto_total;
+  int? ruta_id; // Puede ser nulo// Puede ser nulo
+  final double subtotal; // 
+  final double descuento;
+  final double total;
+
   final String fecha;
   final String tipo;
-  String? foto; // Puede ser nulo
   String estado;
+  String? observacion;
+
+  final double? latitud;
+  final double? longitud;
+  String? distrito;
 
   // Atributos adicionales para el caso del GET
-  final String? nombre; // Puede ser nulo
-  final String? apellidos; // Puede ser nulo
-  final String? telefono; // Puede ser nulo
-  final String? ubicacion; // Puede ser nulo
+  final String nombre; // 
+  final String apellidos; //
+  final String telefono; //
+
 
   bool seleccionado; // Nuevo campo para rastrear la selección
 
   Pedido(
       {required this.id,
       this.ruta_id,
-      required this.cliente_id,
-      this.cliente_nr_id,
-      this.descuento,
-      required this.monto_total,
+      required this.subtotal,
+      required this.descuento,
+      required this.total,
+
       required this.fecha,
       required this.tipo,
-      this.foto,
       required this.estado,
+      this.observacion,
+
+      required this.latitud,
+      required this.longitud,
+      this.distrito,
       // Atributos adicionales para el caso del GET
-      this.nombre,
-      this.apellidos,
-      this.telefono,
-      this.ubicacion,
+      required this.nombre,
+      required this.apellidos,
+      required this.telefono,
       this.seleccionado = false});
 }
 
@@ -196,14 +203,14 @@ class _ArmadoState extends State<Armado> {
     try {
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
-        List<Conductor> tempConductor = data.map<Conductor>((mapa) {
+        List<Conductor> tempConductor = data.map<Conductor>((data) {
           return Conductor(
-              id: mapa['id'],
-              nombres: mapa['nombres'],
-              apellidos: mapa['apellidos'],
-              licencia: mapa['licencia'],
-              dni: mapa['dni'],
-              fecha_nacimiento: mapa['fecha_nacimiento']);
+              id: data['id'],
+              nombres: data['nombres'],
+              apellidos: data['apellidos'],
+              licencia: data['licencia'],
+              dni: data['dni'],
+              fecha_nacimiento: data['fecha_nacimiento']);
         }).toList();
 
         setState(() {
@@ -226,20 +233,23 @@ class _ArmadoState extends State<Armado> {
       if (res.statusCode == 200) {
         var data = json.decode(res.body);
 
-        List<Pedido> pedidos = data.map<Pedido>((mapa) {
+        List<Pedido> pedidos = data.map<Pedido>((data) {
           return Pedido(
-            id: mapa['id'],
-            ruta_id: mapa['ruta_id'] ?? 0,
-            cliente_id: mapa['cliente_id'] ?? 0,
-            cliente_nr_id: mapa['cliente_nr_id'] ?? 0,
-            nombre: mapa['nombre'],
-            apellidos: mapa['apellidos'],
-            telefono: mapa['telefono'],
-            ubicacion: mapa['ubicacion'],
-            monto_total: mapa['monto_total']?.toDouble() ?? 0.0,
-            fecha: mapa['fecha'],
-            tipo: mapa['tipo'],
-            estado: mapa['estado'],
+            id: data['id'],
+            ruta_id: data['ruta_id'] ?? 0,
+            nombre: data['nombre'],
+            apellidos: data['apellidos'],
+            telefono: data['telefono'],
+            latitud: data['latitud']?.toDouble() ?? 0.0,
+            longitud: data['longitud']?.toDouble() ?? 0.0,
+            distrito: data['distrito'],
+            subtotal: data['subtotal']?.toDouble() ?? 0.0,
+            descuento: data['descuento']?.toDouble() ?? 0.0,
+            total: data['total']?.toDouble() ?? 0.0,
+            observacion: data['observacion'],
+            fecha: data['fecha'],
+            tipo: data['tipo'],
+            estado: data['estado'],
           );
         }).toList();
 
@@ -289,65 +299,62 @@ class _ArmadoState extends State<Armado> {
     socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
       setState(() {
+
+        print(".......Dentro...");
         DateTime fechaparseada = DateTime.parse(data['fecha'].toString());
-// Muestra las fechas en el print
-        print('Fecha del pedido: $fechaparseada');
-        print('Fecha actual: $now');
-        print("Nombre: ${data['nombre'] ?? 'Nulo'}");
-        print("Apellidos: ${data['apellidos'] ?? 'Nulo'}");
-        print("Telefono: ${data['telefono'] ?? 'Nulo'}");
-        print("Ubicacion: ${data['ubicacion'] ?? 'Nulo'}");
-
-        print("Tipo de pedido: ${data['tipo']}");
 
         // SI EL PEDIDO TIENE FECHA DE HOY Y ES NORMAL
-        // SI EL PEDIDO TIENE FECHA DE HOY Y ES NORMAL
-        if (data['tipo'].toString() == 'normal' &&
+        if (data['tipo'] == 'normal' &&
             fechaparseada.year == now.year &&
             fechaparseada.month == now.month &&
             fechaparseada.day == now.day) {
           print("---NORMALL----");
-
-          Pedido nuevoHoy = Pedido(
+           Pedido nuevoHoy = Pedido(
             id: data['id'],
             ruta_id: data['ruta_id'] ?? 0,
-            cliente_id: data['cliente_id'] ?? 0,
-            cliente_nr_id: data['cliente_nr_id'] ?? 0,
-            monto_total: data['monto_total']?.toDouble() ?? 0.0,
+            nombre: data['nombre'],
+            apellidos: data['apellidos'],
+            telefono: data['telefono'],
+            latitud: data['latitud']?.toDouble() ?? 0.0,
+            longitud: data['longitud']?.toDouble() ?? 0.0,
+            distrito: data['distrito'],
+            subtotal: data['subtotal']?.toDouble() ?? 0.0,
+            descuento: data['descuento']?.toDouble() ?? 0.0,
+            total: data['total']?.toDouble() ?? 0.0,
+            observacion: data['observacion'],
             fecha: data['fecha'],
             tipo: data['tipo'],
             estado: data['estado'],
-            nombre: data['nombre'] ?? "",
-            apellidos: data['apellidos'] ?? "",
-            telefono: data['telefono'] ?? "",
-            ubicacion: data['ubicacion'] ?? "",
           );
 
           // Añadimos el objeto
           hoypedidos.add(nuevoHoy);
           print("hoy pedidos");
           print(hoypedidos);
+        
         }
-
         // SI EL PEDIDO TIENE FECHA DE HOY Y ES EXPRESS
-        if (data['tipo'].toString() == 'express' &&
+        if (data['tipo'] == 'express' &&
             fechaparseada.year == now.year &&
             fechaparseada.month == now.month &&
             fechaparseada.day == now.day) {
           print("---EXPRESS---");
-          Pedido nuevoExpress = Pedido(
+         Pedido nuevoExpress = Pedido(
             id: data['id'],
-            ruta_id: data['ruta_id'],
-            cliente_id: data['cliente_id'],
-            cliente_nr_id: data['cliente_nr_id'],
-            monto_total: data['monto_total']?.toDouble() ?? 0.0,
+            ruta_id: data['ruta_id'] ?? 0,
+            nombre: data['nombre'],
+            apellidos: data['apellidos'],
+            telefono: data['telefono'],
+            latitud: data['latitud']?.toDouble() ?? 0.0,
+            longitud: data['longitud']?.toDouble() ?? 0.0,
+            distrito: data['distrito'],
+            subtotal: data['subtotal']?.toDouble() ?? 0.0,
+            descuento: data['descuento']?.toDouble() ?? 0.0,
+            total: data['total']?.toDouble() ?? 0.0,
+            observacion: data['observacion'],
             fecha: data['fecha'],
             tipo: data['tipo'],
             estado: data['estado'],
-            nombre: data['nombre'] ?? "",
-            apellidos: data['apellidos'] ?? "",
-            telefono: data['telefono'] ?? "",
-            ubicacion: data['ubicacion'] ?? "",
           );
           //añadimos el objeto
           hoyexpress.add(nuevoExpress);
@@ -599,9 +606,10 @@ class _ArmadoState extends State<Armado> {
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w500),
                                           ),
-                                          //   Text('Telefono ${agendados[index].telefono}'),
+                                          Text('Telefono ${agendados[index].telefono}'),
+                                          Text("Distrito:${agendados[index].distrito}"),
                                           Text(
-                                            'Monto Total: ${agendados[index].monto_total}',
+                                            'Monto Total: ${agendados[index].total}',
                                             style: const TextStyle(),
                                           ),
                                           Text(
@@ -638,6 +646,7 @@ class _ArmadoState extends State<Armado> {
                                             'Fecha: ${agendados[index].fecha}',
                                             style: TextStyle(),
                                           ),
+                                          Text('Tipo:${agendados[index].tipo}')
                                         ],
                                       ),
                                       /*trailing: Row(*/
@@ -746,12 +755,15 @@ class _ArmadoState extends State<Armado> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                              'Pedido ID: ${hoypedidos[index].id}'),
+                                              'Pedido ID: ${hoypedidos[index].id}',
+                                              style: TextStyle(color: Colors.purple,fontWeight: FontWeight.w500),),
                                           Text(
-                                              'Cliente ID: ${hoypedidos[index].cliente_id}'),
-                                          // Text('Telefono: ${hoypedidos[index].telefono}'),
+                                              'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}',
+                                              style: TextStyle(fontWeight: FontWeight.w600),),
+                                           Text('Telefono: ${hoypedidos[index].telefono}'),
+                                           Text("Distrito: ${hoypedidos[index].distrito}"),
                                           Text(
-                                              'Monto Total: ${hoypedidos[index].monto_total}'),
+                                              'Monto Total: ${hoypedidos[index].total}'),
                                           Text(
                                             'Estado: ${hoypedidos[index].estado.toUpperCase()}',
                                             style: TextStyle(
@@ -894,12 +906,15 @@ class _ArmadoState extends State<Armado> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                              'Pedido ID: ${hoyexpress[index].id}'),
+                                              'Pedido ID: ${hoyexpress[index].id}',
+                                              style: TextStyle(color: Colors.purple,fontWeight: FontWeight.w600),),
                                           Text(
-                                              'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}'),
-                                          // Text('Telefono: ${hoyexpress[index].telefono}'),
+                                              'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}',
+                                              style: TextStyle(fontWeight: FontWeight.w600),),
+                                          Text('Telefono: ${hoyexpress[index].telefono}'),
+                                          Text("Distrito: ${hoyexpress[index].distrito}"),
                                           Text(
-                                              'Monto Total: ${hoyexpress[index].monto_total}'),
+                                              'Monto Total: ${hoyexpress[index].total}'),
                                           Text(
                                             'Estado: ${hoyexpress[index].estado.toUpperCase()}',
                                             style: TextStyle(
@@ -1048,7 +1063,7 @@ class _ArmadoState extends State<Armado> {
                                                       color: Colors.purple),
                                                 ),
                                                 Text(
-                                                  "Monto Total: ${obtenerPedidoSeleccionado[index].monto_total}",
+                                                  "Monto Total: ${obtenerPedidoSeleccionado[index].total}",
                                                   style: const TextStyle(
                                                       color: Colors.white),
                                                 ),
@@ -1076,7 +1091,7 @@ class _ArmadoState extends State<Armado> {
                               ),
                             ),
 
-                            // MAPA
+                            // data
                             Container(
                               padding: const EdgeInsets.all(10),
                               margin: const EdgeInsets.only(top: 20, left: 20),
@@ -1122,8 +1137,8 @@ class _ArmadoState extends State<Armado> {
                                                           image: DecorationImage(
                                                               image: AssetImage(
                                                                   'lib/imagenes/pocionverde.png'),
-                                                              fit: BoxFit
-                                                                  .fill)),
+                                                              fit:
+                                                                  BoxFit.fill)),
                                                     ),
                                                   ),
                                                 ],

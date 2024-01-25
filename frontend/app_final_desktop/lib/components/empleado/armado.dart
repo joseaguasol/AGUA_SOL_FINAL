@@ -1,7 +1,7 @@
 import 'package:app_final_desktop/components/empleado/login.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:lottie/lottie.dart';
+import 'package:lottie/lottie.dart' hide Marker;
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'dart:async';
 class Pedido {
   final int id;
   int? ruta_id; // Puede ser nulo// Puede ser nulo
-  final double subtotal; // 
+  final double subtotal; //
   final double descuento;
   final double total;
 
@@ -27,10 +27,9 @@ class Pedido {
   String? distrito;
 
   // Atributos adicionales para el caso del GET
-  final String nombre; // 
+  final String nombre; //
   final String apellidos; //
   final String telefono; //
-
 
   bool seleccionado; // Nuevo campo para rastrear la selección
 
@@ -40,12 +39,10 @@ class Pedido {
       required this.subtotal,
       required this.descuento,
       required this.total,
-
       required this.fecha,
       required this.tipo,
       required this.estado,
       this.observacion,
-
       required this.latitud,
       required this.longitud,
       this.distrito,
@@ -78,6 +75,16 @@ class Conductor {
       this.seleccionado = false});
 }
 
+class Coordenadas<T1, T2> {
+  final T1 latitud;
+  final T2 longitud;
+
+  Coordenadas({
+    required this.latitud,
+    required this.longitud,
+  });
+}
+
 class Armado extends StatefulWidget {
   const Armado({super.key});
 
@@ -100,6 +107,7 @@ class _ArmadoState extends State<Armado> {
   late int rutaIdLast;
   List<Conductor> obtenerConductor = [];
   List<Conductor> conductores = [];
+  List<Coordenadas> coordenadas = [];
 
   DateTime now = DateTime.now();
 
@@ -109,6 +117,8 @@ class _ArmadoState extends State<Armado> {
     LatLng(-16.4022842, -71.5651442),
     LatLng(-16.4086712, -71.5579809),
   ];
+
+  List<LatLng> multipuntos = [];
 
   var direccion = '';
   String apiPedidos =
@@ -125,6 +135,8 @@ class _ArmadoState extends State<Armado> {
   //final TextEditingController _distrito = TextEditingController();
   //final TextEditingController _ubicacion = TextEditingController();
 
+  List<Marker> markers = [];
+
   @override
   void initState() {
     super.initState();
@@ -140,9 +152,57 @@ class _ArmadoState extends State<Armado> {
 
   void actualizarObtenidos() {
     setState(() {
+      int contador = 0;
+
       obtenerPedidoSeleccionado = [...hoypedidos, ...hoyexpress, ...agendados]
           .where((element) => element.seleccionado)
           .toList();
+
+      coordenadas = obtenerPedidoSeleccionado
+          .where(
+              (element) => element.latitud != null && element.longitud != null)
+          .map((element) => Coordenadas(
+              latitud: element.latitud!, longitud: element.longitud!))
+          .toList();
+      // LSITA DE COORDENADAS
+      print("Coordenadas");
+      print(coordenadas.length);
+      if (coordenadas.length > 0) {
+        for (var i = 0; i < coordenadas.length; i++) {
+          print("${coordenadas[i].latitud},${coordenadas[i].longitud}");
+          multipuntos
+              .add(LatLng(coordenadas[i].latitud, coordenadas[i].longitud));
+        }
+      }
+
+      for (LatLng coordinate in multipuntos) {
+        markers.add(
+          Marker(
+            width: 50.0,
+            height: 50.0,
+            point: coordinate,
+            child: Row(
+              children: [
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      //color: Colors.green,
+                      image: DecorationImage(
+                          image: AssetImage('lib/imagenes/pocionverde.png'),
+                          fit: BoxFit.fill)),
+                ),
+                Container(
+                  child: Text("$contador",style: TextStyle(fontSize: 20,color: Color.fromARGB(255, 72, 69, 152),fontWeight: FontWeight.w600),),
+
+                )
+              ],
+            ),
+          ),
+        );
+        contador++;
+      }
     });
   }
 
@@ -299,7 +359,6 @@ class _ArmadoState extends State<Armado> {
     socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
       setState(() {
-
         print(".......Dentro...");
         DateTime fechaparseada = DateTime.parse(data['fecha'].toString());
 
@@ -309,7 +368,7 @@ class _ArmadoState extends State<Armado> {
             fechaparseada.month == now.month &&
             fechaparseada.day == now.day) {
           print("---NORMALL----");
-           Pedido nuevoHoy = Pedido(
+          Pedido nuevoHoy = Pedido(
             id: data['id'],
             ruta_id: data['ruta_id'] ?? 0,
             nombre: data['nombre'],
@@ -331,7 +390,6 @@ class _ArmadoState extends State<Armado> {
           hoypedidos.add(nuevoHoy);
           print("hoy pedidos");
           print(hoypedidos);
-        
         }
         // SI EL PEDIDO TIENE FECHA DE HOY Y ES EXPRESS
         if (data['tipo'] == 'express' &&
@@ -339,7 +397,7 @@ class _ArmadoState extends State<Armado> {
             fechaparseada.month == now.month &&
             fechaparseada.day == now.day) {
           print("---EXPRESS---");
-         Pedido nuevoExpress = Pedido(
+          Pedido nuevoExpress = Pedido(
             id: data['id'],
             ruta_id: data['ruta_id'] ?? 0,
             nombre: data['nombre'],
@@ -477,7 +535,7 @@ class _ArmadoState extends State<Armado> {
 
                   // TITULOS
                   Container(
-                    //color: Colors.grey,
+                   // color: Colors.grey,
                     margin: const EdgeInsets.only(top: 20, left: 20),
                     child: Row(
                       children: [
@@ -489,15 +547,12 @@ class _ArmadoState extends State<Armado> {
                               style: TextStyle(
                                   fontSize: 25, fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              "Pedidos",
-                              style: TextStyle(fontSize: 20),
-                            )
+                        
                           ],
                         ),
                         Container(
                           margin: const EdgeInsets.only(left: 50),
-                          height: 80,
+                          height: 50,
                           width: 80,
                           child: Lottie.asset('lib/imagenes/hangloose.json'),
                         ),
@@ -505,598 +560,530 @@ class _ArmadoState extends State<Armado> {
                     ),
                   ),
 
-                  // PEDIDOS
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // AGENDADOS
-                      Container(
-                        //color: Colors.amber,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.amber),
-                        margin: const EdgeInsets.only(left: 20),
-                        padding: const EdgeInsets.all(15),
-                        width: 390, // MediaQuery
-                        height: 500,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Pedidos Agendados : ${agendados.length}",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            TextField(
-                              controller: _searchController,
-                              onChanged: (value) {
-                                setState(
-                                    () {}); // Actualiza el estado al cambiar el texto
-                              },
-                              decoration: InputDecoration(
-                                labelText: 'Buscar',
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.search),
-                                  onPressed: () {
-                                    // Puedes realizar acciones de búsqueda aquí si es necesario
-                                  },
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                reverse: true,
-                                scrollDirection: Axis.vertical,
-                                //controller: _scrollControllerAgendados,
-                                itemCount: agendados.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(top: 5),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                        color:
-                                            Color.fromARGB(255, 255, 255, 255)),
-                                    child: ListTile(
-                                      trailing: Checkbox(
-                                        value: agendados[index].seleccionado,
-                                        onChanged: (agendados[index].estado !=
-                                                'en proceso')
-                                            ? (value) {
-                                                setState(() {
-                                                  agendados[index]
-                                                          .seleccionado =
-                                                      value ?? false;
-                                                  obtenerPedidoSeleccionado =
-                                                      agendados
-                                                          .where((element) =>
-                                                              element
-                                                                  .seleccionado)
-                                                          .toList();
-                                                  if (value == true) {
-                                                    agendados[index].estado =
-                                                        "en proceso";
+               
 
-                                                    // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                    // esto con la finalidad de que se maneje el estado en la database
-
-                                                    actualizarObtenidos();
-                                                  } else {
-                                                    agendados[index].estado =
-                                                        'pendiente';
-                                                    // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                    // esto con la finalidad de que se maneje el estado en la database
-                                                    actualizarObtenidos();
-                                                  }
-                                                });
-                                              }
-                                            : null,
-                                      ),
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Pedido N°: ${agendados[index].id}',
-                                            style: const TextStyle(
-                                              color: Colors.purple,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Cliente: ${agendados[index].nombre},${agendados[index].apellidos}',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                          Text('Telefono ${agendados[index].telefono}'),
-                                          Text("Distrito:${agendados[index].distrito}"),
-                                          Text(
-                                            'Monto Total: ${agendados[index].total}',
-                                            style: const TextStyle(),
-                                          ),
-                                          Text(
-                                            'Estado: ${agendados[index].estado.toUpperCase()}',
-                                            style: TextStyle(
-                                                color: agendados[index]
-                                                            .estado ==
-                                                        'pendiente'
-                                                    ? const Color.fromARGB(
-                                                        255, 244, 54, 152)
-                                                    : agendados[index].estado ==
-                                                            'en proceso'
-                                                        ? Color.fromARGB(
-                                                            255, 2, 129, 47)
-                                                        : agendados[index]
-                                                                    .estado ==
-                                                                'entregado'
-                                                            ? const Color
-                                                                .fromARGB(
-                                                                255, 9, 135, 13)
-                                                            : Colors.black,
-                                                fontSize:
-                                                    agendados[index].estado ==
-                                                            'en proceso'
-                                                        ? 20
-                                                        : 15,
-                                                fontWeight:
-                                                    agendados[index].estado ==
-                                                            'pendiente'
-                                                        ? FontWeight.w500
-                                                        : FontWeight.bold),
-                                          ),
-                                          Text(
-                                            'Fecha: ${agendados[index].fecha}',
-                                            style: TextStyle(),
-                                          ),
-                                          Text('Tipo:${agendados[index].tipo}')
-                                        ],
-                                      ),
-                                      /*trailing: Row(*/
-                                    ),
-                                  );
-                                  //  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // HOY
-                      Container(
-                        //color: Colors.amber,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Color.fromARGB(255, 209, 94, 132)),
-                        margin: const EdgeInsets.only(left: 20),
-                        padding: const EdgeInsets.all(15),
-                        width: 400,
-                        height: 500,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Pedidos Hoy : ${hoypedidos.length}",
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                            TextField(
-                              controller: _searchController,
-                              onChanged: (value) {
-                                setState(
-                                    () {}); // Actualiza el estado al cambiar el texto
-                              },
-                              decoration: InputDecoration(
-                                labelStyle:
-                                    const TextStyle(color: Colors.white),
-                                enabledBorder: const UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors
-                                          .grey), // Cambia el color del cursor cuando el TextField no está enfocado
-                                ),
-                                labelText: 'Buscar cliente',
-                                suffixIcon: IconButton(
-                                  icon: const Icon(
-                                    Icons.search,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    // Puedes realizar acciones de búsqueda aquí si es necesario
-                                  },
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                reverse: true,
-                                controller: _scrollController,
-                                itemCount: hoypedidos.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: ListTile(
-                                      trailing: Checkbox(
-                                        value: hoypedidos[index].seleccionado,
-                                        onChanged: (hoypedidos[index].estado !=
-                                                'en proceso')
-                                            ? (value) {
-                                                setState(() {
-                                                  hoypedidos[index]
-                                                          .seleccionado =
-                                                      value ?? false;
-                                                  obtenerPedidoSeleccionado =
-                                                      hoypedidos
-                                                          .where((element) =>
-                                                              element
-                                                                  .seleccionado)
-                                                          .toList();
-                                                  if (value == true) {
-                                                    hoypedidos[index].estado =
-                                                        "en proceso";
-                                                    // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                    // esto con la finalidad de que se maneje el estado en la database
-                                                    actualizarObtenidos();
-                                                  } else {
-                                                    hoypedidos[index].estado =
-                                                        'pendiente';
-                                                    // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                    // esto con la finalidad de que se maneje el estado en la database
-                                                    actualizarObtenidos();
-                                                  }
-                                                });
-                                              }
-                                            : null,
-                                      ),
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              'Pedido ID: ${hoypedidos[index].id}',
-                                              style: TextStyle(color: Colors.purple,fontWeight: FontWeight.w500),),
-                                          Text(
-                                              'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}',
-                                              style: TextStyle(fontWeight: FontWeight.w600),),
-                                           Text('Telefono: ${hoypedidos[index].telefono}'),
-                                           Text("Distrito: ${hoypedidos[index].distrito}"),
-                                          Text(
-                                              'Monto Total: ${hoypedidos[index].total}'),
-                                          Text(
-                                            'Estado: ${hoypedidos[index].estado.toUpperCase()}',
-                                            style: TextStyle(
-                                                color: hoypedidos[index]
-                                                            .estado ==
-                                                        'pendiente'
-                                                    ? const Color.fromARGB(
-                                                        255, 244, 54, 152)
-                                                    : hoypedidos[index].estado ==
-                                                            'en proceso'
-                                                        ? Color.fromARGB(
-                                                            255, 2, 129, 47)
-                                                        : hoypedidos[index]
-                                                                    .estado ==
-                                                                'entregado'
-                                                            ? const Color
-                                                                .fromARGB(
-                                                                255, 9, 135, 13)
-                                                            : Colors.black,
-                                                fontSize:
-                                                    hoypedidos[index].estado ==
-                                                            'en proceso'
-                                                        ? 20
-                                                        : 15,
-                                                fontWeight:
-                                                    hoypedidos[index].estado ==
-                                                            'pendiente'
-                                                        ? FontWeight.w500
-                                                        : FontWeight.bold),
-                                          ),
-                                          Text(
-                                              'Fecha: ${hoypedidos[index].fecha}'),
-                                          Text(
-                                              'Tipo: ${hoypedidos[index].tipo}'),
-                                        ],
-                                      ),
-                                      /*trailing: Row(*/
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // EXPRESS
-                      Container(
-                        //color: Colors.amber,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Color.fromARGB(255, 209, 94, 132),
-                        ),
-                        margin: const EdgeInsets.only(left: 20),
-                        padding: const EdgeInsets.all(15),
-                        width: 390,
-                        height: 500,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          //crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Pedidos Express : ${hoyexpress.length}",
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                            TextField(
-                              controller: _searchController,
-                              onChanged: (value) {
-                                setState(
-                                    () {}); // Actualiza el estado al cambiar el texto
-                              },
-                              decoration: InputDecoration(
-                                labelStyle:
-                                    const TextStyle(color: Colors.white),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors
-                                          .grey), // Cambia el color del cursor cuando el TextField no está enfocado
-                                ),
-                                labelText: 'Buscar',
-                                suffixIcon: IconButton(
-                                  icon: const Icon(
-                                    Icons.search,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    // Puedes realizar acciones de búsqueda aquí si es necesario
-                                  },
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                controller: _scrollControllerExpress,
-                                reverse: true,
-                                itemCount: hoyexpress.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(top: 10),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: ListTile(
-                                      trailing: Checkbox(
-                                        value: hoyexpress[index].seleccionado,
-                                        onChanged: (hoyexpress[index].estado !=
-                                                'en proceso')
-                                            ? (value) {
-                                                setState(() {
-                                                  hoyexpress[index]
-                                                          .seleccionado =
-                                                      value ?? false;
-                                                  obtenerPedidoSeleccionado =
-                                                      hoyexpress
-                                                          .where((element) =>
-                                                              element
-                                                                  .seleccionado)
-                                                          .toList();
-                                                  if (value == true) {
-                                                    hoyexpress[index].estado =
-                                                        "en proceso";
-                                                    // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                    // esto con la finalidad de que se maneje el estado en la database
-                                                    actualizarObtenidos();
-                                                  } else {
-                                                    hoyexpress[index].estado =
-                                                        'pendiente';
-                                                    // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                    // esto con la finalidad de que se maneje el estado en la database
-                                                    actualizarObtenidos();
-                                                  }
-                                                });
-                                              }
-                                            : null,
-                                      ),
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              'Pedido ID: ${hoyexpress[index].id}',
-                                              style: TextStyle(color: Colors.purple,fontWeight: FontWeight.w600),),
-                                          Text(
-                                              'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}',
-                                              style: TextStyle(fontWeight: FontWeight.w600),),
-                                          Text('Telefono: ${hoyexpress[index].telefono}'),
-                                          Text("Distrito: ${hoyexpress[index].distrito}"),
-                                          Text(
-                                              'Monto Total: ${hoyexpress[index].total}'),
-                                          Text(
-                                            'Estado: ${hoyexpress[index].estado.toUpperCase()}',
-                                            style: TextStyle(
-                                                color: hoyexpress[index]
-                                                            .estado ==
-                                                        'pendiente'
-                                                    ? const Color.fromARGB(
-                                                        255, 244, 54, 152)
-                                                    : hoyexpress[index].estado ==
-                                                            'en proceso'
-                                                        ? Color.fromARGB(
-                                                            255, 2, 129, 47)
-                                                        : hoyexpress[index]
-                                                                    .estado ==
-                                                                'entregado'
-                                                            ? const Color
-                                                                .fromARGB(
-                                                                255, 9, 135, 13)
-                                                            : Colors.black,
-                                                fontSize:
-                                                    hoyexpress[index].estado ==
-                                                            'en proceso'
-                                                        ? 20
-                                                        : 15,
-                                                fontWeight:
-                                                    hoyexpress[index].estado ==
-                                                            'pendiente'
-                                                        ? FontWeight.w500
-                                                        : FontWeight.bold),
-                                          ),
-                                          Text(
-                                              'Fecha: ${hoyexpress[index].fecha}'),
-                                          Text(
-                                              'Tipo: ${hoyexpress[index].tipo}'),
-                                        ],
-                                      ),
-                                      /*trailing: Row(*/
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(
-                        width: 20,
-                      ),
-
-                      // INFORME PDF
-                      Container(
-                        width: 250,
-                        height: 250,
-                        decoration: BoxDecoration(
-                            //color: Colors.amber,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: Text(
-                            "Informe PDF",
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 26, 44, 78),
-                                fontSize: 29,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.amber)),
-                        ),
-                      )
-                    ],
-                  ),
-
-                  // CREAR RUTA
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20),
-                    child: const Text(
-                      "Creando rutas",
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-
-                  // CORE RUTAS
                   Container(
                     // color: Colors.grey,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // PEDIDOS SELECCIONADOS
-                            Container(
-                              padding: const EdgeInsets.all(25),
-                              margin: const EdgeInsets.only(top: 20, left: 20),
-                              height: 300,
-                              width: 300,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: const Color.fromARGB(255, 16, 63, 100),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Pedidos Seleccionados : ${obtenerPedidoSeleccionado.length}",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                               
+                                // AGENDADOS
+                                Container(
+                                  //color: Colors.amber,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.amber),
+                                  margin: const EdgeInsets.only(left: 20),
+                                  padding: const EdgeInsets.all(15),
+                                  width: 500, // MediaQuery
+                                  height: 500,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    //crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Pedidos Agendados : ${agendados.length}",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                      TextField(
+                                        controller: _searchController,
+                                        onChanged: (value) {
+                                          setState(
+                                              () {}); // Actualiza el estado al cambiar el texto
+                                        },
+                                        decoration: InputDecoration(
+                                          labelText: 'Buscar',
+                                          suffixIcon: IconButton(
+                                            icon: const Icon(Icons.search),
+                                            onPressed: () {
+                                              // Puedes realizar acciones de búsqueda aquí si es necesario
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          reverse: true,
+                                          scrollDirection: Axis.vertical,
+                                          //controller: _scrollControllerAgendados,
+                                          itemCount: agendados.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                              margin:
+                                                  const EdgeInsets.only(top: 5),
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Color.fromARGB(
+                                                      255, 255, 255, 255)),
+                                              child: ListTile(
+                                                trailing: Checkbox(
+                                                  value: agendados[index]
+                                                      .seleccionado,
+                                                  onChanged: (agendados[index]
+                                                              .estado !=
+                                                          'en proceso')
+                                                      ? (value) {
+                                                          setState(() {
+                                                            agendados[index]
+                                                                    .seleccionado =
+                                                                value ?? false;
+                                                            obtenerPedidoSeleccionado =
+                                                                agendados
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .seleccionado)
+                                                                    .toList();
+                                                            if (value == true) {
+                                                              agendados[index]
+                                                                      .estado =
+                                                                  "en proceso";
+
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+
+                                                              actualizarObtenidos();
+                                                            } else {
+                                                              agendados[index]
+                                                                      .estado =
+                                                                  'pendiente';
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              actualizarObtenidos();
+                                                            }
+                                                          });
+                                                        }
+                                                      : null,
+                                                ),
+                                                title: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Pedido N°: ${agendados[index].id}',
+                                                      style: const TextStyle(
+                                                        color: Colors.purple,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'Cliente: ${agendados[index].nombre},${agendados[index].apellidos}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    ),
+                                                    Text(
+                                                        'Telefono ${agendados[index].telefono}'),
+                                                    Text(
+                                                        "Distrito:${agendados[index].distrito}"),
+                                                    Text(
+                                                      'Monto Total: ${agendados[index].total}',
+                                                      style: const TextStyle(),
+                                                    ),
+                                                    Text(
+                                                      'Estado: ${agendados[index].estado.toUpperCase()}',
+                                                      style: TextStyle(
+                                                          color: agendados[index]
+                                                                      .estado ==
+                                                                  'pendiente'
+                                                              ? const Color.fromARGB(
+                                                                  255, 244, 54, 152)
+                                                              : agendados[index].estado ==
+                                                                      'en proceso'
+                                                                  ? Color.fromARGB(
+                                                                      255, 2, 129, 47)
+                                                                  : agendados[index].estado ==
+                                                                          'entregado'
+                                                                      ? const Color.fromARGB(
+                                                                          255,
+                                                                          9,
+                                                                          135,
+                                                                          13)
+                                                                      : Colors
+                                                                          .black,
+                                                          fontSize:
+                                                              agendados[index].estado ==
+                                                                      'en proceso'
+                                                                  ? 20
+                                                                  : 15,
+                                                          fontWeight: agendados[index]
+                                                                      .estado ==
+                                                                  'pendiente'
+                                                              ? FontWeight.w500
+                                                              : FontWeight.bold),
+                                                    ),
+                                                    Text(
+                                                      'Fecha: ${agendados[index].fecha}',
+                                                      style: TextStyle(),
+                                                    ),
+                                                    Text(
+                                                        'Tipo:${agendados[index].tipo}')
+                                                  ],
+                                                ),
+                                                /*trailing: Row(*/
+                                              ),
+                                            );
+                                            //  }
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(
-                                    height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                     // HOY
+                                Container(
+                                  //color: Colors.amber,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Color.fromARGB(255, 209, 94, 132)),
+                                  margin: const EdgeInsets.only(left: 20),
+                                  padding: const EdgeInsets.all(15),
+                                  width: 250,
+                                  height: 350,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    //crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Pedidos Hoy : ${hoypedidos.length}",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
+                                      ),
+                                      TextField(
+                                        controller: _searchController,
+                                        onChanged: (value) {
+                                          setState(
+                                              () {}); // Actualiza el estado al cambiar el texto
+                                        },
+                                        decoration: InputDecoration(
+                                          labelStyle: const TextStyle(
+                                              color: Colors.white),
+                                          enabledBorder:
+                                              const UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors
+                                                    .grey), // Cambia el color del cursor cuando el TextField no está enfocado
+                                          ),
+                                          labelText: 'Buscar cliente',
+                                          suffixIcon: IconButton(
+                                            icon: const Icon(
+                                              Icons.search,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              // Puedes realizar acciones de búsqueda aquí si es necesario
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          reverse: true,
+                                          controller: _scrollController,
+                                          itemCount: hoypedidos.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                              margin: const EdgeInsets.only(
+                                                  top: 10),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              child: ListTile(
+                                                trailing: Checkbox(
+                                                  value: hoypedidos[index]
+                                                      .seleccionado,
+                                                  onChanged: (hoypedidos[index]
+                                                              .estado !=
+                                                          'en proceso')
+                                                      ? (value) {
+                                                          setState(() {
+                                                            hoypedidos[index]
+                                                                    .seleccionado =
+                                                                value ?? false;
+                                                            obtenerPedidoSeleccionado =
+                                                                hoypedidos
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .seleccionado)
+                                                                    .toList();
+                                                            if (value == true) {
+                                                              hoypedidos[index]
+                                                                      .estado =
+                                                                  "en proceso";
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              actualizarObtenidos();
+                                                            } else {
+                                                              hoypedidos[index]
+                                                                      .estado =
+                                                                  'pendiente';
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              actualizarObtenidos();
+                                                            }
+                                                          });
+                                                        }
+                                                      : null,
+                                                ),
+                                                title: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Pedido ID: ${hoypedidos[index].id}',
+                                                      style: TextStyle(
+                                                          color: Colors.purple,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    ),
+                                                    Text(
+                                                      'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    Text(
+                                                        'Telefono: ${hoypedidos[index].telefono}'),
+                                                    Text(
+                                                        "Distrito: ${hoypedidos[index].distrito}"),
+                                                    Text(
+                                                        'Monto Total: ${hoypedidos[index].total}'),
+                                                    Text(
+                                                      'Estado: ${hoypedidos[index].estado.toUpperCase()}',
+                                                      style: TextStyle(
+                                                          color: hoypedidos[index].estado ==
+                                                                  'pendiente'
+                                                              ? const Color.fromARGB(
+                                                                  255, 244, 54, 152)
+                                                              : hoypedidos[index].estado ==
+                                                                      'en proceso'
+                                                                  ? Color.fromARGB(
+                                                                      255, 2, 129, 47)
+                                                                  : hoypedidos[index].estado ==
+                                                                          'entregado'
+                                                                      ? const Color.fromARGB(
+                                                                          255,
+                                                                          9,
+                                                                          135,
+                                                                          13)
+                                                                      : Colors
+                                                                          .black,
+                                                          fontSize: hoypedidos[index]
+                                                                      .estado ==
+                                                                  'en proceso'
+                                                              ? 20
+                                                              : 15,
+                                                          fontWeight: hoypedidos[index]
+                                                                      .estado ==
+                                                                  'pendiente'
+                                                              ? FontWeight.w500
+                                                              : FontWeight.bold),
+                                                    ),
+                                                    Text(
+                                                        'Fecha: ${hoypedidos[index].fecha}'),
+                                                    Text(
+                                                        'Tipo: ${hoypedidos[index].tipo}'),
+                                                  ],
+                                                ),
+                                                /*trailing: Row(*/
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: ListView.builder(
-                                      reverse: true,
-                                      itemCount:
-                                          obtenerPedidoSeleccionado.length,
-                                      itemBuilder: (context, index) {
-                                        return Container(
-                                            margin:
-                                                const EdgeInsets.only(top: 10),
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                                color: const Color.fromARGB(
-                                                    255, 59, 166, 63),
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Pedido ID: ${obtenerPedidoSeleccionado[index].id} ",
-                                                  style: const TextStyle(
-                                                      color: Colors.white),
+                                ),
+
+                                // EXPRESS
+                                Container(
+                                  //color: Colors.amber,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Color.fromARGB(255, 209, 94, 132),
+                                  ),
+                                  //margin: const EdgeInsets.only(left: 20),
+                                  padding: const EdgeInsets.all(15),
+                                  width: 250,
+                                  height: 350,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    //crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Pedidos Express : ${hoyexpress.length}",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
+                                      ),
+                                      TextField(
+                                        controller: _searchController,
+                                        onChanged: (value) {
+                                          setState(
+                                              () {}); // Actualiza el estado al cambiar el texto
+                                        },
+                                        decoration: InputDecoration(
+                                          labelStyle: const TextStyle(
+                                              color: Colors.white),
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Colors
+                                                    .grey), // Cambia el color del cursor cuando el TextField no está enfocado
+                                          ),
+                                          labelText: 'Buscar',
+                                          suffixIcon: IconButton(
+                                            icon: const Icon(
+                                              Icons.search,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              // Puedes realizar acciones de búsqueda aquí si es necesario
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          controller: _scrollControllerExpress,
+                                          reverse: true,
+                                          itemCount: hoyexpress.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                              margin: const EdgeInsets.only(
+                                                  top: 10),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20)),
+                                              child: ListTile(
+                                                trailing: Checkbox(
+                                                  value: hoyexpress[index]
+                                                      .seleccionado,
+                                                  onChanged: (hoyexpress[index]
+                                                              .estado !=
+                                                          'en proceso')
+                                                      ? (value) {
+                                                          setState(() {
+                                                            hoyexpress[index]
+                                                                    .seleccionado =
+                                                                value ?? false;
+                                                            obtenerPedidoSeleccionado =
+                                                                hoyexpress
+                                                                    .where((element) =>
+                                                                        element
+                                                                            .seleccionado)
+                                                                    .toList();
+                                                            if (value == true) {
+                                                              hoyexpress[index]
+                                                                      .estado =
+                                                                  "en proceso";
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              actualizarObtenidos();
+                                                            } else {
+                                                              hoyexpress[index]
+                                                                      .estado =
+                                                                  'pendiente';
+                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                              // esto con la finalidad de que se maneje el estado en la database
+                                                              actualizarObtenidos();
+                                                            }
+                                                          });
+                                                        }
+                                                      : null,
                                                 ),
-                                                Text(
-                                                  "Cliente: ${obtenerPedidoSeleccionado[index].nombre}, ${obtenerPedidoSeleccionado[index].apellidos}",
-                                                  style: const TextStyle(
-                                                      color: Colors.white),
+                                                title: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Pedido ID: ${hoyexpress[index].id}',
+                                                      style: TextStyle(
+                                                          color: Colors.purple,
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    Text(
+                                                      'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ),
+                                                    Text(
+                                                        'Telefono: ${hoyexpress[index].telefono}'),
+                                                    Text(
+                                                        "Distrito: ${hoyexpress[index].distrito}"),
+                                                    Text(
+                                                        'Monto Total: ${hoyexpress[index].total}'),
+                                                    Text(
+                                                      'Estado: ${hoyexpress[index].estado.toUpperCase()}',
+                                                      style: TextStyle(
+                                                          color: hoyexpress[index].estado ==
+                                                                  'pendiente'
+                                                              ? const Color.fromARGB(
+                                                                  255, 244, 54, 152)
+                                                              : hoyexpress[index].estado ==
+                                                                      'en proceso'
+                                                                  ? Color.fromARGB(
+                                                                      255, 2, 129, 47)
+                                                                  : hoyexpress[index].estado ==
+                                                                          'entregado'
+                                                                      ? const Color.fromARGB(
+                                                                          255,
+                                                                          9,
+                                                                          135,
+                                                                          13)
+                                                                      : Colors
+                                                                          .black,
+                                                          fontSize: hoyexpress[index]
+                                                                      .estado ==
+                                                                  'en proceso'
+                                                              ? 20
+                                                              : 15,
+                                                          fontWeight: hoyexpress[index]
+                                                                      .estado ==
+                                                                  'pendiente'
+                                                              ? FontWeight.w500
+                                                              : FontWeight.bold),
+                                                    ),
+                                                    Text(
+                                                        'Fecha: ${hoyexpress[index].fecha}'),
+                                                    Text(
+                                                        'Tipo: ${hoyexpress[index].tipo}'),
+                                                  ],
                                                 ),
-                                                Text(
-                                                  "Ruta ID: ${obtenerPedidoSeleccionado[index].ruta_id}",
-                                                  style: const TextStyle(
-                                                      color: Colors.purple),
-                                                ),
-                                                Text(
-                                                  "Monto Total: ${obtenerPedidoSeleccionado[index].total}",
-                                                  style: const TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  "Fecha: ${obtenerPedidoSeleccionado[index].fecha}",
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Color.fromARGB(
-                                                        255, 44, 42, 22),
-                                                  ),
-                                                ),
-                                                Text(
-                                                    "Tipo: ${obtenerPedidoSeleccionado[index].tipo}",
-                                                    style: const TextStyle(
-                                                      fontSize: 20,
-                                                      color: Colors.yellow,
-                                                    ))
-                                              ],
-                                            ));
-                                      },
-                                    ),
-                                  )
+                                                /*trailing: Row(*/
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                             
+                                  ],
+                                ),
                                 ],
-                              ),
                             ),
 
-                            // data
+                            // MAPA
                             Container(
                               padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(top: 20, left: 20),
-                              width: 500,
-                              height: 300,
+                              //margin: const EdgeInsets.only(top: 20, left: 20),
+                              width: 1020,
+                              height: 850,
                               decoration: BoxDecoration(
                                 color: Color.fromARGB(255, 16, 63, 100),
                                 borderRadius: BorderRadius.circular(20),
@@ -1108,9 +1095,9 @@ class _ArmadoState extends State<Armado> {
                                       children: [
                                         FlutterMap(
                                             options: MapOptions(
-                                              initialCenter: LatLng(
-                                                  -16.4055657, -71.5719081),
-                                              initialZoom: 15.2,
+                                              initialCenter: LatLng(-16.4055657,
+                                                  -71.5719081), //multipuntos.first, //? LatLng(0.0,0.0) :multipuntos.first ,
+                                              initialZoom: 12.8,
                                             ),
                                             children: [
                                               TileLayer(
@@ -1119,11 +1106,50 @@ class _ArmadoState extends State<Armado> {
                                                 userAgentPackageName:
                                                     'com.example.app',
                                               ),
-                                              MarkerLayer(
-                                                markers: [
+                                              PolylineLayer(
+                                                polylines: [
+                                                  Polyline(
+                                                    points: multipuntos,
+                                                    color: Colors.blue,
+                                                    strokeWidth:
+                                                        10.0, // Ajusta el ancho de la línea según tus preferencias
+                                                    isDotted:
+                                                        true, // Cambia a true si quieres una línea punteada
+                                                    // isPolygon: false,
+                                                  ),
+                                                ],
+                                              ),
+                                              MarkerLayer(markers: [
+                                                // AÑADO LOS MARCADORES CON SPREAD
+                                                // DE LOS PEDIDOS
+                                                ...markers,
+                                                // Y AÑADO UN MARCADOR ESPECIFICO
+                                                map.Marker(
+                                                  point: LatLng(-16.4055657,
+                                                      -71.5719081), // Ejemplo de una posición diferente
+                                                  width: 25,
+                                                  height: 25,
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            50),
+                                                    // height: 80,
+                                                    // width: 80,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20),
+                                                        color: Colors.grey,
+                                                        image: DecorationImage(
+                                                            image: AssetImage(
+                                                                'lib/imagenes/logo_sol.png'),
+                                                            fit: BoxFit.cover)),
+                                                  ),
+                                                ),
+                                              ]
+                                                  /* [
                                                   map.Marker(
-                                                    point: LatLng(-16.4096926,
-                                                        -71.5682048),
+                                                    point: LatLng(-16.5,-71.8),
                                                     width: 40,
                                                     height: 50,
                                                     child: Container(
@@ -1141,8 +1167,8 @@ class _ArmadoState extends State<Armado> {
                                                                   BoxFit.fill)),
                                                     ),
                                                   ),
-                                                ],
-                                              ),
+                                                ],*/
+                                                  ),
                                             ]),
                                         Positioned(
                                           bottom:
@@ -1221,6 +1247,8 @@ class _ArmadoState extends State<Armado> {
                                         }
                                         setState(() {
                                           obtenerPedidoSeleccionado = [];
+                                          multipuntos = [];
+                                          markers = [];
                                         });
 
                                         setState(() {});
@@ -1238,330 +1266,450 @@ class _ArmadoState extends State<Armado> {
                               ),
                             ),
 
-                            // CONDUCTORES
-                            Container(
-                              width: 350,
-                              height: 300,
-                              margin: const EdgeInsets.only(top: 20, left: 20),
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: const Color.fromARGB(255, 16, 63, 100),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Conductores Disponibles : ${conductores.length}",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
+                            // PEDIDOS-CONDUCTORES
+                            Column(
+                              //crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                 // PEDIDOS SELECCIONADOS
+                                Container(
+                                  padding: const EdgeInsets.all(25),
+                               //   margin:const EdgeInsets.only(top: 20, left: 20),
+                                  height: 300,
+                                  width: 350,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color:
+                                        const Color.fromARGB(255, 16, 63, 100),
                                   ),
-                                  const SizedBox(
-                                    height: 19,
-                                  ),
-                                  Expanded(
-                                    child: ListView.builder(
-                                      itemCount: conductores.length,
-                                      itemBuilder: (context, index) {
-                                        return Container(
-                                            margin:
-                                                const EdgeInsets.only(top: 10),
-                                            padding: const EdgeInsets.all(20),
-                                            decoration: BoxDecoration(
-                                                color: const Color.fromARGB(
-                                                    255, 59, 166, 63),
-                                                borderRadius:
-                                                    BorderRadius.circular(20)),
-                                            child: ListTile(
-                                              title: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "C1:${conductores[index].id}",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  Text(
-                                                    "Nombres:${conductores[index].nombres}",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  Text(
-                                                    "Apellidos:${conductores[index].apellidos}",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  Text(
-                                                    "Dni:${conductores[index].dni}",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  )
-                                                ],
-                                              ),
-                                              trailing: Checkbox(
-                                                value: conductores[index]
-                                                    .seleccionado,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    conductores[index]
-                                                            .seleccionado =
-                                                        value ?? false;
-                                                    obtenerConductor = conductores
-                                                        .where((element) =>
-                                                            element
-                                                                .seleccionado)
-                                                        .toList();
-
-                                                    if (value == true) {
-                                                      setState(() {
-                                                        conductorid =
-                                                            conductores[index]
-                                                                .id;
-                                                      });
-                                                      print(
-                                                          "CONDUCTOR ID SELECCIIONADO");
-                                                      print(conductorid);
-                                                      /*conductores[index]
-                                                                      .estado =
-                                                                  "Go >>";*/
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      //actualizarObtenidos();
-                                                    } else {
-                                                      /* conductores[index]
-                                                                      .estado =
-                                                                  'Ready >>';*/
-                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                      // esto con la finalidad de que se maneje el estado en la database
-                                                      //actualizarObtenidos();
-                                                    }
-                                                  });
-                                                },
-                                              ),
-                                            ));
-                                      },
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-
-                            // BOTON CREAR
-                            Container(
-                              margin: const EdgeInsets.only(left: 20),
-                              height: 250,
-                              width: 250,
-                              // color: Colors.black,
-                              child: ElevatedButton(
-                                onPressed: obtenerConductor.isNotEmpty &&
-                                        obtenerPedidoSeleccionado.isNotEmpty
-                                    ? () async {
-                                        showDialog<String>(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                AlertDialog(
-                                                  title: const Text(
-                                                      'Crear Ruta - Conductor'),
-                                                  content:
-                                                      const Text('¿Crear?'),
-                                                  actions: <Widget>[
-                                                    // CANCELAR
-                                                    ElevatedButton(
-                                                      onPressed: () {
-                                                        for (var i = 0;
-                                                            i <
-                                                                agendados
-                                                                    .length;
-                                                            i++) {
-                                                          // aca digo que todos los pedidos se reviertan a false
-                                                          // y esten pendinte
-                                                          // ---ASI QUE FILTRO ESE PEDIDO
-                                                          if (agendados[i]
-                                                                      .estado ==
-                                                                  'en proceso' &&
-                                                              agendados[i]
-                                                                      .seleccionado ==
-                                                                  true) {
-                                                            agendados[i]
-                                                                    .seleccionado =
-                                                                false;
-                                                            agendados[i]
-                                                                    .estado =
-                                                                'pendiente';
-                                                          }
-
-                                                          //   agendados[i].seleccionado =false;
-                                                          // agendados[i].estado = 'pendiente';
-                                                        }
-                                                        for (var i = 0;
-                                                            i <
-                                                                hoypedidos
-                                                                    .length;
-                                                            i++) {
-                                                          // aca digo que todos los pedidos se reviertan a false
-                                                          // y esten pendinte
-                                                          // ---ASI QUE FILTRO ESE PEDIDO
-                                                          if (hoypedidos[i]
-                                                                      .estado ==
-                                                                  'en proceso' &&
-                                                              hoypedidos[i]
-                                                                      .seleccionado ==
-                                                                  true) {
-                                                            hoypedidos[i]
-                                                                    .seleccionado =
-                                                                false;
-                                                            hoypedidos[i]
-                                                                    .estado =
-                                                                'pendiente';
-                                                          }
-
-                                                          //   agendados[i].seleccionado =false;
-                                                          // agendados[i].estado = 'pendiente';
-                                                        }
-                                                        for (var i = 0;
-                                                            i <
-                                                                hoyexpress
-                                                                    .length;
-                                                            i++) {
-                                                          // aca digo que todos los pedidos se reviertan a false
-                                                          // y esten pendinte
-                                                          // ---ASI QUE FILTRO ESE PEDIDO
-                                                          if (hoyexpress[i]
-                                                                      .estado ==
-                                                                  'en proceso' &&
-                                                              hoyexpress[i]
-                                                                      .seleccionado ==
-                                                                  true) {
-                                                            hoyexpress[i]
-                                                                    .seleccionado =
-                                                                false;
-                                                            hoyexpress[i]
-                                                                    .estado =
-                                                                'pendiente';
-                                                          }
-
-                                                          //   agendados[i].seleccionado =false;
-                                                          // agendados[i].estado = 'pendiente';
-                                                        }
-
-                                                        for (var i = 0;
-                                                            i <
-                                                                conductores
-                                                                    .length;
-                                                            i++) {
-                                                          conductores[i]
-                                                                  .seleccionado =
-                                                              false;
-                                                        }
-                                                        setState(() {
-                                                          obtenerPedidoSeleccionado =
-                                                              [];
-                                                          obtenerConductor = [];
-                                                        });
-                                                        //await getPedidos();
-
-                                                        setState(() {});
-
-                                                        Navigator.pop(context,
-                                                            'Cancelar');
-                                                      },
-                                                      //
-                                                      child: const Text(
-                                                          'Cancelar'),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Pedidos Seleccionados : ${obtenerPedidoSeleccionado.length}",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 20),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          reverse: true,
+                                          itemCount:
+                                              obtenerPedidoSeleccionado.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                                margin: const EdgeInsets.only(
+                                                    top: 10),
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                    color: const Color.fromARGB(
+                                                        255, 59, 166, 63),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "Pedido ID: ${obtenerPedidoSeleccionado[index].id} ",
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
                                                     ),
-
-                                                    // CONFIRMAR
-                                                    ElevatedButton(
-                                                      onPressed: () async {
-                                                        // PROCESO EL PEDIDO
-                                                        await crearobtenerYactualizarRuta(
-                                                            1,
-                                                            conductorid,
-                                                            50,
-                                                            3,
-                                                            "en proceso");
-
-                                                        // LIMPIO LOS SELECCIONADOS
-                                                        setState(() {
-                                                          obtenerPedidoSeleccionado =
-                                                              [];
-                                                          obtenerConductor = [];
-                                                        });
-
-                                                        // Y DEVUELVO A DESELECCIONAR PARA QUE NO SE ACUMULE O
-                                                        // ARRASTREE EL CHECKBOX ANTIGUO
-                                                        for (var i = 0;
-                                                            i <
-                                                                agendados
-                                                                    .length;
-                                                            i++) {
-                                                          agendados[i]
-                                                                  .seleccionado =
-                                                              false;
-                                                          agendados[i].estado ==
-                                                              'en proceso';
-                                                        }
-                                                        for (var i = 0;
-                                                            i <
-                                                                hoypedidos
-                                                                    .length;
-                                                            i++) {
-                                                          hoypedidos[i]
-                                                                  .seleccionado =
-                                                              false;
-                                                          hoypedidos[i]
-                                                                  .estado ==
-                                                              'en proceso';
-                                                        }
-                                                        for (var i = 0;
-                                                            i <
-                                                                hoyexpress
-                                                                    .length;
-                                                            i++) {
-                                                          hoyexpress[i]
-                                                                  .seleccionado =
-                                                              false;
-                                                          hoyexpress[i]
-                                                                  .estado ==
-                                                              'en proceso';
-                                                        }
-
-                                                        // IGUAL . DESELECCIONO EL CHOFER, PARA QUE NO ARRASTRE
-                                                        for (var i = 0;
-                                                            i <
-                                                                conductores
-                                                                    .length;
-                                                            i++) {
-                                                          conductores[i]
-                                                                  .seleccionado =
-                                                              false;
-                                                        }
-                                                        // ACTUALIZO LA VISTA AL USUARIO
-                                                        // await getPedidos();
-                                                        setState(() {});
-
-                                                        Navigator.pop(
-                                                            context, 'SI');
-                                                      },
-                                                      child: const Text('SI'),
+                                                    Text(
+                                                      "Cliente: ${obtenerPedidoSeleccionado[index].nombre}, ${obtenerPedidoSeleccionado[index].apellidos}",
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
                                                     ),
+                                                    Text(
+                                                      "Ruta ID: ${obtenerPedidoSeleccionado[index].ruta_id}",
+                                                      style: const TextStyle(
+                                                          color: Colors.purple),
+                                                    ),
+                                                    Text(
+                                                      "Monto Total: ${obtenerPedidoSeleccionado[index].total}",
+                                                      style: const TextStyle(
+                                                          color: Colors.white),
+                                                    ),
+                                                    Text(
+                                                      "Fecha: ${obtenerPedidoSeleccionado[index].fecha}",
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color: Color.fromARGB(
+                                                            255, 44, 42, 22),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                        "Tipo: ${obtenerPedidoSeleccionado[index].tipo}",
+                                                        style: const TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.yellow,
+                                                        ))
                                                   ],
                                                 ));
-
-                                        // create ruta - empleadoid,conductorid,distancia,tiempo
-                                      }
-                                    : null,
-                                child: Text(
-                                  "Crear \u{2795}",
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 35),
-                                ),
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    const Color.fromARGB(255, 16, 63, 100),
+                                          },
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
-                              ),
+                                
+                                // CONDUCTORES
+                                Container(
+                                  width: 350,
+                                  height: 400,
+                                  //margin: const EdgeInsets.only(top: 20, left: 20),
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color:
+                                        const Color.fromARGB(255, 16, 63, 100),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Conductores Disponibles : ${conductores.length}",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
+                                      ),
+                                      const SizedBox(
+                                        height: 19,
+                                      ),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemCount: conductores.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                                margin: const EdgeInsets.only(
+                                                    top: 10),
+                                                padding:
+                                                    const EdgeInsets.all(20),
+                                                decoration: BoxDecoration(
+                                                    color: const Color.fromARGB(
+                                                        255, 59, 166, 63),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20)),
+                                                child: ListTile(
+                                                  title: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "C1:${conductores[index].id}",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      Text(
+                                                        "Nombres:${conductores[index].nombres}",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      Text(
+                                                        "Apellidos:${conductores[index].apellidos}",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      ),
+                                                      Text(
+                                                        "Dni:${conductores[index].dni}",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  trailing: Checkbox(
+                                                    value: conductores[index]
+                                                        .seleccionado,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        conductores[index]
+                                                                .seleccionado =
+                                                            value ?? false;
+                                                        obtenerConductor = conductores
+                                                            .where((element) =>
+                                                                element
+                                                                    .seleccionado)
+                                                            .toList();
+
+                                                        if (value == true) {
+                                                          setState(() {
+                                                            conductorid =
+                                                                conductores[
+                                                                        index]
+                                                                    .id;
+                                                          });
+                                                          print(
+                                                              "CONDUCTOR ID SELECCIIONADO");
+                                                          print(conductorid);
+                                                          /*conductores[index]
+                                                                      .estado =
+                                                                  "Go >>";*/
+                                                          // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                          // esto con la finalidad de que se maneje el estado en la database
+                                                          //actualizarObtenidos();
+                                                        } else {
+                                                          /* conductores[index]
+                                                                      .estado =
+                                                                  'Ready >>';*/
+                                                          // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                          // esto con la finalidad de que se maneje el estado en la database
+                                                          //actualizarObtenidos();
+                                                        }
+                                                      });
+                                                    },
+                                                  ),
+                                                ));
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                
+                               
+                                //BOTONES
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // BOTON CREAR
+                                    Container(
+                                     // margin: const EdgeInsets.only(left: 20),
+                                      height: 150,
+                                      width: 150,
+                                      // color: Colors.black,
+                                      child: ElevatedButton(
+                                        onPressed:
+                                            obtenerConductor.isNotEmpty &&
+                                                    obtenerPedidoSeleccionado
+                                                        .isNotEmpty
+                                                ? () async {
+                                                    showDialog<String>(
+                                                        context: context,
+                                                        builder:
+                                                            (BuildContext
+                                                                    context) =>
+                                                                AlertDialog(
+                                                                  title: const Text(
+                                                                      'Crear Ruta - Conductor'),
+                                                                  content:
+                                                                      const Text(
+                                                                          '¿Crear?'),
+                                                                  actions: <Widget>[
+                                                                    // CANCELAR
+                                                                    ElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < agendados.length;
+                                                                            i++) {
+                                                                          // aca digo que todos los pedidos se reviertan a false
+                                                                          // y esten pendinte
+                                                                          // ---ASI QUE FILTRO ESE PEDIDO
+                                                                          if (agendados[i].estado == 'en proceso' &&
+                                                                              agendados[i].seleccionado == true) {
+                                                                            agendados[i].seleccionado =
+                                                                                false;
+                                                                            agendados[i].estado =
+                                                                                'pendiente';
+                                                                          }
+
+                                                                          //   agendados[i].seleccionado =false;
+                                                                          // agendados[i].estado = 'pendiente';
+                                                                        }
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < hoypedidos.length;
+                                                                            i++) {
+                                                                          // aca digo que todos los pedidos se reviertan a false
+                                                                          // y esten pendinte
+                                                                          // ---ASI QUE FILTRO ESE PEDIDO
+                                                                          if (hoypedidos[i].estado == 'en proceso' &&
+                                                                              hoypedidos[i].seleccionado == true) {
+                                                                            hoypedidos[i].seleccionado =
+                                                                                false;
+                                                                            hoypedidos[i].estado =
+                                                                                'pendiente';
+                                                                          }
+
+                                                                          //   agendados[i].seleccionado =false;
+                                                                          // agendados[i].estado = 'pendiente';
+                                                                        }
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < hoyexpress.length;
+                                                                            i++) {
+                                                                          // aca digo que todos los pedidos se reviertan a false
+                                                                          // y esten pendinte
+                                                                          // ---ASI QUE FILTRO ESE PEDIDO
+                                                                          if (hoyexpress[i].estado == 'en proceso' &&
+                                                                              hoyexpress[i].seleccionado == true) {
+                                                                            hoyexpress[i].seleccionado =
+                                                                                false;
+                                                                            hoyexpress[i].estado =
+                                                                                'pendiente';
+                                                                          }
+
+                                                                          //   agendados[i].seleccionado =false;
+                                                                          // agendados[i].estado = 'pendiente';
+                                                                        }
+
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < conductores.length;
+                                                                            i++) {
+                                                                          conductores[i].seleccionado =
+                                                                              false;
+                                                                        }
+                                                                        setState(
+                                                                            () {
+                                                                          obtenerPedidoSeleccionado =
+                                                                              [];
+                                                                          obtenerConductor =
+                                                                              [];
+                                                                        });
+                                                                        //await getPedidos();
+
+                                                                        setState(
+                                                                            () {});
+
+                                                                        Navigator.pop(
+                                                                            context,
+                                                                            'Cancelar');
+                                                                      },
+                                                                      //
+                                                                      child: const Text(
+                                                                          'Cancelar'),
+                                                                    ),
+
+                                                                    // CONFIRMAR
+                                                                    ElevatedButton(
+                                                                      onPressed:
+                                                                          () async {
+                                                                        // PROCESO EL PEDIDO
+                                                                        await crearobtenerYactualizarRuta(
+                                                                            1,
+                                                                            conductorid,
+                                                                            50,
+                                                                            3,
+                                                                            "en proceso");
+
+                                                                        // LIMPIO LOS SELECCIONADOS
+                                                                        setState(
+                                                                            () {
+                                                                          obtenerPedidoSeleccionado =
+                                                                              [];
+                                                                          obtenerConductor =
+                                                                              [];
+                                                                        });
+
+                                                                        // Y DEVUELVO A DESELECCIONAR PARA QUE NO SE ACUMULE O
+                                                                        // ARRASTREE EL CHECKBOX ANTIGUO
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < agendados.length;
+                                                                            i++) {
+                                                                          agendados[i].seleccionado =
+                                                                              false;
+                                                                          agendados[i].estado ==
+                                                                              'en proceso';
+                                                                        }
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < hoypedidos.length;
+                                                                            i++) {
+                                                                          hoypedidos[i].seleccionado =
+                                                                              false;
+                                                                          hoypedidos[i].estado ==
+                                                                              'en proceso';
+                                                                        }
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < hoyexpress.length;
+                                                                            i++) {
+                                                                          hoyexpress[i].seleccionado =
+                                                                              false;
+                                                                          hoyexpress[i].estado ==
+                                                                              'en proceso';
+                                                                        }
+
+                                                                        // IGUAL . DESELECCIONO EL CHOFER, PARA QUE NO ARRASTRE
+                                                                        for (var i =
+                                                                                0;
+                                                                            i < conductores.length;
+                                                                            i++) {
+                                                                          conductores[i].seleccionado =
+                                                                              false;
+                                                                        }
+                                                                        // ACTUALIZO LA VISTA AL USUARIO
+                                                                        // await getPedidos();
+                                                                        setState(
+                                                                            () {});
+
+                                                                        Navigator.pop(
+                                                                            context,
+                                                                            'SI');
+                                                                      },
+                                                                      child: const Text(
+                                                                          'SI'),
+                                                                    ),
+                                                                  ],
+                                                                ));
+
+                                                    // create ruta - empleadoid,conductorid,distancia,tiempo
+                                                  }
+                                                : null,
+                                        child: Text(
+                                          "Crear \u{2795}",
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 35),
+                                        ),
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                            const Color.fromARGB(
+                                                255, 16, 63, 100),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    // INFORME PDF
+                                    Container(
+                                      width: 150,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                          //color: Colors.amber,
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text(
+                                          "Info-PDF",
+                                          style: TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 26, 44, 78),
+                                              fontSize: 29,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.amber)),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
                             ),
                           ],
                         ),
@@ -1616,7 +1764,7 @@ class _ArmadoState extends State<Armado> {
                                         child: Stack(
                                           children: [
                                             FlutterMap(
-                                              options: MapOptions(
+                                              options: const MapOptions(
                                                 initialCenter: LatLng(
                                                     -16.4055657, -71.5719081),
                                                 initialZoom: 15.2,

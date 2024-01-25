@@ -1,14 +1,16 @@
+import 'package:http/http.dart' as http;
 import 'package:app_final/components/test/holaconductor.dart';
 import 'package:app_final/main.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'dart:convert';
 
 class Camara extends StatefulWidget {
-  final Pedido pedido;
+  final int pedidoID;
   final String problemasOpago;
   const Camara({
     Key? key,
-    required this.pedido,
+    required this.pedidoID,
     required this.problemasOpago,
   }) : super(key: key);
 
@@ -19,16 +21,33 @@ class Camara extends StatefulWidget {
 class _CamaraState extends State<Camara> {
   //late List<CameraDescription> camera;
   late CameraController cameraController;
+  String apiPedidosConductor = 'http://10.0.2.2:8004/api/pedido_conductor/';
   String comentario = '';
+  String estadoNuevo = '';
+
+  Future<dynamic> updateEstadoPedido(estadoNuevo, foto, pedidoID) async {
+    if (pedidoID != 0) {
+      await http.put(Uri.parse("$apiPedidosConductor$pedidoID"),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode({
+            "estado": estadoNuevo,
+            "foto": foto,
+          }));
+    } else {
+      print('papas fritas');
+    }
+  }
 
   void esProblemaOesPago() {
     if (widget.problemasOpago == 'pago') {
       setState(() {
         comentario = 'Comentarios';
+        estadoNuevo = 'entregado';
       });
     } else {
       setState(() {
         comentario = 'Detalla los inconvenientes';
+        estadoNuevo = 'truncado';
       });
     }
   }
@@ -71,8 +90,7 @@ class _CamaraState extends State<Camara> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            height: 150,
-                            margin: const EdgeInsets.only(top: 30, left: 20),
+                            margin: const EdgeInsets.only(top: 20, left: 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -82,20 +100,21 @@ class _CamaraState extends State<Camara> {
                                     Text(
                                       "Una foto",
                                       style: TextStyle(
-                                          fontSize: 29,
+                                          fontSize: 25,
                                           fontWeight: FontWeight.w300),
                                     ),
                                     Text(
                                       "te ayuda ",
-                                      style: TextStyle(fontSize: 35),
+                                      style: TextStyle(fontSize: 25),
                                     ),
                                     Text(
                                       "con tus registros",
-                                      style: TextStyle(fontSize: 24),
+                                      style: TextStyle(fontSize: 25),
                                     ),
                                   ],
                                 ),
                                 Container(
+                                  height: 100,
                                   margin: const EdgeInsets.only(right: 20),
                                   child: Image.asset('lib/imagenes/fotore.png'),
                                 ),
@@ -106,8 +125,8 @@ class _CamaraState extends State<Camara> {
                             height: 20,
                           ),
                           Container(
-                            margin: const EdgeInsets.only(left: 20, right: 0),
-                            height: 300,
+                            margin: const EdgeInsets.only(left: 0, right: 0),
+                            height: 400,
                             width: MediaQuery.of(context).size.width <= 480
                                 ? 430
                                 : 300,
@@ -119,8 +138,8 @@ class _CamaraState extends State<Camara> {
                             child: CameraPreview(cameraController),
                           ),
                           Container(
-                            margin: const EdgeInsets.only(left: 50, right: 50),
-                            height: 100,
+                            margin: const EdgeInsets.only(
+                                top: 10, left: 50, right: 50),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -242,9 +261,8 @@ class _CamaraState extends State<Camara> {
                                   width: (anchoPantalla - 80) / 2,
                                   child: ElevatedButton(
                                       onPressed: () {
-                                        setState(() {
-                                          widget.pedido.estado = 'entregado';
-                                        });
+                                        updateEstadoPedido(
+                                            estadoNuevo, null, widget.pedidoID);
                                         Navigator.push(
                                           context,
                                           //REGRESA A LA VISTA DE HOME PERO ACTUALIZA EL PEDIDO
@@ -288,10 +306,11 @@ class _CamaraState extends State<Camara> {
       return Scaffold(
         body: Container(
           child: Center(
-              child: Text(
-            "...Detectando Cámara",
-            style: TextStyle(fontSize: 30),
-          )),
+            child: Text(
+              "... Detectando Cámara",
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
         ),
       );
     }

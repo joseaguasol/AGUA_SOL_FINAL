@@ -6,7 +6,15 @@ const pgp = pgPromise();
 //const connectionStr = "postgresql://aguasol:TntaHgQf9msnfmHXdrQWEXHEt1hut1MC@dpg-cml86oacn0vc739oj51g-a.oregon-postgres.render.com/aguasol_ui5l";
 //const connectionStr = "postgres://aguasol:TntaHgQf9msnfmHXdrQWEXHEt1hut1MC@dpg-cml86oacn0vc739oj51g-a/aguasol_ui5l";
 const connectionStr = "postgres://aguasol:TntaHgQf9msnfmHXdrQWEXHEt1hut1MC@dpg-cml86oacn0vc739oj51g-a.oregon-postgres.render.com/aguasol_ui5l";
-export const db_pool =  pgp(connectionStr);
+// Configuración del cliente con SSL
+const dbConfig = {
+  connectionString: connectionStr,
+  ssl: {
+    rejectUnauthorized: false, // Puedes ajustar esto según tus necesidades
+  },
+};
+
+export const db_pool = pgp(dbConfig);
 
 try{
     db_pool.connect()

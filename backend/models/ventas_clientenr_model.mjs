@@ -9,10 +9,12 @@ const modelClientenr = {
       
           console.log("-----Cliente INSERTADO-------")
 
-            const clientenrs = await db_pool.one('INSERT INTO ventas.cliente_noregistrado (nombre,apellidos,direccion,telefono,email,distrito,ubicacion,RUC) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
-            [clientenr.nombre,clientenr.apellidos,clientenr.direccion,clientenr.telefono,clientenr.email,clientenr.distrito,clientenr.ubicacion,clientenr.ruc]);
+            const clientenrs = await db_pool.one('INSERT INTO ventas.cliente_noregistrado (nombre,apellidos,direccion,telefono,email,distrito,RUC) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
+            [clientenr.nombre,clientenr.apellidos,clientenr.direccion,clientenr.telefono,clientenr.email,clientenr.distrito,clientenr.ruc]);
             
-        
+            await db_pool.one(`INSERT INTO relaciones.ubicacion (latitud,longitud,direccion,cliente_nr_id,distrito)
+            VALUES($1,$2,$3,$4,$5)`,[clientenr.latitud,clientenr.longitud,clientenr.direccion,clientenrs.id,clientenr.distrito])
+
            console.log("CLIENTENR")
            console.log(clientenr)
            

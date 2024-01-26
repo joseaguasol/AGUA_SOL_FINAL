@@ -1,4 +1,4 @@
-import 'package:app_final_desktop/components/empleado/login.dart';
+import 'package:app_final_desktop/components/empleado/inicio.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lottie/lottie.dart' hide Marker;
@@ -510,7 +510,7 @@ class _ArmadoState extends State<Armado> {
                           PageRouteBuilder(
                             pageBuilder:
                                 (context, animation, secondaryAnimation) =>
-                                    Login(),
+                                    Inicio(),
                             transitionsBuilder: (context, animation,
                                 secondaryAnimation, child) {
                               const begin = Offset(1.0, 0.0);

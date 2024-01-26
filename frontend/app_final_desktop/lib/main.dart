@@ -1,6 +1,6 @@
 
 import 'package:app_final_desktop/components/empleado/armado.dart';
-import 'package:app_final_desktop/components/empleado/login.dart';
+import 'package:app_final_desktop/components/empleado/inicio.dart';
 
 import 'package:flutter/material.dart';
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget{
         
       ),
       
-      home:  const Armado(),
+      home:  const Inicio(),
     );
   }
 }

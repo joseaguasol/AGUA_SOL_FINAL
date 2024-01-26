@@ -60,14 +60,14 @@ class ProductoPromocion {
   });
 }
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class Inicio extends StatefulWidget {
+  const Inicio({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Inicio> createState() => _InicioState();
 }
 
-class _LoginState extends State<Login> {
+class _InicioState extends State<Inicio> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var direccion = '';
   final TextEditingController _nombres = TextEditingController();
@@ -76,7 +76,8 @@ class _LoginState extends State<Login> {
   final TextEditingController _telefono = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _distrito = TextEditingController();
-  final TextEditingController _ubicacion = TextEditingController();
+  final TextEditingController _latitud = TextEditingController();
+  final TextEditingController _longitud = TextEditingController();
   final TextEditingController _ruc = TextEditingController();
 
   late double temperatura = 0.0;
@@ -96,8 +97,7 @@ class _LoginState extends State<Login> {
 
   String apiPromos = 'http://127.0.0.1:8004/api/promocion';
 
-  Future<dynamic> createNR(nombre, apellidos, direccion, telefono, email,
-      distrito, ubicacion, ruc) async {
+  Future<dynamic> createNR(nombre, apellidos, direccion, telefono, email,distrito, latitud,longitud, ruc) async {
     try {
       await http.post(Uri.parse(apiClienteNR),
           headers: {"Content-type": "application/json"},
@@ -108,7 +108,8 @@ class _LoginState extends State<Login> {
             "telefono": telefono,
             "email": email ?? "",
             "distrito": distrito,
-            "ubicacion": ubicacion,
+            "latitud":latitud,
+            "longitud":longitud,
             "ruc": ruc ?? ""
           }));
     } catch (e) {
@@ -541,28 +542,60 @@ class _LoginState extends State<Login> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      TextFormField(
-                                        controller: _ubicacion,
-                                        decoration: InputDecoration(
-                                            labelText: 'Ubicación(Lat:Long)',
-                                            hintText: 'Ingrese su ubicación',
-                                            isDense: true,
-                                            labelStyle: TextStyle(
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.bold,
-                                              color: Color.fromARGB(
-                                                  255, 1, 55, 99),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextFormField(
+                                              controller: _latitud,
+                                              decoration: InputDecoration(
+                                                  labelText: 'Ubicación(Lat)',
+                                                  hintText: 'Ingrese su ubicación',
+                                                  isDense: true,
+                                                  labelStyle: TextStyle(
+                                                    fontSize: 15.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromARGB(
+                                                        255, 1, 55, 99),
+                                                  ),
+                                                  hintStyle: TextStyle(
+                                                    fontSize: 13.0,
+                                                    color: Colors.grey,
+                                                  )),
+                                              validator: (value) {
+                                                if (value == null || value.isEmpty) {
+                                                  return 'El campo es obligatorio';
+                                                }
+                                                return null;
+                                              },
                                             ),
-                                            hintStyle: TextStyle(
-                                              fontSize: 13.0,
-                                              color: Colors.grey,
-                                            )),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'El nombre es obligatorio';
-                                          }
-                                          return null;
-                                        },
+                                          ),
+                                        
+                                         Expanded(
+                                           child: TextFormField(
+                                              controller: _longitud,
+                                              decoration: const InputDecoration(
+                                                  labelText: 'Ubicación(Long)',
+                                                  hintText: 'Ingrese su ubicación',
+                                                  isDense: true,
+                                                  labelStyle: TextStyle(
+                                                    fontSize: 15.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color.fromARGB(
+                                                        255, 1, 55, 99),
+                                                  ),
+                                                  hintStyle: TextStyle(
+                                                    fontSize: 13.0,
+                                                    color: Colors.grey,
+                                                  )),
+                                              validator: (value) {
+                                                if (value == null || value.isEmpty) {
+                                                  return 'El campo es obligatorio';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                         ),
+                                        ],
                                       ),
                                       const SizedBox(
                                         height: 10,
@@ -574,7 +607,7 @@ class _LoginState extends State<Login> {
                                           FilteringTextInputFormatter.digitsOnly
                                         ], // Añade esta línea
                                         maxLength: 11,
-                                        decoration: InputDecoration(
+                                        decoration:const InputDecoration(
                                             labelText: 'RUC',
                                             hintText: 'Ingrese su RUC',
                                             isDense: true,
@@ -1381,20 +1414,16 @@ class _LoginState extends State<Login> {
                                 onPicked: (pickedData) {
                                   setState(() {
                                     //direccion = pickedData.addressName;
-                                    String road =
-                                        pickedData.address['road'] ?? '';
-                                    String neighbourhood =
-                                        pickedData.address['neighbourhood'] ??
-                                            '';
-                                    String city =
-                                        pickedData.address['city'] ?? '';
+                                    String road =pickedData.address['road'] ?? '';
+                                    String neighbourhood = pickedData.address['neighbourhood'] ??'';
+                                    String city =pickedData.address['city'] ?? '';
                                     var latitude = pickedData.latLong.latitude;
-                                    var longitude =
-                                        pickedData.latLong.longitude;
+                                    var longitude = pickedData.latLong.longitude;
 
                                     _direccion.text = '$road $neighbourhood';
                                     _distrito.text = '$city';
-                                    _ubicacion.text = '$latitude $longitude';
+                                    _latitud.text = '$latitude';
+                                    _longitud.text = '$longitude';
                                   });
                                   print(pickedData.latLong.latitude);
                                   print(pickedData.latLong.longitude);
@@ -1448,8 +1477,19 @@ class _LoginState extends State<Login> {
                                                 _telefono.text,
                                                 _email.text,
                                                 _distrito.text,
-                                                _ubicacion.text,
+                                                _latitud.text,
+                                                _longitud.text,
                                                 _ruc.text);
+                                                //LIMPIEZA DE CAMPOS
+                                                _nombres.clear();
+                                                _apellidos.clear();
+                                                _direccion.clear();
+                                                _telefono.clear();
+                                                _email.clear();
+                                                _distrito.clear();
+                                                _latitud.clear();
+                                                _longitud.clear();
+                                                _ruc.clear();
                                             Navigator.pop(context, 'SI');
                                           }
                                         },

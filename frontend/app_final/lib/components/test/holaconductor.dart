@@ -1,11 +1,13 @@
 import 'package:app_final/components/test/camara.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart' as map;
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 //import 'package:lottie/lottie.dart';
 
 extension StringExtension on String {
@@ -96,18 +98,12 @@ class _HolaConductorState extends State<HolaConductor> {
       direccion: '');
   int rutaID = 0;
   int? rutaIDpref = 0;
-MapController mapController = MapController();
+
   @override
   void initState() {
-    super.initState();
     _initialize();
     connectToServer();
-     WidgetsBinding.instance?.addPostFrameCallback((_) {
-      // Cargar el mapa después de que la interfaz de usuario principal se haya renderizado
-      // Puedes usar el controlador para ajustar el zoom si es necesario
-      loadMap();
-    });
-    
+    super.initState();
   }
 
   _cargarPreferencias() async {
@@ -307,11 +303,6 @@ MapController mapController = MapController();
     }
   }
 
-  
-   void loadMap() {
-    // Ajusta el valor del zoom a 15
-    mapController.move(LatLng(-16.4075427, -71.5699512), 9.0);
-  }
   @override
   void dispose() {
     socket.disconnect();
@@ -527,30 +518,54 @@ MapController mapController = MapController();
 
                     // MAPA
                     Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.only(right: 10, left: 10),
+                      //width: 500,
                       height: 300,
-                      width: MediaQuery.of(context).size.width,
-                      child: FlutterMap(
-                        mapController: mapController,
-                        options: MapOptions(
-                          initialCenter: LatLng(-16.4075427, -71.5699512),
-                          initialZoom: 9.5,
-                          
-                        ),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 16, 63, 100),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Stack(
                         children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'com.example.app',
-                          ),
-                          MarkerLayer(
-                            markers: [
-                              Marker(
-                                point:  LatLng(-16.4075427, -71.5699512),
-                                width: 80,
-                                height: 80,
-                                child: FlutterLogo(),
+                          FlutterMap(
+                              options: const MapOptions(
+                                initialCenter: LatLng(-16.4055657, -71.5719081),
+                                initialZoom: 15.2,
                               ),
-                            ],
+                              children: [
+                                TileLayer(
+                                  urlTemplate:
+                                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                  userAgentPackageName: 'com.example.app',
+                                ),
+                              ]),
+                          Positioned(
+                            bottom:
+                                16.0, // Ajusta la posición vertical según tus necesidades
+                            right:
+                                16.0, // Ajusta la posición horizontal según tus necesidades
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              child: FloatingActionButton(
+                                onPressed: () async {
+                                  final Uri url = Uri(
+                                    scheme: 'tel',
+                                    path: pedidoTrabajo.telefono,
+                                  ); // Acciones al hacer clic en el FloatingActionButton
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url);
+                                  } else {
+                                    print('no se puede llamar');
+                                  }
+                                },
+                                backgroundColor:
+                                    Color.fromARGB(255, 53, 142, 80),
+                                child:
+                                    const Icon(Icons.call, color: Colors.white),
+                              ),
+                            ),
                           ),
                         ],
                       ),

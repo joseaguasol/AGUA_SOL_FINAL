@@ -7,7 +7,7 @@ routerVentasPedido.post('/pedido',createPedidos)
 routerVentasPedido.get('/pedido_conductor/:rutaID/:conductorID',getPedidosConductor)
 routerVentasPedido.get('/pedido_last/:clienteID',getLastPedidos)
 routerVentasPedido.delete('/pedido/:pedidoID', deletePedidos)
-routerVentasPedido.put('/pedidoConductor/:pedidoID', updateEstadoPedidos)
+routerVentasPedido.put('/pedido_conductor/:pedidoID', updateEstadoPedidos)
 routerVentasPedido.put('/pedidoruta/:pedidoID',updateRutaPedidos)
 
 

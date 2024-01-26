@@ -5,12 +5,13 @@ import 'package:app_final/components/conductor/bienvenida.dart';
 import 'package:app_final/components/conductor/felicitaciones.dart';
 //import 'package:app_final/components/empleado/home.dart';
 import 'package:app_final/components/empleado/armadoruta.dart';
-import 'package:app_final/components/test/camara.dart';
+
 import 'package:app_final/components/test/dise%C3%B1o.dart';
 import 'package:app_final/components/test/fin.dart';
 import 'package:app_final/components/test/formulario.dart';
 import 'package:app_final/components/test/hola.dart';
 import 'package:app_final/components/test/holaconductor.dart';
+import 'package:app_final/components/test/mapa.dart';
 import 'package:app_final/components/test/pedido.dart';
 import 'package:app_final/components/test/presenta.dart';
 import 'package:app_final/components/test/promos.dart';
@@ -23,8 +24,7 @@ import 'package:app_final/login.dart';
 //import 'package:app_final/components/cliente/productos.dart';
 import 'package:app_final/components/cliente/bienvenido.dart';
 import 'package:app_final/presentacion.dart';
-import 'package:app_final/provider/usuario_provider.dart';
-import 'package:provider/provider.dart';
+
 import 'package:app_final/components/test/camara.dart';
 //import 'package:app_final/components/empleado/pedidos.dart';
 import 'package:app_final/components/empleado/programacion.dart';
@@ -36,10 +36,9 @@ Future<void> main() async {
   await Firebase.initializeApp();
   camera = await availableCameras();
   //await Geolocator.requestPermission();
-  runApp(ChangeNotifierProvider(
-    create: (context) => UsuarioProvider(),
-    child: const MyApp(),
-  ));
+  runApp(
+    const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -54,9 +53,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      initialRoute: '/ubicacion',
+      initialRoute: '/conductor',
       routes: {
 //<<<<<<< HEAD
+        '/mapaprueba':(context) => Mapaprueba(),
         '/diseño': (context) => Hola(),
         '/cliubi':(context)=>Maps(),
         '/ubicacion':(context)=>Ubicacion(),

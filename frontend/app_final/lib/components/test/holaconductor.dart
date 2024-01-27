@@ -101,9 +101,9 @@ class _HolaConductorState extends State<HolaConductor> {
 
   @override
   void initState() {
+    super.initState();
     _initialize();
     connectToServer();
-    super.initState();
   }
 
   _cargarPreferencias() async {
@@ -521,7 +521,7 @@ class _HolaConductorState extends State<HolaConductor> {
                       // padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.only(right: 10, left: 10),
                       //width: 500,
-                      height: 400,
+                      height: 300,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 16, 63, 100),
                         borderRadius: BorderRadius.circular(20),

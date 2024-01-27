@@ -27,7 +27,7 @@ class Pedido {
   final String nombre;
   final String apellidos;
   final String telefono;
-  final String ubicacion;
+  //final String ubicacion;
   final String direccion;
 
   Pedido({
@@ -39,7 +39,7 @@ class Pedido {
     required this.nombre,
     required this.apellidos,
     required this.telefono,
-    required this.ubicacion,
+    //required this.ubicacion,
     required this.direccion,
     this.estado = 'en proceso',
   });
@@ -71,12 +71,12 @@ class HolaConductor extends StatefulWidget {
 
 class _HolaConductorState extends State<HolaConductor> {
   late io.Socket socket;
-  String apiPedidosConductor = 'http://10.0.2.2:8004/api/pedido_conductor/';
-  String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido/';
-  /*String apiPedidosConductor =
-      'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/pedido_conductor/';
+  /*String apiPedidosConductor = 'http://10.0.2.2:8004/api/pedido_conductor/';
+  String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido/';*/
+  String apiPedidosConductor =
+      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/pedido_conductor/';
   String apiDetallePedido =
-      'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/detallepedido/';*/
+      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/detallepedido/';
   int conductorID = 1;
   bool puedoLlamar = false;
   List<Pedido> listPedidosbyRuta = [];
@@ -94,7 +94,7 @@ class _HolaConductorState extends State<HolaConductor> {
       nombre: '',
       apellidos: '',
       telefono: '',
-      ubicacion: '',
+      //ubicacion: '',
       direccion: '');
   int rutaID = 0;
   int? rutaIDpref = 0;
@@ -137,14 +137,14 @@ class _HolaConductorState extends State<HolaConductor> {
         List<Pedido> listTemporal = data.map<Pedido>((mapa) {
           return Pedido(
             id: mapa['id'],
-            montoTotal: mapa['monto_total'].toDouble(),
+            montoTotal: mapa['total'].toDouble(),
             fecha: mapa['fecha'],
             estado: mapa['estado'],
             tipo: mapa['tipo'],
             nombre: mapa['nombre'],
             apellidos: mapa['apellidos'],
             telefono: mapa['telefono'],
-            ubicacion: mapa['ubicacion'],
+            //ubicacion: mapa['ubicacion'],
             direccion: mapa['direccion'],
           );
         }).toList();
@@ -193,8 +193,8 @@ class _HolaConductorState extends State<HolaConductor> {
   void connectToServer() async {
     print("3.1) Dentro de connectToServer");
     // Reemplaza la URL con la URL de tu servidor Socket.io
-    socket = io.io('http://10.0.2.2:8004', <String, dynamic>{
-      //io.io('https://aguasolfinal-dev-qngg.2.us-1.fl0.io', <String, dynamic>{
+    socket = //io.io('http://10.0.2.2:8004', <String, dynamic>{
+        io.io('https://aguasolfinal-dev-bbhx.1.us-1.fl0.io', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
       'reconnect': true,
@@ -518,10 +518,10 @@ class _HolaConductorState extends State<HolaConductor> {
 
                     // MAPA
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      // padding: const EdgeInsets.all(10),
                       margin: const EdgeInsets.only(right: 10, left: 10),
                       //width: 500,
-                      height: 300,
+                      height: 400,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 16, 63, 100),
                         borderRadius: BorderRadius.circular(20),
@@ -529,16 +529,17 @@ class _HolaConductorState extends State<HolaConductor> {
                       child: Stack(
                         children: [
                           FlutterMap(
-                              options: const MapOptions(
-                                initialCenter: LatLng(-16.4055657, -71.5719081),
-                                initialZoom: 15.2,
+                              options: MapOptions(
+                                initialCenter: LatLng(-16.40521646629229,
+                                    -71.57102099896395), // Centro del mapa (California)
+                                initialZoom: 17.0, // Nivel de zoom
                               ),
                               children: [
                                 TileLayer(
                                   urlTemplate:
                                       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  userAgentPackageName: 'com.example.app',
-                                ),
+                                  //subdomains: ['a', 'b', 'c'],
+                                )
                               ]),
                           Positioned(
                             bottom:

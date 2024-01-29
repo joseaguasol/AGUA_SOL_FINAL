@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart' as map;
 import 'dart:async';
+import 'package:app_final_desktop/components/empleado/vista.dart';
 
 // AGENDADOS
 class Pedido {
@@ -502,37 +503,61 @@ class _ArmadoState extends State<Armado> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // SISTEMA DE PEDIDO
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    Inicio(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              const begin = Offset(1.0, 0.0);
-                              const end = Offset.zero;
-                              const curve = Curves.easeInOut;
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-                              var offsetAnimation = animation.drive(tween);
-                              return SlideTransition(
-                                  position: offsetAnimation, child: child);
+                  Row(
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, left: 20),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      Inicio(),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeInOut;
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+                                    var offsetAnimation =
+                                        animation.drive(tween);
+                                    return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child);
+                                  },
+                                ),
+                              );
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color.fromARGB(255, 33, 76, 110))),
+                            child: const Text("<< Sistema de Pedido",
+                                style: TextStyle(color: Colors.white)),
                           ),
-                        );
-                      },
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color.fromARGB(255, 33, 76, 110))),
-                      child: const Text("<< Sistema de Pedido",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, left: 20),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Vista()),
+                              );
+                            },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color.fromARGB(255, 33, 76, 110))),
+                            child: const Text("Supervision >>",
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+                      ]),
 
                   // TITULOS
                   Container(

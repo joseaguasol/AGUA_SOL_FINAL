@@ -23,8 +23,8 @@ export const getONEProducts = async (req,res) => {
 
 export const getProductsPorPromos = async (req,res) => {
     try{
-        const { productID } = req.params;
-        const id = parseInt(productID, 10);
+        const { promocionId } = req.params;
+        const id = parseInt(promocionId, 10);
         const getUNproducto = await modelProduct.getProductsPorPromo(id);
         res.json(getUNproducto);
     } catch (error) {

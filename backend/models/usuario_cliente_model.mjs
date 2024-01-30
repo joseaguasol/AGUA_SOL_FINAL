@@ -1,19 +1,50 @@
 import { db_pool } from "../config.mjs";
 
 const modelUserCliente = {
-    createUserCliente:async (cliente) => {
-        try{
-            const usuario = await db_pool.one('INSERT INTO personal.usuario (rol_id,nickname, contrasena, email) VALUES ($1,$2,$3,$4) RETURNING *',
-            [cliente.rol_id,cliente.nickname,cliente.contrasena,cliente.email]);
-            
-            const clientes = await db_pool.one('INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sexo, direccion, dni, codigo, saldo_beneficios, direccion_empresa, suscripcion, ubicacion, RUC, nombre_empresa,frecuencia, zona_trabajo_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *',
-            [usuario.id, cliente.nombre, cliente.apellidos, cliente.fecha_nacimiento, cliente.sexo, cliente.direccion, cliente.dni, cliente.codigo, cliente.saldo_beneficios, cliente.direccion_empresa, cliente.suscripcion, cliente.ubicacion, cliente.RUC, cliente.nombre_empresa,cliente.frecuencia, cliente.zona_trabajo_id]);
+     createUserCliente: async (cliente) => {
+        const client = await db_pool.connect();
+        try {
+            console.log("cliente")
+            console.log(cliente)
 
-            return clientes
+            const UsuarioExistente = await db_pool.oneOrNone(`SELECT * FROM personal.usuario WHERE nickname=$1`,
+                [cliente.nickname])
+            console.log("usuarioexistente")
+            console.log(UsuarioExistente)
 
+            if (UsuarioExistente) {
+                return { "message": "Usuario ya existente, intente otro por favor. " }
+            }
+            else {
+                console.log("usuario nuevo")
+
+                const hashedPassword = await bcrypt.hash(cliente.contrasena, 10);
+                // Inicia una transacción
+                const result = await client.tx(async (t) => {
+                    const usuario = await t.one('INSERT INTO personal.usuario (rol_id, nickname, contrasena, email) VALUES ($1, $2, $3, $4) RETURNING *',
+                        [cliente.rol_id, cliente.nickname, hashedPassword, cliente.email]);
+
+                    console.log("usuario");
+                    console.log(usuario);
+                    console.log("id usuario");
+                    console.log(usuario.id);
+
+                    const clientes = await t.one('INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sexo, direccion, dni, codigo, saldo_beneficios, direccion_empresa, suscripcion, RUC, nombre_empresa, frecuencia, zona_trabajo_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *',
+                        [usuario.id, cliente.nombre, cliente.apellidos, cliente.fecha_nacimiento, cliente.sexo, cliente.direccion, cliente.dni, cliente.codigo, cliente.saldo_beneficios, cliente.direccion_empresa, cliente.suscripcion, cliente.RUC, cliente.nombre_empresa, cliente.frecuencia, cliente.zona_trabajo_id]);
+
+                    console.log("cliente");
+                    console.log(clientes);
+
+                    return { usuario, clientes } 
+                });
+                return result
+            }
         }
-        catch(e){
+        catch (e) {
             throw new Error(`Error query create:${e}`)
+        } finally {
+            // Asegúrate de liberar la conexión al finalizar
+            client.done();
         }
     },
     updateUserCliente: async (id,cliente) => {

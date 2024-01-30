@@ -21,3 +21,15 @@ export const getClienteNR =  async (req,res) => {
         res.status(500).json({erro:error.message})
     }
 }
+
+//Cambio para hallar el ultimo cliente NR, segun el empleado ID
+export const getLastClientesnr =  async (req,res) => {
+    try {
+        const { empleadoId} = req.params;
+        const empleado_id = parseInt(empleadoId,10);
+        const getLast =  await modelClientenr.getLastClientenr(empleado_id)
+        res.json(getLast);
+    } catch (error) {
+        res.status(500).json({"message":"NO DATA"})
+    }
+}

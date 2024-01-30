@@ -24,9 +24,10 @@ export const getClienteNR =  async (req,res) => {
 
 //Cambio para hallar el ultimo cliente NR, segun el empleado ID
 export const getLastClientesnr =  async (req,res) => {
+    console.log('entro al get las cliente')
     try {
-        const { empleadoId} = req.params;
-        const empleado_id = parseInt(empleadoId,10);
+        const { empleadoID} = req.params;
+        const empleado_id = parseInt(empleadoID,10);
         const getLast =  await modelClientenr.getLastClientenr(empleado_id)
         res.json(getLast);
     } catch (error) {

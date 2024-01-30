@@ -11,6 +11,7 @@ import 'dart:async';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Producto {
   final String nombre;
@@ -29,14 +30,17 @@ class Producto {
 class Hola extends StatefulWidget {
   final String? url;
   final String? LoggedInWith;
-  final double? latitud;
-  final double? longitud;
+  final String direccion;
+  //final double? latitud;
+ // final double? longitud;
+  
 
   const Hola({
     this.url,
     this.LoggedInWith,
-    this.latitud, // Nuevo campo
-    this.longitud, // Nuevo campo
+    this.direccion = '',
+   // this.latitud, // Nuevo campo
+   // this.longitud, // Nuevo campo
     Key? key,
   }) : super(key: key);
 
@@ -45,32 +49,45 @@ class Hola extends StatefulWidget {
 }
 
 class _HolaState extends State<Hola> with TickerProviderStateMixin {
-  String apiProducts = 'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/products';
+
+  String apiUrl = dotenv.env['API_URL'] ?? '';
   List<Producto> listProducto = [];
-  List<String> listUbicaciones = ["..."];
+  late List<String> listUbicaciones = [];
   late String dropdownValue = listUbicaciones.first;
 
   ScrollController _scrollController1 = ScrollController();
   ScrollController _scrollController2 = ScrollController();
-  @override
-  void initState() {
-    super.initState();
-    getProducts();
-    if (widget.latitud != null && widget.longitud != null) {
-      obtenerDireccion(widget.latitud!, widget.longitud!);
-    } else {
-      print("Las coordenadas son nulas");
-      // Puedes manejar esta situación de otra manera si es necesario
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startAutoScroll();
+@override
+void initState() {
+  super.initState();
+  getProducts();
+  listUbicaciones.add(widget.direccion);
+ /* if (widget.latitud != null && widget.longitud != null) {
+    obtenerDireccion(widget.latitud!, widget.longitud!).then((res2) {
+      setState(() {
+        print("coor");
+        print(res2);
+        listUbicaciones.add(res2);
+        dropdownValue = listUbicaciones.first;
+      });
     });
-  }
+  } else {
+    print("Las coordenadas son nulas");
+    obtenerDireccion(-16.4054755, -71.5706074).then((res) {
+      setState(() {
+        listUbicaciones.add(res);
+      });
+    });
+  }*/
+  WidgetsBinding.instance.addPostFrameCallback((_) {                                                                                                                                       
+    _startAutoScroll();
+  });
+}
 
   Future<dynamic> getProducts() async {
     print("-------get products---------");
     var res = await http.get(
-      Uri.parse(apiProducts),
+      Uri.parse(apiUrl+'/api/products'),
       headers: {"Content-type": "application/json"},
     );
     try {
@@ -81,7 +98,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
             nombre: mapa['nombre'],
             precio: mapa['precio'].toDouble(),
             descripcion: mapa['descripcion'],
-            foto: 'https://aguasol-30pw.onrender.com/images/${mapa['foto']}',
+            foto: '$apiUrl/images/${mapa['foto']}',
           );
         }).toList();
 
@@ -194,14 +211,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
     }
   }
 
-  @override
-  void dispose() {
-    _scrollController1.dispose();
-    _scrollController2.dispose();
-    super.dispose();
-  }
+ 
 
-  Future<void> obtenerDireccion(x, y) async {
+  Future<void>obtenerDireccion(x, y) async {
     //double latitud = widget.latitud ?? 0.0; // Accede a widget.latitud
     //double longitud = widget.longitud ?? 0.0;
     List<Placemark> placemark = await placemarkFromCoordinates(x, y);
@@ -209,17 +221,13 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
     if (placemark.isNotEmpty) {
       Placemark lugar = placemark.first;
       setState(() {
-        listUbicaciones.add(
-            "${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}");
+        listUbicaciones.add("${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}");
       });
+    //  return '${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}';
     }
     print("x-----y");
     print("${x},${y}");
-
-    // AÑADIR LA UBICACION Y LA DIRECCIÓN A LA API
-    /*await addUbicacionDireccion(x,y,lugar.locality,lugar.subAadministrative,lugar.street) */
-    // get
-
+   // return '';
   }
 
   Future<void> currentLocation() async {
@@ -232,7 +240,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
     try {
       _locationData = await location.getLocation();
       //updateLocation(_locationData);
-
+      
+      // OBTENER DIRECCION ACTUAL
       obtenerDireccion(_locationData.latitude, _locationData.longitude);
       //setState(() {
       // latitudUser = _locationData.latitude;
@@ -250,18 +259,26 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
     }
   }
 
+   @override
+  void dispose() {
+    _scrollController1.dispose();
+    _scrollController2.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
+   
     final TabController _tabController = TabController(length: 2, vsync: this);
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
-        key: _scaffoldKey,
+      
+          key: _scaffoldKey,
         drawer: Drawer(
           child: ListView(
             children: [
               const DrawerHeader(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 2, 68, 122),
+                  color: Color.fromARGB(255, 9, 133, 235),
                 ),
                 child: Text(
                   'Menu',
@@ -272,13 +289,13 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                 ),
               ),
               ListTile(
-                title: Text('Opción 1'),
+                title: Text('Cuenta'),
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: Text('Opción 2'),
+                title: Text('Soporte'),
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -291,7 +308,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                     _handleLogout();
                     Navigator.pushReplacementNamed(context, '/loginsol');
                   },
-                  child: Text("Salir")),
+                  child: Text("Salir",style: TextStyle(color:Colors.black),)
+              ),
             ],
           ),
         ),
@@ -302,6 +320,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
+                    //color: Colors.grey,
+                        width: MediaQuery.of(context).size.width,
                         margin:
                             const EdgeInsets.only(top: 10, left: 10, right: 20),
                         //color:Colors.red,
@@ -309,15 +329,18 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             // MENU
-                            IconButton(
-                                onPressed: () {
-                                  _scaffoldKey.currentState?.openDrawer();
-                                },
-                                icon: const Icon(Icons.menu)),
+                            Container(
+                              //margin: EdgeInsets.only(right: ),
+                              child: IconButton(
+                                  onPressed: () {
+                                    _scaffoldKey.currentState?.openDrawer();
+                                  },
+                                  icon: const Icon(Icons.menu,size:18,)),
+                            ),
 
                             // LOCATION
                             Container(
-                              width: 300,
+                             // width: 300,
                               height: 100,
                               decoration: BoxDecoration(
                                   //color: Colors.grey,
@@ -339,6 +362,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Container(
+                                        //margin: EdgeInsets.only(right: 10),
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(20),
@@ -412,7 +436,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                           },
                                           icon: Icon(
                                               Icons.add_location_alt_outlined,
-                                              size: 30,
+                                              size: 25,
                                               color: Colors.white),
                                         ),
                                       ),
@@ -442,8 +466,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                           final value = listUbicaciones[index];
                                           return DropdownMenuEntry<String>(
                                               value: value,
-                                              label: value.length > 22
-                                                  ? '${value.substring(0, 18)}'
+                                              label: value.length > 20
+                                                  ? '${value.substring(0, 15)}'
                                                   : value);
                                         }).toList(),
                                       ),
@@ -455,12 +479,12 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
 
                             // USER PHOTO
                             Container(
-                              margin: const EdgeInsets.only(left: 0),
+                              margin: const EdgeInsets.only(right: 10),
                               decoration: BoxDecoration(
                                   color: const Color.fromARGB(255, 84, 81, 81),
                                   borderRadius: BorderRadius.circular(20)),
                               height: 50,
-                              width: 50,
+                             // width: 50,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
                                 child: widget.url != null
@@ -475,6 +499,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         height: 20,
                       ),
                       Container(
+                         width: MediaQuery.of(context).size.width,
                         margin: const EdgeInsets.only(left: 20),
                         child: Text(
                           "Hola, Stefanny !",
@@ -485,6 +510,8 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         ),
                       ),
                       Container(
+                       // color:Colors.grey,
+                        width: MediaQuery.of(context).size.width,
                         margin: const EdgeInsets.only(left: 20),
                         child: const Row(
                           children: [
@@ -505,6 +532,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         ),
                       ),
                       Container(
+                         width: MediaQuery.of(context).size.width,
                         height: 70,
                         margin: const EdgeInsets.only(left: 20),
                         // color: Colors.grey,
@@ -531,6 +559,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                       Container(
                         //color:Colors.red,
                         height: 50,
+                         width: MediaQuery.of(context).size.width,
                         margin: const EdgeInsets.only(left: 20),
                         child: TabBar(
                             controller: _tabController,
@@ -540,7 +569,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     20), // Ajusta el tamaño del texto de la pestaña seleccionada
                             unselectedLabelStyle: const TextStyle(fontSize: 16),
                             labelColor: const Color.fromARGB(255, 0, 52, 95),
-                            unselectedLabelColor: Colors.grey,
+                            unselectedLabelColor: const Color.fromARGB(255, 46, 43, 43),
                             indicatorColor:
                                 const Color.fromARGB(255, 21, 168, 14),
                             tabs: const [
@@ -554,7 +583,9 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                       ),
                       Container(
                         margin: const EdgeInsets.only(top: 20, left: 20),
-                        height: 350,
+                        height: MediaQuery.of(context).size.height/3.5,
+                       // color:Colors.grey,
+                        
 
                         //
                         width: double.maxFinite,
@@ -618,12 +649,12 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                         ),
                       ),
                       const SizedBox(
-                        height: 50,
+                        height: 10,
                       ),
                       Container(
-                        height: 100,
+                        height: 80,
                         margin: const EdgeInsets.only(left: 20, right: 20),
-                        //color: Colors.grey,
+                      //color: Colors.grey,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -635,7 +666,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     child: const Text(
                                       "Mejora!",
                                       style: TextStyle(
-                                          fontSize: 25,
+                                          fontSize: 18,
                                           fontWeight: FontWeight.w300,
                                           color:
                                               Color.fromARGB(255, 2, 46, 83)),
@@ -646,7 +677,7 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                                     child: const Text(
                                       "Tú vida",
                                       style: TextStyle(
-                                          fontSize: 30,
+                                          fontSize: 20,
                                           color:
                                               Color.fromARGB(255, 3, 31, 54)),
                                     )),
@@ -666,118 +697,120 @@ class _HolaState extends State<Hola> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 20, right: 20),
-                        child: Row(children: [
-                          Container(
-                            width: 150,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text(
-                                        'PRONTO',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Color.fromARGB(
-                                                255, 4, 80, 143)),
-                                      ),
-                                      content: const Text(
-                                        'Muy pronto te sorprenderemos!',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context)
-                                                .pop(); // Cierra el AlertDialog
-                                          },
-                                          child: const Text(
-                                            'OK',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 25,
-                                                color: Color.fromARGB(
-                                                    255, 13, 58, 94)),
-                                          ),
+                       Container(
+                          margin: const EdgeInsets.only(left: 20, right: 20),
+                          child: Row(children: [
+                            Container(
+                              //width: 150,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text(
+                                          'PRONTO',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Color.fromARGB(
+                                                  255, 4, 80, 143)),
                                         ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color.fromARGB(255, 0, 59, 108)),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons
-                                        .attach_money_outlined, // Reemplaza con el icono que desees
-                                    size: 24,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          8), // Ajusta el espacio entre el icono y el texto según tus preferencias
-                                  Text(
-                                    " Aquí ",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Expanded(child: Container()),
-                          Container(
-                            width: 200,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Asistencia()),
-                                );
-                              },
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color.fromARGB(255, 0, 59, 108)),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons
-                                        .face, // Reemplaza con el icono que desees
-                                    size: 28,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(
-                                      width:
-                                          8), // Ajusta el espacio entre el icono y el texto según tus preferencias
-                                  Text(
-                                    "¿ Asistencia ?",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white),
-                                  ),
-                                ],
+                                        content: const Text(
+                                          'Muy pronto te sorprenderemos!',
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Cierra el AlertDialog
+                                            },
+                                            child: const Text(
+                                              'OK',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 25,
+                                                  color: Color.fromARGB(
+                                                      255, 13, 58, 94)),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      const Color.fromARGB(255, 0, 59, 108)),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons
+                                          .attach_money_outlined, // Reemplaza con el icono que desees
+                                      size: 24,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            8), // Ajusta el espacio entre el icono y el texto según tus preferencias
+                                    Text(
+                                      " Aquí ",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ]),
+                            Expanded(child: Container()),
+
+                            Container(
+                              width: 200,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Asistencia()),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      const Color.fromARGB(255, 0, 59, 108)),
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons
+                                          .face, // Reemplaza con el icono que desees
+                                      size: 28,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            8), // Ajusta el espacio entre el icono y el texto según tus preferencias
+                                    Text(
+                                      "¿ Asistencia ?",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ]),
+                        
                       ),
                     ]))));
   }

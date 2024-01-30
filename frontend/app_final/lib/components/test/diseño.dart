@@ -1,3 +1,4 @@
+import 'package:app_final/components/test/formulario.dart';
 import 'package:app_final/components/test/hola.dart';
 import 'package:app_final/components/test/ubicacion.dart';
 import 'package:flutter/material.dart';
@@ -200,37 +201,28 @@ class _Login2State extends State<Login2> {
               Container(
                 //color: Colors.amber,
                 margin: const EdgeInsets.only(top: 30, left: 20),
-                height: MediaQuery.of(context).size.height/7,
+                height: MediaQuery.of(context).size.height/8,
                 width: MediaQuery.of(context).size.width/2.25,
                 child: Opacity(
                     opacity: 1,
                     child: Image.asset('lib/imagenes/logo_sol_tiny.png')),
               ),
-             /* Container(
-                margin: const EdgeInsets.only(top: 0, left: 20),
-                child: const Text(
-                  "Agua Sol",
-                  style: TextStyle(
-                      fontSize: 40,
-                      fontFamily: 'Pacifico',
-                      color: Color.fromARGB(255, 1, 43, 78)),
-                ),
-              ),*/
+             
               const SizedBox(
-                height: 50,
+                height: 20,
               ),
               Container(
                 margin: const EdgeInsets.only(left: 20),
                 child: const Text(
                   "Llevando vida a tu hogar !",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w300),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w300),
                 ),
               ),
               Container(
                 margin: const EdgeInsets.only(left: 20),
                 child: const Text(
                   "Conoce la mejor agua del Sur.",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w100),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w100),
                 ),
               ),
               const SizedBox(
@@ -254,7 +246,7 @@ class _Login2State extends State<Login2> {
                     labelText: 'Usuario',
                     labelStyle: TextStyle(
                         color: Color.fromARGB(255, 8, 62, 107),
-                        fontSize: 10,
+                        fontSize: 20,
                         fontWeight: FontWeight.w200),
                   ),
                 ),
@@ -265,7 +257,7 @@ class _Login2State extends State<Login2> {
               Container(
                 margin: const EdgeInsets.only(left: 20),
                 width: 200, //MediaQuery.of(context).size.width*0.5,
-                height: 40, //MediaQuery.of(context).size.height * 0.5,
+                height: 30, //MediaQuery.of(context).size.height * 0.5,
                 child: const TextField(
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
@@ -304,6 +296,31 @@ class _Login2State extends State<Login2> {
                           const Color.fromARGB(255, 1, 61, 109))),
                   child: const Text(
                     "Bienvenido",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300),
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20),
+                child: ElevatedButton(
+                  onPressed: () {
+                    print(largoActual);
+                    print(anchoActual);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Formu()),
+                    );
+                  },
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                          const Color.fromARGB(255, 1, 61, 109))),
+                  child: const Text(
+                    "Registrar",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -355,8 +372,8 @@ class _Login2State extends State<Login2> {
                       },
                       child: Image.asset(
                         'lib/imagenes/google.png',
-                        width: 50,
-                        height: 50,
+                        width: 30,
+                        height: 30,
                       ),
                     ),
                     const SizedBox(
@@ -389,8 +406,8 @@ class _Login2State extends State<Login2> {
                       },
                       child: Image.asset(
                         'lib/imagenes/facebook.png',
-                        width: 50,
-                        height: 50,
+                        width: 30,
+                        height: 30,
                       ),
                     ),
                   ],
@@ -399,101 +416,25 @@ class _Login2State extends State<Login2> {
               const SizedBox(
                 height: 30,
               ),
-              Center(
+              Expanded(
+                child: Center(
                   child: Container(
-                    
-                //color: Colors.red,
-                height: MediaQuery.of(context).size.height/2.75,
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.only(left: 20, right: 20,bottom: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                    image:const DecorationImage(
-                        image: AssetImage('lib/imagenes/parejitajoven.jpg'),
-                        fit: BoxFit.fill)),
-                // padding: EdgeInsets.all(20),
-                // child: Image.asset('lib/imagenes/BIDON7.png'),
-              )),
-              /*  
-              Container(
-                  width: 200,
-                  height: MediaQuery.of(context).size.height < 480 ? 40 : 50,
-                  margin: const EdgeInsets.only(left: 20),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        print(largoActual);
-                        print(anchoActual);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Ubicacion()),
-                        );
-                      },
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color.fromARGB(255, 1, 61, 109))),
-                      child: const Text(
-                        "Bienvenido",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w300),
-                      ))),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: 200,
-                //color:Colors.red,
-                margin: const EdgeInsets.only(left: 20),
-                child: const Center(child: Text("o continua con:")),
-              ),
-              const SizedBox(
-                height: 3,
-              ),
-              Container(
-                  //color:Colors.red,
-                  margin: const EdgeInsets.only(left: 20, right: 20),
-                  width: 200,
-                  child: Row(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      Image.asset(
-                        'lib/imagenes/google.png',
-                        height: 40,
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Image.asset(
-                        'lib/imagenes/facebook.png',
-                        height: 40,
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                    ],
-                  )),
-              const SizedBox(
-                height: 20,
-              ),
-              Center(
-                child: Container(
-                  //color: Colors.red,
-                  height: 300,
-                  width: 400,
-                  margin: const EdgeInsets.only(left: 20, right: 20),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage('lib/imagenes/pareja.jpg'),
-                          fit: BoxFit.fitHeight)),
-                  // padding: EdgeInsets.all(20),
-                  // child: Image.asset('lib/imagenes/BIDON7.png'),
+                        
+                    //color: Colors.red,
+                    height: MediaQuery.of(context).size.height/3,
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.only(left: 20, right: 20,bottom: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                        image:const DecorationImage(
+                            image: AssetImage('lib/imagenes/parejitajoven.jpg'),
+                            fit: BoxFit.fill)),
+                    // padding: EdgeInsets.all(20),
+                    // child: Image.asset('lib/imagenes/BIDON7.png'),
+                  ),
                 ),
-              ),*/
+              ),
+              
             ],
           ),
         ),

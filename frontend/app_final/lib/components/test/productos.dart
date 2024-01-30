@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:lottie/lottie.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class Producto {
   final int id;
@@ -33,7 +35,9 @@ class Productos extends StatefulWidget {
 }
 
 class _ProductosState extends State<Productos> {
-  String apiProducts = 'https://aguasol-30pw.onrender.com/api/products';
+    String apiUrl = dotenv.env['API_URL'] ?? '';
+
+  //String apiProducts = 'https://aguasol-30pw.onrender.com/api/products';
   List<Producto> listProducto = [];
   int cantidadP = 0;
   bool almenosUno = false;
@@ -47,7 +51,7 @@ class _ProductosState extends State<Productos> {
 
   Future<dynamic> getProducts() async {
     var res = await http.get(
-      Uri.parse(apiProducts),
+      Uri.parse(apiUrl+'/api/products'),
       headers: {"Content-type": "application/json"},
     );
     try {
@@ -60,7 +64,7 @@ class _ProductosState extends State<Productos> {
               precio: mapa['precio'].toDouble(),
               descripcion: mapa['descripcion'],
               promoID: null,
-              foto: 'https://aguasol-30pw.onrender.com/images/${mapa['foto']}',
+              foto: '$apiUrl/images/${mapa['foto']}',
 );
         }).toList();
 

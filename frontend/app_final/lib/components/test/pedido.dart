@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:app_final/components/test/productos.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -37,19 +38,30 @@ class _PedidoState extends State<Pedido> {
   int lastPedido = 0;
   //POR AHORA EL CLIENTE ES MANUAL!!""
 
-  int clienteId = 2;
+  int clienteId = 9;
   DateTime tiempoActual = DateTime.now();
-  String apiPedidos = 'https://aguasol-30pw.onrender.com/api/pedido';
-  String apiDetallePedido = 'https://aguasol-30pw.onrender.com/api/detallepedido';
-  String apiLastPedido = 'https://aguasol-30pw.onrender.com/api/pedido_last';
+  /*
+
+  String apiPedidos = 'http://10.0.2.2:8004/api/pedido';
+  String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido';
+  String apiLastPedido = 'http://10.0.2.2:8004/api/pedido_last';*/
+
+  String apiUrl = dotenv.env['API_URL'] ?? '';
+  String apiPedidos = 'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/pedido';
+  String apiDetallePedido =
+      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/detallepedido';
+  String apiLastPedido =
+      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/pedido_last';
 
   Future<dynamic> datosCreadoPedido(
       clienteId, fecha, montoTotal, tipo, estado) async {
-    await http.post(Uri.parse(apiPedidos),
+    await http.post(Uri.parse(apiUrl+'/api/pedido'),
         headers: {"Content-type": "application/json"},
         body: jsonEncode({
           "cliente_id": clienteId,
-          "monto_total": montoTotal,
+          "subtotal": montoTotal.toDouble(),
+          "descuento": null,
+          "total": montoTotal.toDouble(),
           "fecha": fecha,
           "tipo": tipo,
           "estado": estado,
@@ -58,7 +70,7 @@ class _PedidoState extends State<Pedido> {
 
   Future<dynamic> detallePedido(
       clienteId, productoId, cantidad, promoID) async {
-    await http.post(Uri.parse(apiDetallePedido),
+    await http.post(Uri.parse(apiUrl+'/api/detallepedido'),
         headers: {"Content-type": "application/json"},
         body: jsonEncode({
           "cliente_id": clienteId,
@@ -69,8 +81,11 @@ class _PedidoState extends State<Pedido> {
   }
 
   Future<void> crearPedidoyDetallePedido(tipo, monto) async {
+    DateTime tiempoGMTPeru = tiempoActual.subtract(const Duration(hours: 5));
     await datosCreadoPedido(
-        clienteId, tiempoActual.toString(), monto, tipo, "pendiente");
+        clienteId, tiempoGMTPeru.toString(), monto, tipo, "pendiente");
+    print(tiempoGMTPeru.toString());
+    print(tiempoActual.timeZoneName);
     print("creando detalles de pedidos----------");
     for (var i = 0; i < widget.seleccionados.length; i++) {
       print("longitud de seleccinados--------${widget.seleccionados.length}");
@@ -84,8 +99,6 @@ class _PedidoState extends State<Pedido> {
 
   @override
   Widget build(BuildContext context) {
-    //final TabController _tabController = TabController(length: 2, vsync: this);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(""),
@@ -289,7 +302,7 @@ class _PedidoState extends State<Pedido> {
                           margin: const EdgeInsets.only(left: 20),
                           width: 240,
                           child: const Text(
-                            "Por S/. 4.00 convierte tu pedido a Expresss y recíbelo ya!",
+                            "Por S/. 4.00 convierte tu pedido a Express y recíbelo ya!",
                             style: TextStyle(
                                 fontSize: 13,
                                 color: Color.fromARGB(255, 3, 39, 68)),

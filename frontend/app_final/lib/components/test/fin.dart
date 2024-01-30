@@ -69,7 +69,7 @@ class _FinState extends State<Fin> {
                         margin: const EdgeInsets.only(left:30),
                         //color: Colors.grey,
                         width: 100,
-                        height: 150,
+                        height: 100,
                         child: Image.asset('lib/imagenes/logo_sol_tiny.png').animate().fade(delay:1500.ms ).then().shake(),
                       ),
                       const SizedBox(height: 20,),
@@ -94,11 +94,13 @@ class _FinState extends State<Fin> {
           
                       ),
                       const SizedBox(height: 20,),
-                      Container(
-                        //color:Colors.grey,
-                        width: 300,
-                        height: 400,
-                        child: Image.asset('lib/imagenes/reparte.png'),
+                      Expanded(
+                        child: Container(
+                          //color:Colors.grey,
+                           width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height/1.75,
+                          child: Image.asset('lib/imagenes/reparte.png'),
+                        ),
                       ),
                       
           

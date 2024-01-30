@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'package:app_final/components/test/dise%C3%B1o.dart';
+import 'package:intl/intl.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:http/http.dart' as http;
 
 class Formu extends StatefulWidget {
   const Formu({super.key});
@@ -22,7 +27,35 @@ class _FormuState extends State<Formu> {
   String? selectedSexo;
   List<String> sexos = ['Masculino', 'Femenino'];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String apiCreateUser = 'http://10.0.2.2:8004/api/user_cliente';
 
+  Future<dynamic> registrar(nombre, apellidos, dni, sexo, fecha, nickname,contrasena, email, telefono, ruc) async {
+    try {
+      // Parsear la fecha de nacimiento a DateTime
+    DateTime fechaNacimiento = DateFormat('d/M/yyyy').parse(fecha);
+
+    // Formatear la fecha como una cadena en el formato deseado (por ejemplo, 'yyyy-MM-dd')
+    String fechaFormateada = DateFormat('yyyy-MM-dd').format(fechaNacimiento);
+
+      await http.post(Uri.parse(apiCreateUser),
+          headers: {"Content-type": "application/json"},
+          body: jsonEncode({
+            "rol_id": 4,
+            "nickname": nickname,
+            "contrasena": contrasena,
+            "email": email ?? "",
+            "nombre": nombre,
+            "apellidos": apellidos,
+            "telefono": telefono,
+            "ruc": ruc ?? "",
+            "dni": dni,
+            "fecha_nacimiento": fechaFormateada,
+            "sexo": sexo
+          }));
+    } catch (e) {
+      throw Exception('$e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +63,7 @@ class _FormuState extends State<Formu> {
 
     return Scaffold(
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        appBar: AppBar(),
         body: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -79,12 +113,12 @@ class _FormuState extends State<Formu> {
                       const SizedBox(
                         height: 20,
                       ),
-                  
+
                       // FORMULARIO
                       Container(
                         margin: const EdgeInsets.only(left: 20),
                         padding: const EdgeInsets.all(8),
-                       // height: 700,
+                        // height: 700,
                         width: 300,
                         decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 237, 210, 242),
@@ -95,272 +129,269 @@ class _FormuState extends State<Formu> {
                             )),
                         //color:Colors.cyan,
                         child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              TextFormField(
-                              controller: _nombres,
-                              decoration: InputDecoration(
-                                labelText: 'Nombres',
-                                hintText: 'Ingrese sus apellidos',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: _nombres,
+                                  decoration: InputDecoration(
+                                    labelText: 'Nombres',
+                                    hintText: 'Ingrese sus apellidos',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El campo es obligatorio';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
+                                TextFormField(
+                                  controller: _apellidos,
+                                  decoration: InputDecoration(
+                                    labelText: 'Apellidos',
+                                    hintText: 'Ingrese sus apellidos',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El campo es obligatorio';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'El campo es obligatorio';
-                                }
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              controller: _apellidos,
-                              decoration: InputDecoration(
-                                labelText: 'Apellidos',
-                                hintText: 'Ingrese sus apellidos',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
+                                TextFormField(
+                                  controller: _dni,
+                                  decoration: InputDecoration(
+                                    labelText: 'DNI',
+                                    hintText: 'Ingrese sus apellidos',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El campo es obligatorio';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'El campo es obligatorio';
-                                }
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              controller: _dni,
-                              decoration: InputDecoration(
-                                labelText: 'DNI',
-                                hintText: 'Ingrese sus apellidos',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
-                                ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'El campo es obligatorio';
-                                }
-                                return null;
-                              },
-                            ),
-                            DropdownButtonFormField<String>(
-                              value: selectedSexo,
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedSexo = value;
-                                });
-                              },
-                              items: sexos.map((sexo) {
-                                return DropdownMenuItem<String>(
-                                  value: sexo,
-                                  child: Text(sexo),
-                                );
-                              }).toList(),
-                              decoration: InputDecoration(
-                                labelText: 'Sexo',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
-                                ),
-                              ),
-                            ),
-                            TextFormField(
-                              readOnly: true,
-                              controller:
-                                  _fechaController, // Usa el controlador de texto
-                              onTap: () async {
-                                // Abre el selector de fechas cuando se hace clic en el campo
-                                DateTime? fechaSeleccionada =
-                                    await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(1970),
-                                  lastDate: DateTime(2101),
-                                );
-                  
-                                if (fechaSeleccionada != null) {
-                                  // Actualiza el valor del campo de texto con la fecha seleccionada
-                                  _fechaController.text =
-                                      "${fechaSeleccionada.day}/${fechaSeleccionada.month}/${fechaSeleccionada.year}";
-                                }
-                              },
-                              keyboardType: TextInputType.datetime,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                              decoration: const InputDecoration(
-                                labelText: 'Fecha de Nacimiento',
-                                // hintText: 'Ingrese sus apellidos',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
-                                ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _username,
-                              decoration: InputDecoration(
-                                labelText: 'Usuario',
-                                hintText: 'Ingresa un usuario',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
-                                ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'El campo es obligatorio';
-                                }
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              controller: _password,
-                              keyboardType: TextInputType.visiblePassword,
-                              obscureText: _obscureText,
-                              decoration: InputDecoration(
-                                labelText: 'Contraseña',
-                                hintText: 'Ingrese una contraseña',
-                                isDense: true,
-                                labelStyle: const TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
-                                ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
-                                ),
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
+                                DropdownButtonFormField<String>(
+                                  value: selectedSexo,
+                                  onChanged: (value) {
                                     setState(() {
-                                      _obscureText = !_obscureText;
+                                      selectedSexo = value;
                                     });
                                   },
-                                  child: Icon(
-                                    _obscureText
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Colors.grey,
+                                  items: sexos.map((sexo) {
+                                    return DropdownMenuItem<String>(
+                                      value: sexo,
+                                      child: Text(sexo),
+                                    );
+                                  }).toList(),
+                                  decoration: InputDecoration(
+                                    labelText: 'Sexo',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'El campo es obligatorio';
-                                }
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              controller: _email,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                labelText: 'Email (opcional)',
-                                hintText: 'Ingresa su email',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
+                                TextFormField(
+                                  readOnly: true,
+                                  controller:
+                                      _fechaController, // Usa el controlador de texto
+                                  onTap: () async {
+                                    // Abre el selector de fechas cuando se hace clic en el campo
+                                    DateTime? fechaSeleccionada =
+                                        await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1970),
+                                      lastDate: DateTime(2101),
+                                    );
+
+                                    if (fechaSeleccionada != null) {
+                                      // Actualiza el valor del campo de texto con la fecha seleccionada
+                                      _fechaController.text =
+                                          "${fechaSeleccionada.day}/${fechaSeleccionada.month}/${fechaSeleccionada.year}";
+                                    }
+                                  },
+                                  keyboardType: TextInputType.datetime,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Fecha de Nacimiento',
+                                    // hintText: 'Ingrese sus apellidos',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
+                                TextFormField(
+                                  controller: _username,
+                                  decoration: InputDecoration(
+                                    labelText: 'Usuario',
+                                    hintText: 'Ingresa un usuario',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El campo es obligatorio';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                              ),
-                            ),
-                            TextFormField(
-                              controller: _telefono,
-                              maxLength: 9,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: 'Teléfono',
-                                hintText: 'Ingresa un usuario',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
+                                TextFormField(
+                                  controller: _password,
+                                  keyboardType: TextInputType.visiblePassword,
+                                  obscureText: _obscureText,
+                                  decoration: InputDecoration(
+                                    labelText: 'Contraseña',
+                                    hintText: 'Ingrese una contraseña',
+                                    isDense: true,
+                                    labelStyle: const TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _obscureText = !_obscureText;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _obscureText
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El campo es obligatorio';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
+                                TextFormField(
+                                  controller: _email,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                    labelText: 'Email (opcional)',
+                                    hintText: 'Ingresa su email',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'El campo es obligatorio';
-                                }
-                                return null;
-                              },
-                            ),
-                             TextFormField(
-                              controller: _ruc,
-                              maxLength: 11,
-                              keyboardType: TextInputType.number,
-                             
-                              decoration: InputDecoration(
-                                labelText: 'RUC (opcional)',
-                                hintText: 'Ingresa un usuario',
-                                isDense: true,
-                                labelStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 1, 55, 99),
+                                TextFormField(
+                                  controller: _telefono,
+                                  maxLength: 9,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: 'Teléfono',
+                                    hintText: 'Ingresa un usuario',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'El campo es obligatorio';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                hintStyle: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey,
+                                TextFormField(
+                                  controller: _ruc,
+                                  maxLength: 11,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    labelText: 'RUC (opcional)',
+                                    hintText: 'Ingresa un usuario',
+                                    isDense: true,
+                                    labelStyle: TextStyle(
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 1, 55, 99),
+                                    ),
+                                    hintStyle: TextStyle(
+                                      fontSize: 13.0,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              
-                            ),
-                            
-                          ],
-                        )),
+                              ],
+                            )),
                       ),
-                  
+
                       // REGISTRAR
                       const SizedBox(
                         height: 15,
@@ -370,9 +401,60 @@ class _FormuState extends State<Formu> {
                         height: 60,
                         width: 150,
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()){
+                          onPressed: ()  {
+                            if (_formKey.currentState!.validate()) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'Gracias por registrar',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Color.fromARGB(
+                                                255, 4, 80, 143)),
+                                      ),
+                                      content: const Text(
+                                        'Te esparamos!',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () async{
+                                            await registrar(
+                                  _nombres.text,
+                                  _apellidos.text,
+                                  _dni.text,
+                                  selectedSexo,
+                                  _fechaController.text,
+                                  _username.text,
+                                  _password.text,
+                                  _email.text,
+                                  _telefono.text,
+                                  _ruc.text);
                               print("registrado-....");
+                                            Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Login2()),
+                                ); // Cierra el AlertDialog
+                                          },
+                                          child: const Text(
+                                            'OK',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 25,
+                                                color: Color.fromARGB(
+                                                    255, 13, 58, 94)),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              
                             }
                           },
                           child: Text(

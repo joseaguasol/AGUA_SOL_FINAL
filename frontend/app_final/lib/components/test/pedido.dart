@@ -40,20 +40,6 @@ class _PedidoState extends State<Pedido> {
 
   int clienteId = 9;
   DateTime tiempoActual = DateTime.now();
-<<<<<<< HEAD
-  /*
-
-  String apiPedidos = 'http://10.0.2.2:8004/api/pedido';
-  String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido';
-  String apiLastPedido = 'http://10.0.2.2:8004/api/pedido_last';*/
-
-  String apiUrl = dotenv.env['API_URL'] ?? '';
-  String apiPedidos = 'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/pedido';
-  String apiDetallePedido =
-      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/detallepedido';
-  String apiLastPedido =
-      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/pedido_last';
-=======
 
   String apiPedidos = 'http://10.0.2.2:8004/api/pedido';
   String apiDetallePedido = 'http://10.0.2.2:8004/api/detallepedido';
@@ -64,7 +50,6 @@ class _PedidoState extends State<Pedido> {
       'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/detallepedido';
   String apiLastPedido =
       'https://aguasolfinal-dev-qngg.2.us-1.fl0.io/api/pedido_last';*/
->>>>>>> 335744f9e243712c6ed1d145b45d5304be64e477
 
   Future<dynamic> datosCreadoPedido(
       clienteId, fecha, montoTotal, tipo, estado) async {
@@ -94,11 +79,7 @@ class _PedidoState extends State<Pedido> {
   }
 
   Future<void> crearPedidoyDetallePedido(tipo, monto) async {
-<<<<<<< HEAD
-    DateTime tiempoGMTPeru = tiempoActual.subtract(const Duration(hours: 5));
-=======
     DateTime tiempoGMTPeru = tiempoActual.subtract(const Duration(hours: 10));
->>>>>>> 335744f9e243712c6ed1d145b45d5304be64e477
     await datosCreadoPedido(
         clienteId, tiempoGMTPeru.toString(), monto, tipo, "pendiente");
     print(tiempoGMTPeru.toString());

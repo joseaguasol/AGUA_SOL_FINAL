@@ -21,6 +21,8 @@ const modelPedido = {
 
                 console.log("pedidos cr");
                 console.log(pedidos_cr);
+                console.log(pedidos_cr.id);
+
                 const pedidoss = await db_pool.one(`SELECT vp.id,vp.subtotal,vp.descuento,vp.total,vp.ruta_id,vp.fecha,vp.estado,vp.tipo,vp.observacion,vc.nombre,vc.apellidos,vc.telefono,rub.latitud,rub.longitud,rub.distrito
                 FROM ventas.pedido as vp
                 INNER JOIN ventas.cliente as vc ON vp.cliente_id = vc.id
@@ -28,6 +30,7 @@ const modelPedido = {
                 WHERE estado =  \'pendiente\' and vp.id=$1`, [pedidos_cr.id]);
 
                 // PEDIDOS SOCKET
+                console.log('nuevoPedido Emitido')
                 io.emit('nuevoPedido', pedidoss)
 
                 return pedidoss
@@ -61,7 +64,7 @@ const modelPedido = {
     },
     getLastPedido: async (id) => {
         try {
-            const lastPedido = await db_pool.one('SELECT id FROM ventas.pedido WHERE cliente_id=$1 ORDER BY id DESC LIMIT 1', [id]);
+            const lastPedido = await db_pool.one('SELECT id FROM ventas.pedido WHERE cliente_id=$1 ORDER BY id DESC LIMIT 1',[id]);
             return lastPedido;
         } catch (e) {
             throw new Error(`Error getting last pedido: ${e}`);
@@ -69,7 +72,7 @@ const modelPedido = {
     },
 
     getPedido: async () => {
-        console.log("dentro de get....")
+        console.log("dentro de get para conductores")
 
         try {
             const pedidos = await db_pool.any(`
@@ -98,26 +101,22 @@ const modelPedido = {
             LEFT JOIN relaciones.ubicacion as rub_nr ON vp.cliente_nr_id = rub_nr.cliente_nr_id
             WHERE estado = \'pendiente\' ORDER BY vp.id ASC;`);
 
-            //  const pedidos = await db_pool.any('SELECT id,ruta_id,cliente_id,cliente_nr_id,monto_total,fecha,tipo,estado FROM ventas.pedido WHERE estado =  \'pendiente\'');
-            //console.log("EMITIENDO PEDIDOS...GET,...")
-            //io.emit('vista',"hola")
-            // console.log(pedidos)
+            console.log(pedidos)
             return pedidos
+            
 
         } catch (error) {
             throw new Error(`Error getting pedido: ${error}`)
         }
     },
 
-    getPedidoConductor: async (rutaID, conductorID) => {
-        console.log("dentro de get Pedidos para Conductores....")
 
+    getPedidoConductor: async (rutaID,conductorID)=> {
+        console.log("dentro de get Pedidos para Conductores....")
+        
         try {
-            const pedidos = await db_pool.any(`SELECT vp.id,vp.monto_total,vp.fecha,vp.estado,vp.tipo,vc.nombre,vc.apellidos,vc.telefono,vc.ubicacion,vc.direccion
-          FROM ventas.ruta as vr INNER JOIN ventas.pedido as vp ON vr.id=vp.ruta_id
-          INNER JOIN ventas.cliente as vc ON vp.cliente_id = vc.id 
-          WHERE ruta_id=$1 and conductor_id=$2`, [rutaID, conductorID]);
-            console.log(pedidos)
+          const pedidos = await db_pool.any(`SELECT vp.id, vp.total, vp.fecha, vp.estado, vp.tipo, vc.nombre, vc.apellidos, vc.telefono, vc.direccion FROM ventas.ruta as vr INNER JOIN ventas.pedido as vp ON vr.id = vp.ruta_id INNER JOIN ventas.cliente as vc ON vp.cliente_id = vc.id WHERE ruta_id=$1 and conductor_id=$2`,[rutaID,conductorID]);
+          console.log(pedidos)
             return pedidos
 
         } catch (error) {
@@ -133,29 +132,31 @@ const modelPedido = {
             throw new Error(`Error en la eliminación del pedido: ${error.message}`);
         }
     },
-
-    updateEstadoPedido: async (pedidoID, pedidoActualizado) => {
+    
+    updateEstadoPedido: async (pedidoID,newDatos) => {
 
         try {
+            console.log('entro a update')
             const result = await db_pool.oneOrNone('UPDATE ventas.pedido SET estado = $1,foto=$2 WHERE id = $3 RETURNING *',
-                [pedidoActualizado.estado, pedidoActualizado.foto, pedidoID]);
+                [newDatos.estado,newDatos.foto,pedidoID]);
 
             if (!result) {
                 throw new Error(`No se encontró un pedido con ID ${id}.`);
             }
-            return { result }
+            return result
         } catch (error) {
             throw new Error(`Error en la actualización del pedido: ${error.message}`);
         }
     },
-    updateRutaPedido: async (id, ruta) => {
+    updateRutaPedido:async (id,ruta) => {
         try {
-            const result = await db_pool.oneOrNone('UPDATE ventas.pedido SET ruta_id = $1,estado = $2 WHERE id = $3 RETURNING *',
-                [ruta.ruta_id, ruta.estado, id]);
-            if (!result) {
-                return { "Message": "No se encontró un pedido con ese ID" }
+            const result  = await db_pool.oneOrNone('UPDATE ventas.pedido SET ruta_id = $1,estado = $2 WHERE id = $3 RETURNING *',
+            [ruta.ruta_id,ruta.estado,id]);
+            if (!result){
+                return {"Message":"No se encontró un pedido con ese ID"}
             }
-            return { result }
+            return{result}
+
         } catch (error) {
             throw new Error(`Error en la actualización del pedido: ${error.message}`)
         }

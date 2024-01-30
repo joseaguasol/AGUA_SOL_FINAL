@@ -21,3 +21,14 @@ export const getONEProducts = async (req,res) => {
     }
 }
 
+export const getProductsPorPromos = async (req,res) => {
+    try{
+        const { promocionId } = req.params;
+        const id = parseInt(promocionId, 10);
+        const getUNproducto = await modelProduct.getProductsPorPromo(id);
+        res.json(getUNproducto);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+

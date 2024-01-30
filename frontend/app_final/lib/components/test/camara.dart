@@ -21,7 +21,9 @@ class Camara extends StatefulWidget {
 class _CamaraState extends State<Camara> {
   //late List<CameraDescription> camera;
   late CameraController cameraController;
-  String apiPedidosConductor = 'http://10.0.2.2:8004/api/pedido_conductor/';
+  String apiPedidosConductor =
+      'https://aguasolfinal-dev-bbhx.1.us-1.fl0.io/api/pedido_conductor/';
+  /*'http://10.0.2.2:8004/api/pedido_conductor/';*/
   String comentario = '';
   String estadoNuevo = '';
 

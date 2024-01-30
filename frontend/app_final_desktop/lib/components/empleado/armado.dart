@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart' as map;
 import 'dart:async';
+import 'package:app_final_desktop/components/empleado/vista.dart';
 
 // AGENDADOS
 class Pedido {
@@ -102,13 +103,14 @@ class _ArmadoState extends State<Armado> {
   List<Pedido> hoypedidos = [];
   List<Pedido> hoyexpress = [];
   List<Pedido> agendados = [];
+  List<Pedido> agendadosParaHoy = [];
   List<Pedido> obtenerPedidoSeleccionado = [];
   late int conductorid;
   late int rutaIdLast;
   List<Conductor> obtenerConductor = [];
   List<Conductor> conductores = [];
   List<Coordenadas> coordenadas = [];
-
+  late DateTime fechaparseadas;
   DateTime now = DateTime.now();
 
   final List<LatLng> routePoints = [
@@ -194,8 +196,13 @@ class _ArmadoState extends State<Armado> {
                           fit: BoxFit.fill)),
                 ),
                 Container(
-                  child: Text("$contador",style: TextStyle(fontSize: 20,color: Color.fromARGB(255, 72, 69, 152),fontWeight: FontWeight.w600),),
-
+                  child: Text(
+                    "$contador",
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Color.fromARGB(255, 72, 69, 152),
+                        fontWeight: FontWeight.w600),
+                  ),
                 )
               ],
             ),
@@ -285,7 +292,7 @@ class _ArmadoState extends State<Armado> {
 
   // GET PEDIDOS
   Future<dynamic> getPedidos() async {
-    print("<<<<<<<<<Getpedidos");
+    print("1) Getpedidos");
     var res = await http.get(Uri.parse(apiPedidos),
         headers: {"Content-type": "application/json"});
     //timeout: Duration(seconds: 10);
@@ -316,16 +323,26 @@ class _ArmadoState extends State<Armado> {
         setState(() {
           // SI LOS PEDIDOS CON FECHA DE AYER,+
           for (var i = 0; i < pedidos.length; i++) {
+            fechaparseadas = DateTime.parse(pedidos[i].fecha.toString());
             if (pedidos[i].estado == 'pendiente') {
-              agendados.add(pedidos[i]);
+              if (pedidos[i].tipo == 'normal') {
+                if (fechaparseadas.year == now.year &&
+                    fechaparseadas.month == now.month &&
+                    fechaparseadas.day == now.day) {
+                  if (fechaparseadas.hour < 13) {
+                    hoypedidos.add(pedidos[i]);
+                  }
+                } else {
+                  agendados.add(pedidos[i]);
+                }
+              } else if (pedidos[i].tipo == 'express') {
+                hoyexpress.add(pedidos[i]);
+              }
             }
           }
-          /*if(pedidos.estado == 'pendiente'){
-            agendados = pedidos;
-          }*/
 
           print("--------AGENDADOS-----");
-          print("agendados");
+          print(agendados);
         });
       }
     } catch (e) {
@@ -359,64 +376,49 @@ class _ArmadoState extends State<Armado> {
     socket.on('nuevoPedido', (data) {
       print('Nuevo Pedido: $data');
       setState(() {
-        print(".......Dentro...");
+        print("DENTOR DE nuevoPèdido");
         DateTime fechaparseada = DateTime.parse(data['fecha'].toString());
 
-        // SI EL PEDIDO TIENE FECHA DE HOY Y ES NORMAL
-        if (data['tipo'] == 'normal' &&
-            fechaparseada.year == now.year &&
-            fechaparseada.month == now.month &&
-            fechaparseada.day == now.day) {
-          print("---NORMALL----");
-          Pedido nuevoHoy = Pedido(
-            id: data['id'],
-            ruta_id: data['ruta_id'] ?? 0,
-            nombre: data['nombre'],
-            apellidos: data['apellidos'],
-            telefono: data['telefono'],
-            latitud: data['latitud']?.toDouble() ?? 0.0,
-            longitud: data['longitud']?.toDouble() ?? 0.0,
-            distrito: data['distrito'],
-            subtotal: data['subtotal']?.toDouble() ?? 0.0,
-            descuento: data['descuento']?.toDouble() ?? 0.0,
-            total: data['total']?.toDouble() ?? 0.0,
-            observacion: data['observacion'],
-            fecha: data['fecha'],
-            tipo: data['tipo'],
-            estado: data['estado'],
-          );
+        Pedido nuevoPedido = Pedido(
+          id: data['id'],
+          ruta_id: data['ruta_id'] ?? 0,
+          nombre: data['nombre'],
+          apellidos: data['apellidos'],
+          telefono: data['telefono'],
+          latitud: data['latitud']?.toDouble() ?? 0.0,
+          longitud: data['longitud']?.toDouble() ?? 0.0,
+          distrito: data['distrito'],
+          subtotal: data['subtotal']?.toDouble() ?? 0.0,
+          descuento: data['descuento']?.toDouble() ?? 0.0,
+          total: data['total']?.toDouble() ?? 0.0,
+          observacion: data['observacion'],
+          fecha: data['fecha'],
+          tipo: data['tipo'],
+          estado: data['estado'],
+        );
 
-          // Añadimos el objeto
-          hoypedidos.add(nuevoHoy);
-          print("hoy pedidos");
-          print(hoypedidos);
+        if (nuevoPedido.estado == 'pendiente') {
+          print('esta pendiente');
+          print(nuevoPedido);
+          if (nuevoPedido.tipo == 'normal') {
+            print('es normal');
+            if (fechaparseada.year == now.year &&
+                fechaparseada.month == now.month &&
+                fechaparseada.day == now.day) {
+              if (fechaparseada.hour < 13) {
+                print('es antes de la 1');
+                hoypedidos.add(nuevoPedido);
+              }
+            } else {
+              agendados.add(nuevoPedido);
+            }
+          } else if (nuevoPedido.tipo == 'express') {
+            print(nuevoPedido);
+
+            hoyexpress.add(nuevoPedido);
+          }
         }
-        // SI EL PEDIDO TIENE FECHA DE HOY Y ES EXPRESS
-        if (data['tipo'] == 'express' &&
-            fechaparseada.year == now.year &&
-            fechaparseada.month == now.month &&
-            fechaparseada.day == now.day) {
-          print("---EXPRESS---");
-          Pedido nuevoExpress = Pedido(
-            id: data['id'],
-            ruta_id: data['ruta_id'] ?? 0,
-            nombre: data['nombre'],
-            apellidos: data['apellidos'],
-            telefono: data['telefono'],
-            latitud: data['latitud']?.toDouble() ?? 0.0,
-            longitud: data['longitud']?.toDouble() ?? 0.0,
-            distrito: data['distrito'],
-            subtotal: data['subtotal']?.toDouble() ?? 0.0,
-            descuento: data['descuento']?.toDouble() ?? 0.0,
-            total: data['total']?.toDouble() ?? 0.0,
-            observacion: data['observacion'],
-            fecha: data['fecha'],
-            tipo: data['tipo'],
-            estado: data['estado'],
-          );
-          //añadimos el objeto
-          hoyexpress.add(nuevoExpress);
-        }
+        // SI EL PEDIDO TIENE FECHA DE HOY Y ES NORMAL
       });
 
       // Desplaza automáticamente hacia el último elemento
@@ -501,41 +503,65 @@ class _ArmadoState extends State<Armado> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // SISTEMA DE PEDIDO
-                  Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    Inicio(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              const begin = Offset(1.0, 0.0);
-                              const end = Offset.zero;
-                              const curve = Curves.easeInOut;
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-                              var offsetAnimation = animation.drive(tween);
-                              return SlideTransition(
-                                  position: offsetAnimation, child: child);
+                  Row(
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, left: 20),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      Inicio(),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.easeInOut;
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+                                    var offsetAnimation =
+                                        animation.drive(tween);
+                                    return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child);
+                                  },
+                                ),
+                              );
                             },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color.fromARGB(255, 33, 76, 110))),
+                            child: const Text("<< Sistema de Pedido",
+                                style: TextStyle(color: Colors.white)),
                           ),
-                        );
-                      },
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              const Color.fromARGB(255, 33, 76, 110))),
-                      child: const Text("<< Sistema de Pedido",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 20, left: 20),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Vista()),
+                              );
+                            },
+                            style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    const Color.fromARGB(255, 33, 76, 110))),
+                            child: const Text("Supervision >>",
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+                      ]),
 
                   // TITULOS
                   Container(
-                   // color: Colors.grey,
+                    // color: Colors.grey,
                     margin: const EdgeInsets.only(top: 20, left: 20),
                     child: Row(
                       children: [
@@ -547,7 +573,6 @@ class _ArmadoState extends State<Armado> {
                               style: TextStyle(
                                   fontSize: 25, fontWeight: FontWeight.bold),
                             ),
-                        
                           ],
                         ),
                         Container(
@@ -559,8 +584,6 @@ class _ArmadoState extends State<Armado> {
                       ],
                     ),
                   ),
-
-               
 
                   Container(
                     // color: Colors.grey,
@@ -574,7 +597,6 @@ class _ArmadoState extends State<Armado> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                               
                                 // AGENDADOS
                                 Container(
                                   //color: Colors.amber,
@@ -739,343 +761,367 @@ class _ArmadoState extends State<Armado> {
                                 ),
                                 Row(
                                   children: [
-                                     // HOY
-                                Container(
-                                  //color: Colors.amber,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Color.fromARGB(255, 209, 94, 132)),
-                                  margin: const EdgeInsets.only(left: 20),
-                                  padding: const EdgeInsets.all(15),
-                                  width: 250,
-                                  height: 350,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    //crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Pedidos Hoy : ${hoypedidos.length}",
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.white),
-                                      ),
-                                      TextField(
-                                        controller: _searchController,
-                                        onChanged: (value) {
-                                          setState(
-                                              () {}); // Actualiza el estado al cambiar el texto
-                                        },
-                                        decoration: InputDecoration(
-                                          labelStyle: const TextStyle(
-                                              color: Colors.white),
-                                          enabledBorder:
-                                              const UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors
-                                                    .grey), // Cambia el color del cursor cuando el TextField no está enfocado
+                                    // HOY
+                                    Container(
+                                      //color: Colors.amber,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: Color.fromARGB(
+                                              255, 209, 94, 132)),
+                                      margin: const EdgeInsets.only(left: 20),
+                                      padding: const EdgeInsets.all(15),
+                                      width: 250,
+                                      height: 350,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        //crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Pedidos Hoy : ${hoypedidos.length}",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white),
                                           ),
-                                          labelText: 'Buscar cliente',
-                                          suffixIcon: IconButton(
-                                            icon: const Icon(
-                                              Icons.search,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: () {
-                                              // Puedes realizar acciones de búsqueda aquí si es necesario
+                                          TextField(
+                                            controller: _searchController,
+                                            onChanged: (value) {
+                                              setState(
+                                                  () {}); // Actualiza el estado al cambiar el texto
                                             },
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ListView.builder(
-                                          reverse: true,
-                                          controller: _scrollController,
-                                          itemCount: hoypedidos.length,
-                                          itemBuilder: (context, index) {
-                                            return Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 10),
-                                              decoration: BoxDecoration(
+                                            decoration: InputDecoration(
+                                              labelStyle: const TextStyle(
+                                                  color: Colors.white),
+                                              enabledBorder:
+                                                  const UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors
+                                                        .grey), // Cambia el color del cursor cuando el TextField no está enfocado
+                                              ),
+                                              labelText: 'Buscar cliente',
+                                              suffixIcon: IconButton(
+                                                icon: const Icon(
+                                                  Icons.search,
                                                   color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              child: ListTile(
-                                                trailing: Checkbox(
-                                                  value: hoypedidos[index]
-                                                      .seleccionado,
-                                                  onChanged: (hoypedidos[index]
-                                                              .estado !=
-                                                          'en proceso')
-                                                      ? (value) {
-                                                          setState(() {
-                                                            hoypedidos[index]
-                                                                    .seleccionado =
-                                                                value ?? false;
-                                                            obtenerPedidoSeleccionado =
-                                                                hoypedidos
-                                                                    .where((element) =>
-                                                                        element
-                                                                            .seleccionado)
-                                                                    .toList();
-                                                            if (value == true) {
-                                                              hoypedidos[index]
-                                                                      .estado =
-                                                                  "en proceso";
-                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                              // esto con la finalidad de que se maneje el estado en la database
-                                                              actualizarObtenidos();
-                                                            } else {
-                                                              hoypedidos[index]
-                                                                      .estado =
-                                                                  'pendiente';
-                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                              // esto con la finalidad de que se maneje el estado en la database
-                                                              actualizarObtenidos();
-                                                            }
-                                                          });
-                                                        }
-                                                      : null,
                                                 ),
-                                                title: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Pedido ID: ${hoypedidos[index].id}',
-                                                      style: TextStyle(
-                                                          color: Colors.purple,
-                                                          fontWeight:
-                                                              FontWeight.w500),
+                                                onPressed: () {
+                                                  // Puedes realizar acciones de búsqueda aquí si es necesario
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: ListView.builder(
+                                              reverse: true,
+                                              controller: _scrollController,
+                                              itemCount: hoypedidos.length,
+                                              itemBuilder: (context, index) {
+                                                return Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 10),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: ListTile(
+                                                    trailing: Checkbox(
+                                                      value: hoypedidos[index]
+                                                          .seleccionado,
+                                                      onChanged:
+                                                          (hoypedidos[index]
+                                                                      .estado !=
+                                                                  'en proceso')
+                                                              ? (value) {
+                                                                  setState(() {
+                                                                    hoypedidos[index]
+                                                                            .seleccionado =
+                                                                        value ??
+                                                                            false;
+                                                                    obtenerPedidoSeleccionado = hoypedidos
+                                                                        .where((element) =>
+                                                                            element.seleccionado)
+                                                                        .toList();
+                                                                    if (value ==
+                                                                        true) {
+                                                                      hoypedidos[index]
+                                                                              .estado =
+                                                                          "en proceso";
+                                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                                      // esto con la finalidad de que se maneje el estado en la database
+                                                                      actualizarObtenidos();
+                                                                    } else {
+                                                                      hoypedidos[index]
+                                                                              .estado =
+                                                                          'pendiente';
+                                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                                      // esto con la finalidad de que se maneje el estado en la database
+                                                                      actualizarObtenidos();
+                                                                    }
+                                                                  });
+                                                                }
+                                                              : null,
                                                     ),
-                                                    Text(
-                                                      'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                    Text(
-                                                        'Telefono: ${hoypedidos[index].telefono}'),
-                                                    Text(
-                                                        "Distrito: ${hoypedidos[index].distrito}"),
-                                                    Text(
-                                                        'Monto Total: ${hoypedidos[index].total}'),
-                                                    Text(
-                                                      'Estado: ${hoypedidos[index].estado.toUpperCase()}',
-                                                      style: TextStyle(
-                                                          color: hoypedidos[index].estado ==
-                                                                  'pendiente'
-                                                              ? const Color.fromARGB(
-                                                                  255, 244, 54, 152)
-                                                              : hoypedidos[index].estado ==
-                                                                      'en proceso'
-                                                                  ? Color.fromARGB(
-                                                                      255, 2, 129, 47)
+                                                    title: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Pedido ID: ${hoypedidos[index].id}',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.purple,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500),
+                                                        ),
+                                                        Text(
+                                                          'Cliente: ${hoypedidos[index].nombre},${hoypedidos[index].apellidos}',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                        Text(
+                                                            'Telefono: ${hoypedidos[index].telefono}'),
+                                                        Text(
+                                                            "Distrito: ${hoypedidos[index].distrito}"),
+                                                        Text(
+                                                            'Monto Total: ${hoypedidos[index].total}'),
+                                                        Text(
+                                                          'Estado: ${hoypedidos[index].estado.toUpperCase()}',
+                                                          style: TextStyle(
+                                                              color: hoypedidos[index].estado ==
+                                                                      'pendiente'
+                                                                  ? const Color.fromARGB(
+                                                                      255, 244, 54, 152)
                                                                   : hoypedidos[index].estado ==
-                                                                          'entregado'
-                                                                      ? const Color.fromARGB(
+                                                                          'en proceso'
+                                                                      ? Color.fromARGB(
                                                                           255,
-                                                                          9,
-                                                                          135,
-                                                                          13)
-                                                                      : Colors
-                                                                          .black,
-                                                          fontSize: hoypedidos[index]
-                                                                      .estado ==
-                                                                  'en proceso'
-                                                              ? 20
-                                                              : 15,
-                                                          fontWeight: hoypedidos[index]
-                                                                      .estado ==
-                                                                  'pendiente'
-                                                              ? FontWeight.w500
-                                                              : FontWeight.bold),
+                                                                          2,
+                                                                          129,
+                                                                          47)
+                                                                      : hoypedidos[index].estado ==
+                                                                              'entregado'
+                                                                          ? const Color.fromARGB(
+                                                                              255,
+                                                                              9,
+                                                                              135,
+                                                                              13)
+                                                                          : Colors
+                                                                              .black,
+                                                              fontSize:
+                                                                  hoypedidos[index].estado ==
+                                                                          'en proceso'
+                                                                      ? 20
+                                                                      : 15,
+                                                              fontWeight: hoypedidos[index]
+                                                                          .estado ==
+                                                                      'pendiente'
+                                                                  ? FontWeight.w500
+                                                                  : FontWeight.bold),
+                                                        ),
+                                                        Text(
+                                                            'Fecha: ${hoypedidos[index].fecha}'),
+                                                        Text(
+                                                            'Tipo: ${hoypedidos[index].tipo}'),
+                                                      ],
                                                     ),
-                                                    Text(
-                                                        'Fecha: ${hoypedidos[index].fecha}'),
-                                                    Text(
-                                                        'Tipo: ${hoypedidos[index].tipo}'),
-                                                  ],
-                                                ),
-                                                /*trailing: Row(*/
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                // EXPRESS
-                                Container(
-                                  //color: Colors.amber,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Color.fromARGB(255, 209, 94, 132),
-                                  ),
-                                  //margin: const EdgeInsets.only(left: 20),
-                                  padding: const EdgeInsets.all(15),
-                                  width: 250,
-                                  height: 350,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    //crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Pedidos Express : ${hoyexpress.length}",
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.white),
-                                      ),
-                                      TextField(
-                                        controller: _searchController,
-                                        onChanged: (value) {
-                                          setState(
-                                              () {}); // Actualiza el estado al cambiar el texto
-                                        },
-                                        decoration: InputDecoration(
-                                          labelStyle: const TextStyle(
-                                              color: Colors.white),
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Colors
-                                                    .grey), // Cambia el color del cursor cuando el TextField no está enfocado
-                                          ),
-                                          labelText: 'Buscar',
-                                          suffixIcon: IconButton(
-                                            icon: const Icon(
-                                              Icons.search,
-                                              color: Colors.white,
+                                                    /*trailing: Row(*/
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                            onPressed: () {
-                                              // Puedes realizar acciones de búsqueda aquí si es necesario
-                                            },
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                      Expanded(
-                                        child: ListView.builder(
-                                          controller: _scrollControllerExpress,
-                                          reverse: true,
-                                          itemCount: hoyexpress.length,
-                                          itemBuilder: (context, index) {
-                                            return Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 10),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20)),
-                                              child: ListTile(
-                                                trailing: Checkbox(
-                                                  value: hoyexpress[index]
-                                                      .seleccionado,
-                                                  onChanged: (hoyexpress[index]
-                                                              .estado !=
-                                                          'en proceso')
-                                                      ? (value) {
-                                                          setState(() {
-                                                            hoyexpress[index]
-                                                                    .seleccionado =
-                                                                value ?? false;
-                                                            obtenerPedidoSeleccionado =
-                                                                hoyexpress
-                                                                    .where((element) =>
-                                                                        element
-                                                                            .seleccionado)
-                                                                    .toList();
-                                                            if (value == true) {
-                                                              hoyexpress[index]
-                                                                      .estado =
-                                                                  "en proceso";
-                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
-                                                              // esto con la finalidad de que se maneje el estado en la database
-                                                              actualizarObtenidos();
-                                                            } else {
-                                                              hoyexpress[index]
-                                                                      .estado =
-                                                                  'pendiente';
-                                                              // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
-                                                              // esto con la finalidad de que se maneje el estado en la database
-                                                              actualizarObtenidos();
-                                                            }
-                                                          });
-                                                        }
-                                                      : null,
-                                                ),
-                                                title: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Pedido ID: ${hoyexpress[index].id}',
-                                                      style: TextStyle(
-                                                          color: Colors.purple,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                    Text(
-                                                      'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}',
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    ),
-                                                    Text(
-                                                        'Telefono: ${hoyexpress[index].telefono}'),
-                                                    Text(
-                                                        "Distrito: ${hoyexpress[index].distrito}"),
-                                                    Text(
-                                                        'Monto Total: ${hoyexpress[index].total}'),
-                                                    Text(
-                                                      'Estado: ${hoyexpress[index].estado.toUpperCase()}',
-                                                      style: TextStyle(
-                                                          color: hoyexpress[index].estado ==
-                                                                  'pendiente'
-                                                              ? const Color.fromARGB(
-                                                                  255, 244, 54, 152)
-                                                              : hoyexpress[index].estado ==
-                                                                      'en proceso'
-                                                                  ? Color.fromARGB(
-                                                                      255, 2, 129, 47)
-                                                                  : hoyexpress[index].estado ==
-                                                                          'entregado'
-                                                                      ? const Color.fromARGB(
-                                                                          255,
-                                                                          9,
-                                                                          135,
-                                                                          13)
-                                                                      : Colors
-                                                                          .black,
-                                                          fontSize: hoyexpress[index]
-                                                                      .estado ==
-                                                                  'en proceso'
-                                                              ? 20
-                                                              : 15,
-                                                          fontWeight: hoyexpress[index]
-                                                                      .estado ==
-                                                                  'pendiente'
-                                                              ? FontWeight.w500
-                                                              : FontWeight.bold),
-                                                    ),
-                                                    Text(
-                                                        'Fecha: ${hoyexpress[index].fecha}'),
-                                                    Text(
-                                                        'Tipo: ${hoyexpress[index].tipo}'),
-                                                  ],
-                                                ),
-                                                /*trailing: Row(*/
+                                    ),
+
+                                    // EXPRESS
+                                    Container(
+                                      //color: Colors.amber,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color:
+                                            Color.fromARGB(255, 209, 94, 132),
+                                      ),
+                                      //margin: const EdgeInsets.only(left: 20),
+                                      padding: const EdgeInsets.all(15),
+                                      width: 250,
+                                      height: 350,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        //crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Pedidos Express : ${hoyexpress.length}",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white),
+                                          ),
+                                          TextField(
+                                            controller: _searchController,
+                                            onChanged: (value) {
+                                              setState(
+                                                  () {}); // Actualiza el estado al cambiar el texto
+                                            },
+                                            decoration: InputDecoration(
+                                              labelStyle: const TextStyle(
+                                                  color: Colors.white),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors
+                                                        .grey), // Cambia el color del cursor cuando el TextField no está enfocado
                                               ),
-                                            );
-                                          },
-                                        ),
+                                              labelText: 'Buscar',
+                                              suffixIcon: IconButton(
+                                                icon: const Icon(
+                                                  Icons.search,
+                                                  color: Colors.white,
+                                                ),
+                                                onPressed: () {
+                                                  // Puedes realizar acciones de búsqueda aquí si es necesario
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: ListView.builder(
+                                              controller:
+                                                  _scrollControllerExpress,
+                                              reverse: true,
+                                              itemCount: hoyexpress.length,
+                                              itemBuilder: (context, index) {
+                                                return Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 10),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: ListTile(
+                                                    trailing: Checkbox(
+                                                      value: hoyexpress[index]
+                                                          .seleccionado,
+                                                      onChanged:
+                                                          (hoyexpress[index]
+                                                                      .estado !=
+                                                                  'en proceso')
+                                                              ? (value) {
+                                                                  setState(() {
+                                                                    hoyexpress[index]
+                                                                            .seleccionado =
+                                                                        value ??
+                                                                            false;
+                                                                    obtenerPedidoSeleccionado = hoyexpress
+                                                                        .where((element) =>
+                                                                            element.seleccionado)
+                                                                        .toList();
+                                                                    if (value ==
+                                                                        true) {
+                                                                      hoyexpress[index]
+                                                                              .estado =
+                                                                          "en proceso";
+                                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = en proceso"
+                                                                      // esto con la finalidad de que se maneje el estado en la database
+                                                                      actualizarObtenidos();
+                                                                    } else {
+                                                                      hoyexpress[index]
+                                                                              .estado =
+                                                                          'pendiente';
+                                                                      // AQUI DEBO TAMBIEN HACER "update pedido set estado = pendiente"
+                                                                      // esto con la finalidad de que se maneje el estado en la database
+                                                                      actualizarObtenidos();
+                                                                    }
+                                                                  });
+                                                                }
+                                                              : null,
+                                                    ),
+                                                    title: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          'Pedido ID: ${hoyexpress[index].id}',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.purple,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                        Text(
+                                                          'Cliente: ${hoyexpress[index].nombre}, ${hoyexpress[index].apellidos}',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                        Text(
+                                                            'Telefono: ${hoyexpress[index].telefono}'),
+                                                        Text(
+                                                            "Distrito: ${hoyexpress[index].distrito}"),
+                                                        Text(
+                                                            'Monto Total: ${hoyexpress[index].total}'),
+                                                        Text(
+                                                          'Estado: ${hoyexpress[index].estado.toUpperCase()}',
+                                                          style: TextStyle(
+                                                              color: hoyexpress[index].estado ==
+                                                                      'pendiente'
+                                                                  ? const Color.fromARGB(
+                                                                      255, 244, 54, 152)
+                                                                  : hoyexpress[index].estado ==
+                                                                          'en proceso'
+                                                                      ? Color.fromARGB(
+                                                                          255,
+                                                                          2,
+                                                                          129,
+                                                                          47)
+                                                                      : hoyexpress[index].estado ==
+                                                                              'entregado'
+                                                                          ? const Color.fromARGB(
+                                                                              255,
+                                                                              9,
+                                                                              135,
+                                                                              13)
+                                                                          : Colors
+                                                                              .black,
+                                                              fontSize:
+                                                                  hoyexpress[index].estado ==
+                                                                          'en proceso'
+                                                                      ? 20
+                                                                      : 15,
+                                                              fontWeight: hoyexpress[index]
+                                                                          .estado ==
+                                                                      'pendiente'
+                                                                  ? FontWeight.w500
+                                                                  : FontWeight.bold),
+                                                        ),
+                                                        Text(
+                                                            'Fecha: ${hoyexpress[index].fecha}'),
+                                                        Text(
+                                                            'Tipo: ${hoyexpress[index].tipo}'),
+                                                      ],
+                                                    ),
+                                                    /*trailing: Row(*/
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                             
+                                    ),
                                   ],
                                 ),
-                                ],
+                              ],
                             ),
 
                             // MAPA
@@ -1271,10 +1317,10 @@ class _ArmadoState extends State<Armado> {
                               //crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                 // PEDIDOS SELECCIONADOS
+                                // PEDIDOS SELECCIONADOS
                                 Container(
                                   padding: const EdgeInsets.all(25),
-                               //   margin:const EdgeInsets.only(top: 20, left: 20),
+                                  //   margin:const EdgeInsets.only(top: 20, left: 20),
                                   height: 300,
                                   width: 350,
                                   decoration: BoxDecoration(
@@ -1357,7 +1403,7 @@ class _ArmadoState extends State<Armado> {
                                     ],
                                   ),
                                 ),
-                                
+
                                 // CONDUCTORES
                                 Container(
                                   width: 350,
@@ -1474,15 +1520,14 @@ class _ArmadoState extends State<Armado> {
                                     ],
                                   ),
                                 ),
-                                
-                               
+
                                 //BOTONES
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     // BOTON CREAR
                                     Container(
-                                     // margin: const EdgeInsets.only(left: 20),
+                                      // margin: const EdgeInsets.only(left: 20),
                                       height: 150,
                                       width: 150,
                                       // color: Colors.black,

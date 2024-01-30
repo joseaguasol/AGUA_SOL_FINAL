@@ -21,6 +21,7 @@ export const getONEProducts = async (req,res) => {
     }
 }
 
+//UPDATE DE SARA: es para obtener info del backend
 export const getProductsPorPromos = async (req,res) => {
     try{
         const { promocionId } = req.params;

@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:app_final/components/test/productos.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 extension StringExtension on String {
   String capitalize() {
@@ -37,7 +38,7 @@ class _PedidoState extends State<Pedido> {
   int lastPedido = 0;
   //POR AHORA EL CLIENTE ES MANUAL!!""
 
-  int clienteId = 2;
+  int clienteId = 9;
   DateTime tiempoActual = DateTime.now();
 
   String apiPedidos = 'http://10.0.2.2:8004/api/pedido';
@@ -52,7 +53,7 @@ class _PedidoState extends State<Pedido> {
 
   Future<dynamic> datosCreadoPedido(
       clienteId, fecha, montoTotal, tipo, estado) async {
-    await http.post(Uri.parse(apiPedidos),
+    await http.post(Uri.parse(apiUrl+'/api/pedido'),
         headers: {"Content-type": "application/json"},
         body: jsonEncode({
           "cliente_id": clienteId,
@@ -67,7 +68,7 @@ class _PedidoState extends State<Pedido> {
 
   Future<dynamic> detallePedido(
       clienteId, productoId, cantidad, promoID) async {
-    await http.post(Uri.parse(apiDetallePedido),
+    await http.post(Uri.parse(apiUrl+'/api/detallepedido'),
         headers: {"Content-type": "application/json"},
         body: jsonEncode({
           "cliente_id": clienteId,

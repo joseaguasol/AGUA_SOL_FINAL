@@ -1,6 +1,8 @@
 import 'package:app_final/components/test/hola.dart';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:location/location.dart' as location_package;
+import 'package:geocoding/geocoding.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -16,15 +18,15 @@ class _UbicacionState extends State<Ubicacion> {
   double? latitudUser = 0.0;
   double? longitudUser = 0.0;
   String apiCliente = '';
-
+  late String direccion;
 
   // GET UBICACIÓN
   Future<void> currentLocation() async {
-    var location = new Location();
+    var location = location_package.Location();
 
     // bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
+    location_package.PermissionStatus _permissionGranted;
+    location_package.LocationData _locationData;
 
     setState(() {
       _isloading = true;
@@ -45,10 +47,10 @@ class _UbicacionState extends State<Ubicacion> {
 
     // Verificar si se otorgaron los permisos de ubicación
     _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
+    if (_permissionGranted == location_package.PermissionStatus.denied) {
       // Solicitar permisos de ubicación
       _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+      if (_permissionGranted != location_package.PermissionStatus.granted) {
         // Mostrar mensaje al usuario indicando que los permisos de ubicación son necesarios
         return;
       }
@@ -58,11 +60,13 @@ class _UbicacionState extends State<Ubicacion> {
     try {
       _locationData = await location.getLocation();
       //updateLocation(_locationData);
-      setState(() {
-        latitudUser = _locationData.latitude;
-        longitudUser = _locationData.longitude; 
-      });
-      
+      await obtenerDireccion(_locationData.latitude, _locationData.longitude);
+      // setState(() {
+      /// latitudUser = _locationData.latitude;
+      // longitudUser = _locationData.longitude;
+
+      //});
+
       print("----ubicación--");
       print(_locationData);
       print(latitudUser);
@@ -71,6 +75,61 @@ class _UbicacionState extends State<Ubicacion> {
     } catch (e) {
       // Manejo de errores, puedes mostrar un mensaje al usuario indicando que hubo un problema al obtener la ubicación.
       print("Error al obtener la ubicación: $e");
+    }
+  }
+
+  Future<void> obtenerDireccion(x, y) async {
+    //double latitud = widget.latitud ?? 0.0; // Accede a widget.latitud
+    //double longitud = widget.longitud ?? 0.0;
+    List<Placemark> placemark = await placemarkFromCoordinates(x, y);
+    try {
+      if (placemark.isNotEmpty) {
+        Placemark lugar = placemark.first;
+        setState(() {
+          direccion =
+              "${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}";
+        });
+
+        //  return '${lugar.locality},${lugar.subAdministrativeArea},${lugar.street}';
+      } else {
+        direccion = "Default";
+      }
+      print("x-----y");
+      print("${x},${y}");
+    } catch (e) {
+      //throw Exception("Error ${e}");
+      // Manejo de errores, puedes mostrar un mensaje al usuario indicando que hubo un problema al obtener la ubicación.
+      print("Error al obtener la ubicación: $e");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Error de Ubicación',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            ),
+            content: Text(
+              'Hubo un problema al obtener la ubicación. Por favor, inténtelo de nuevo.',
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el AlertDialog
+                  setState(() {
+                    _isloading = false;
+                  });
+                },
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+              ),
+            ],
+          );
+        },
+      );
     } finally {
       setState(() {
         _isloading = false;
@@ -78,24 +137,33 @@ class _UbicacionState extends State<Ubicacion> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Ubicación'
-              ,style: TextStyle(fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 4, 80, 143)),),
-              content:const Text('Gracias por compartir tu ubicación!',
-              style: TextStyle(fontSize:20,fontWeight: FontWeight.w600),),
+              title: const Text(
+                'Ubicación',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 4, 80, 143)),
+              ),
+              content: const Text(
+                'Gracias por compartir tu ubicación!',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Cierra el AlertDialog
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Hola(latitud:latitudUser,longitud: longitudUser,)),
+                      MaterialPageRoute(
+                          builder: (context) => Hola(direccion: direccion)),
                     );
                   },
-                  child: const Text('OK',
-                  style: TextStyle(fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                  color: Color.fromARGB(255, 13, 58, 94)),),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                        color: Color.fromARGB(255, 13, 58, 94)),
+                  ),
                 ),
               ],
             );
@@ -171,11 +239,9 @@ class _UbicacionState extends State<Ubicacion> {
                 child: ElevatedButton(
                   onPressed: () {
                     currentLocation();
-                  
                   },
                   child: _isloading
-                      ?   
-                      CircularProgressIndicator()
+                      ? CircularProgressIndicator()
                       : const Text(
                           ">> Aquí",
                           style: TextStyle(

@@ -4,6 +4,8 @@ import 'package:app_final/components/test/pedido.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 import 'package:lottie/lottie.dart';
 
@@ -47,10 +49,11 @@ class Promos extends StatefulWidget {
 }
 
 class _PromosState extends State<Promos> {
-  String apiPromociones = 'https://aguasol-30pw.onrender.com/api/promocion';
-  String apiProductoPromocion =
-      'https://aguasol-30pw.onrender.com/api/prod_prom';
-  String apiProducto = 'https://aguasol-30pw.onrender.com/api/products';
+  String apiUrl = dotenv.env['API_URL'] ?? '';
+
+  //String apiPromociones = 'https://aguasol-30pw.onrender.com/api/promocion';
+  //String apiProductoPromocion ='https://aguasol-30pw.onrender.com/api/prod_prom';
+  //String apiProducto = 'https://aguasol-30pw.onrender.com/api/products';
   List<Producto> productosContabilizados = [];
   List<Promo> promocionesContabilizadas = [];
   List<Promo> listPromociones = [];
@@ -67,7 +70,7 @@ class _PromosState extends State<Promos> {
 
   Future<dynamic> getPromociones() async {
     var res = await http.get(
-      Uri.parse(apiPromociones),
+      Uri.parse('$apiUrl/api/promocion'),
       headers: {"Content-type": "application/json"},
     );
     try {
@@ -81,7 +84,7 @@ class _PromosState extends State<Promos> {
               descripcion: mapa['descripcion'],
               fechaLimite: mapa['fecha_limite'],
               foto:
-                  'https://aguasol-30pw.onrender.com/images/${mapa['foto'].replaceAll(r'\\', '/')}');
+                  '$apiUrl/images/${mapa['foto'].replaceAll(r'\\', '/')}');
         }).toList();
 
         setState(() {
@@ -98,7 +101,7 @@ class _PromosState extends State<Promos> {
   Future<dynamic> getProductoPromocion(promocionID, cantidadPromo) async {
     print("cantidad promo----${cantidadPromo}");
     var res = await http.get(
-      Uri.parse(apiProductoPromocion + "/" + promocionID.toString()),
+      Uri.parse('$apiUrl/api/prod_prom/'+ promocionID.toString()),
       headers: {"Content-type": "application/json"},
     );
     try {
@@ -129,7 +132,7 @@ class _PromosState extends State<Promos> {
     ;
 
     var res = await http.get(
-      Uri.parse(apiProducto + "/" + productoID.toString()),
+      Uri.parse('$apiUrl/api/products' + "/" + productoID.toString()),
       headers: {"Content-type": "application/json"},
     );
     try {

@@ -1,4 +1,4 @@
--- Insertar registros en la tabla roles
+ple-- Insertar registros en la tabla roles
 INSERT INTO relaciones.roles (nombre) VALUES
   ('administrador'),
   ('empleado'),
@@ -63,8 +63,8 @@ INSERT INTO ventas.cliente (usuario_id, nombre, apellidos, fecha_nacimiento, sex
 
  
    -- Insertar registros en la tabla cliente
-INSERT INTO ventas.cliente_noregistrado (nombre, apellidos, direccion,telefono, email,distrito,RUC) VALUES
-  ('señora pochita', 'pochita', 'fatima-uchumayo', '99991515', 'pochita@gmail.com', 'sachaca','105165165165');
+INSERT INTO ventas.cliente_noregistrado (empleado_id, nombre, apellidos, direccion,telefono, email,distrito,RUC) VALUES
+  (1, 'señora pochita', 'pochita', 'fatima-uchumayo', '99991515', 'pochita@gmail.com', 'sachaca','105165165165');
 
  
 

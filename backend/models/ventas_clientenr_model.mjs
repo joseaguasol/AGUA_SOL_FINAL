@@ -23,7 +23,7 @@ const modelClientenr = {
 
         }
         catch(e){
-            throw new Error(`Error query create:${e}`)
+            throw new Error('Error query create:${e}')
         }
     },
     getClientenr:async () =>{
@@ -31,7 +31,17 @@ const modelClientenr = {
             const clientenr = await db_pool.any('SELECT * FROM ventas.cliente_noregistrado')
             return clientenr
         } catch (error) {
-            throw new Error(`Error query get:${e}`)
+            throw new Error('Error query get:${e}')
+        }
+    },
+
+//Cambio para hallar el ultimo cliente NR, segun el empleado ID
+    getLastClientenr:async (empleado_id) =>{
+        try {
+            const clientenr = await db_pool.any('SELECT id FROM ventas.cliente_noregistrado WHERE empleado_id = $1 ORDER BY id DESC LIMIT 1',[empleado_id])
+            return clientenr
+        } catch (error) {
+            throw new Error('Error query get:${e}')
         }
     }
 

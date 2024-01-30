@@ -110,8 +110,10 @@ create table ventas.cliente(
 	zona_trabajo_id int
 );
 
+--SE AGREDO EMPLEADO ID
 create table ventas.cliente_noregistrado(
 	id serial primary key,
+	empleado_id int not null,
 	nombre varchar(200),
 	apellidos varchar(300),
 	direccion varchar(200),
@@ -226,8 +228,12 @@ ALTER TABLE ventas.ruta ADD CONSTRAINT fk_ruta_zona_trabajo FOREIGN KEY (zona_tr
 -- PEDIDO
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_ruta FOREIGN KEY (ruta_id) REFERENCES ventas.ruta (id) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_cliente FOREIGN KEY (cliente_id) REFERENCES ventas.cliente (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
 -- pedido-cliente nr
 ALTER TABLE ventas.pedido ADD CONSTRAINT fk_pedido_clientenr FOREIGN KEY (cliente_nr_id) REFERENCES ventas.cliente_noregistrado (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--CLIENTE NR
+ALTER TABLE ventas.cliente_noregistrado ADD CONSTRAINT fk_clientnr_empleado FOREIGN KEY (empleado_id) REFERENCES persona.empleado (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- DETALLE PEDIDO
 ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_detallepedido_promocion FOREIGN KEY (promocion_id) REFERENCES ventas.promocion (id) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -247,6 +253,7 @@ ALTER TABLE ventas.vehiculo ADD CONSTRAINT fk_vehiculo_conductor FOREIGN KEY (co
 -- COMPRA
 ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_producto FOREIGN KEY (producto_id) REFERENCES ventas.producto (id);
 ALTER TABLE relaciones.detalle_pedido ADD CONSTRAINT fk_compra_pedido FOREIGN KEY (pedido_id) REFERENCES ventas.pedido (id) ON DELETE CASCADE ON UPDATE CASCADE;
+
 
 -- ROLES
 ALTER TABLE personal.usuario ADD CONSTRAINT fk_usuario_rol FOREIGN KEY (rol_id) REFERENCES relaciones.roles(id);

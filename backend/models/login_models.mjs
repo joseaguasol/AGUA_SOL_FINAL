@@ -87,6 +87,22 @@ const modelLogin = {
                         return {message:"credenciales invalidas"}
                     }
                 }
+                else if(existUser.rol_id==1){
+                    const resultado = await db_pool.oneOrNone(
+                        `SELECT * FROM personal.usuario 
+                        INNER JOIN personal.administrador ON personal.usuario.id = personal.administrador.usuario_id 
+                        WHERE nickname=$1`,// AND contrasena=$2`,
+                        [credenciales.nickname]
+                    );
+                    if (resultado && await bcrypt.compare(credenciales.contrasena, resultado.contrasena)) {
+                        
+                        
+                        return {usuario:resultado}
+                    }
+                    else{
+                        return {message:"credenciales invalidas"}
+                    }
+                }
 
             }
 

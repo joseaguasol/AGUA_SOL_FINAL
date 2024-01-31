@@ -1,19 +1,48 @@
 import { db_pool } from "../config.mjs";
+import bcrypt from 'bcrypt';
 
 const modelUserConductor = {
     createUserConductor:async (conductor) => {
+        const driver =  await db_pool.connect();
+
         try{
-            const usuario = await db_pool.one('INSERT INTO personal.usuario (rol_id,nickname, contrasena, email) VALUES ($1,$2,$3,$4) RETURNING *',
-            [conductor.rol_id,conductor.nickname,conductor.contrasena,conductor.email]);
-            
-            const conductores = await db_pool.one('INSERT INTO personal.conductor (usuario_id, nombres, apellidos, licencia, dni, fecha_nacimiento) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-            [usuario.id, conductor.nombres, conductor.apellidos, conductor.licencia, conductor.dni, conductor.fecha_nacimiento]);
+            const UsuarioExistente = await db_pool.oneOrNone(`SELECT * FROM personal.usuario WHERE nickname=$1`,
+                [conductor.nickname])
+            console.log("usuarioexistente")
+            console.log(UsuarioExistente)
+            if (UsuarioExistente) {
+                return { "message": "Usuario ya existente, intente otro por favor. " }
+            }
+            else{
+                
+                const hashedPassword = await bcrypt.hash(conductor.contrasena, 10);
+                // Inicia una transacción
+                const result = await driver.tx(async (t) => {
+                    const usuario = await t.one('INSERT INTO personal.usuario (rol_id, nickname, contrasena, email) VALUES ($1, $2, $3, $4) RETURNING *',
+                        [conductor.rol_id, conductor.nickname, hashedPassword, conductor.email]);
+                    console.log("id conductor")
+                    console.log(usuario.id)
+                    
 
-            return conductores
+                    const conductores = await t.one('INSERT INTO personal.conductor (usuario_id, nombres, apellidos, licencia, dni, fecha_nacimiento) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+                    [usuario.id, conductor.nombres, conductor.apellidos, conductor.licencia, conductor.dni, conductor.fecha_nacimiento]);
+        
 
+                    console.log("conductores+-++++");
+                    console.log(conductores);
+
+                    return { usuario, conductores } 
+                });
+                return result
+            }
+          
+           
         }
         catch(e){
             throw new Error(`Error query create:${e}`)
+        } finally {
+            // Asegúrate de liberar la conexión al finalizar
+            driver.done();
         }
     },
     updateUserConductor: async (id,conductor) => {

@@ -2,19 +2,47 @@ import { db_pool } from "../config.mjs";
 
 const modelUserEmpleado = {
     createUserEmpleado: async (empleado) => {
-        try {
-            const usuario = await db_pool.one('INSERT INTO personal.usuario (rol_id,nickname, contrasena, email) VALUES ($1,$2,$3,$4) RETURNING *',
-                [empleado.rol_id, empleado.nickname, empleado.contrasena, empleado.email]);
+        const employer =  await db_pool.connect();
+        try{
+            const UsuarioExistente = await db_pool.oneOrNone(`SELECT * FROM personal.usuario WHERE nickname=$1`,
+                [empleado.nickname])
+            console.log("usuarioexistente")
+            console.log(UsuarioExistente)
+            if (UsuarioExistente) {
+                return { "message": "Usuario ya existente, intente otro por favor. " }
+            }
+            else{
+                
+                const hashedPassword = await bcrypt.hash(empleado.contrasena, 10);
+                // Inicia una transacción
+                const result = await employer.tx(async (t) => {
+                    const usuario = await t.one('INSERT INTO personal.usuario (rol_id, nickname, contrasena, email) VALUES ($1, $2, $3, $4) RETURNING *',
+                        [empleado.rol_id, empleado.nickname, hashedPassword, empleado.email]);
+                    console.log("id conductor")
+                    console.log(usuario.id)
+                    
 
-            const empleados = await db_pool.one('INSERT INTO personal.empleado (usuario_id, nombres, apellidos, dni, fecha_nacimiento, codigo_empleado) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-                [usuario.id, empleados.usuario_id, empleados.nombres, empleados.apellidos, empleados.dni, empleados.fecha_nacimiento, empleados.codigo_empleado]);
+                    const empleados = await t.one('INSERT INTO personal.empleado (usuario_id, nombres, apellidos, dni, fecha_nacimiento, codigo_empleado) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
+                    [usuario.id, empleado.nombres, empleado.apellidos, empleado.licencia, empleado.dni, empleado.fecha_nacimiento]);
+        
 
-            return empleados
+                    console.log("empleados+-++++");
+                    console.log(empleados);
 
+                    return { usuario, empleados } 
+                });
+                return result
+            }
+          
+           
         }
-        catch (e) {
+        catch(e){
             throw new Error(`Error query create:${e}`)
+        } finally {
+            // Asegúrate de liberar la conexión al finalizar
+            employer.done();
         }
+
     },
     updateUserEmpleado: async (id, empleado) => {
 

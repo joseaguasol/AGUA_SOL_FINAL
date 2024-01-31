@@ -2,7 +2,48 @@ import { db_pool } from "../config.mjs";
 
 const modelUserAdmin = {
     createUserAdmin:async (admin) => {
+        const adminer =  await db_pool.connect();
+
         try{
+            const UsuarioExistente = await db_pool.oneOrNone(`SELECT * FROM personal.usuario WHERE nickname=$1`,
+                [admin.nickname])
+            console.log("usuarioexistente")
+            console.log(UsuarioExistente)
+            if (UsuarioExistente) {
+                return { "message": "Usuario ya existente, intente otro por favor. " }
+            }
+            else{
+                
+                const hashedPassword = await bcrypt.hash(admin.contrasena, 10);
+                // Inicia una transacción
+                const result = await adminer.tx(async (t) => {
+                    const usuario = await t.one('INSERT INTO personal.usuario (rol_id, nickname, contrasena, email) VALUES ($1, $2, $3, $4) RETURNING *',
+                        [admin.rol_id, admin.nickname, hashedPassword, admin.email]);
+                    console.log("id conductor")
+                    console.log(usuario.id)
+                    
+
+                    const administradores = await t.one('INSERT INTO personal.administrador(usuario_id,nombres,apellidos,dni,fecha_nacimiento) VALUES($1,$2,$3,$4,$5) RETURNING *',
+                    [usuario.id,admin.nombres,admin.apellidos,admin.dni,admin.fecha_nacimiento]);
+        
+
+                    console.log("administradores+-++++");
+                    console.log(administradores);
+
+                    return { usuario, administradores } 
+                });
+                return result
+            }
+          
+           
+        }
+        catch(e){
+            throw new Error(`Error query create:${e}`)
+        } finally {
+            // Asegúrate de liberar la conexión al finalizar
+            adminer.done();
+        }
+        /*try{
             const usuario = await db_pool.one('INSERT INTO personal.usuario (rol_id,nickname, contrasena, email) VALUES ($1,$2,$3,$4) RETURNING *',
             [admin.rol_id,admin.nickname,admin.contrasena,admin.email]);
             
@@ -14,7 +55,7 @@ const modelUserAdmin = {
         }
         catch(e){
             throw new Error(`Error query create:${e}`)
-        }
+        }*/
     },
     updateUserAdmin: async (id,admin) => {
         console.log("---dentro de models",id)

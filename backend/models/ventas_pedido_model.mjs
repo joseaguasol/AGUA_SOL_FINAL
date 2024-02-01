@@ -14,10 +14,10 @@ const modelPedido = {
             if (pedido.cliente_id) {
                 // Si cliente_id existe, es un cliente registrado
                 const pedidos_cr = await db_pool.one(`
-                    INSERT INTO ventas.pedido (cliente_id, subtotal,descuento,total, fecha, tipo, estado)
-                    VALUES ($1, $2, $3, $4, $5,$6,$7)
+                    INSERT INTO ventas.pedido (cliente_id, subtotal,descuento,total, fecha, tipo, estado, observacion)
+                    VALUES ($1, $2, $3, $4, $5, $6 , $7, $8)
                     RETURNING *
-                `, [pedido.cliente_id, pedido.subtotal,pedido.descuento,pedido.total, pedido.fecha, pedido.tipo, pedido.estado]);
+                `, [pedido.cliente_id, pedido.subtotal,pedido.descuento,pedido.total, pedido.fecha, pedido.tipo, pedido.estado, pedido.observacion]);
 
                 console.log("pedidos cr");
                 console.log(pedidos_cr);
@@ -38,10 +38,10 @@ const modelPedido = {
             } else {
                 // Si cliente_id es nulo, es un cliente no registrado
                 const pedidos_nr = await db_pool.one(`
-                    INSERT INTO ventas.pedido (cliente_nr_id, subtotal,descuento,total, fecha, tipo, estado)
-                    VALUES ($1, $2, $3, $4, $5,$6,$7)
+                    INSERT INTO ventas.pedido (cliente_nr_id, subtotal,descuento,total, fecha, tipo, estado, observacion)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                     RETURNING *
-                `, [pedido.cliente_nr_id, pedido.subtotal,pedido.descuento,pedido.total, pedido.fecha, pedido.tipo, pedido.estado]);
+                `, [pedido.cliente_nr_id, pedido.subtotal,pedido.descuento,pedido.total, pedido.fecha, pedido.tipo, pedido.estado, pedido.observacion]);
                 console.log("pedidos nr");
                 console.log(pedidos_nr);
 
